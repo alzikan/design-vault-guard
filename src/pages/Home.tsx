@@ -1,6 +1,10 @@
 import { PageHeader } from "@/components/page-header";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { BottomNav } from "@/components/ui/bottom-nav";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Play, BookOpen, Palette, TrendingUp } from "lucide-react";
 import waterfallPainting from "@/assets/waterfall-painting.jpg";
 import shellPainting from "@/assets/shell-painting.jpg";
 import boatNightPainting from "@/assets/boat-night-painting.jpg";
@@ -33,15 +37,48 @@ const featuredArtworks = [
   }
 ];
 
+const recentLessons = [
+  { title: "Traditional Saudi Art", progress: 67, duration: "45min", difficulty: "Beginner" },
+  { title: "Color Theory", progress: 100, duration: "1h 30min", difficulty: "Advanced" },
+  { title: "Vanishing Point", progress: 0, duration: "2h 15min", difficulty: "Intermediate" },
+];
+
+const recentVideos = [
+  { title: "Watercolor Techniques", views: "2.4K", duration: "15:32", level: "Advanced" },
+  { title: "Oil Painting Fundamentals", views: "1.8K", duration: "22:45", level: "Beginner" },
+];
+
+const quickStats = [
+  { label: "Artworks", value: "8", icon: Palette, color: "text-warm-gold" },
+  { label: "Videos", value: "4", icon: Play, color: "text-blue-500" },
+  { label: "Lessons", value: "4", icon: BookOpen, color: "text-green-500" },
+  { label: "Progress", value: "42%", icon: TrendingUp, color: "text-purple-500" },
+];
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-background pb-24">
       <PageHeader title="Home" />
       
       <div className="px-4">
-        {/* Main Content Area */}
-        <div className="bg-card rounded-2xl p-6 shadow-xl">
-          {/* Featured Artworks Grid */}
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {quickStats.map((stat, index) => (
+            <Card key={index} className="bg-card border-border/20 p-4">
+              <div className="flex items-center gap-3">
+                <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                <div>
+                  <div className="text-xl font-bold text-card-foreground">{stat.value}</div>
+                  <div className="text-xs text-muted-foreground">{stat.label}</div>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Featured Artworks */}
+        <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
+          <h2 className="text-xl font-bold text-card-foreground mb-4">Featured Artworks</h2>
           <div className="grid grid-cols-2 gap-4">
             {featuredArtworks.map((artwork) => (
               <ArtGalleryCard
@@ -53,21 +90,72 @@ export default function Home() {
               />
             ))}
           </div>
-          
-          {/* Additional artworks - continuing the grid */}
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <ArtGalleryCard
-              title="Desert Oasis"
-              year="1439"
-              image={waterfallPainting}
-              onClick={() => console.log("Viewing Desert Oasis")}
-            />
-            <ArtGalleryCard
-              title="Coastal Breeze"
-              year="1441"
-              image={shellPainting}
-              onClick={() => console.log("Viewing Coastal Breeze")}
-            />
+        </div>
+
+        {/* Recent Lessons Progress */}
+        <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-card-foreground">Recent Lessons</h2>
+            <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
+              View All
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {recentLessons.map((lesson, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                <div className="flex-1">
+                  <h3 className="font-medium text-card-foreground text-sm">{lesson.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted-foreground">{lesson.duration}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {lesson.difficulty}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-medium text-warm-gold">{lesson.progress}%</div>
+                  <div className="w-16 bg-muted rounded-full h-1.5 mt-1">
+                    <div 
+                      className="bg-warm-gold h-1.5 rounded-full transition-all" 
+                      style={{ width: `${lesson.progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Videos */}
+        <div className="bg-card rounded-2xl p-6 shadow-xl">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-card-foreground">Recent Videos</h2>
+            <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
+              View All
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {recentVideos.map((video, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-8 bg-gradient-to-br from-warm-gold/20 to-accent/20 rounded flex items-center justify-center">
+                    <Play className="w-4 h-4 text-warm-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-card-foreground text-sm">{video.title}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-muted-foreground">{video.duration}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {video.level}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {video.views} views
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

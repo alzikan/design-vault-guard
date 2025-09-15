@@ -1,4 +1,4 @@
-import { Home, Image, BookOpen, User, Play } from "lucide-react";
+import { Home, Image, BookOpen, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 
@@ -11,7 +11,6 @@ const navItems = [
   { icon: Play, label: "Videos", path: "/videos" },
   { icon: Image, label: "Gallery", path: "/gallery" },
   { icon: BookOpen, label: "Lessons", path: "/lessons" },
-  { icon: User, label: "Profile", path: "/profile" },
 ];
 
 export function BottomNav({ className }: BottomNavProps) {
