@@ -6,23 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Heart, X, Share2, Download } from "lucide-react";
-import waterfallPainting from "@/assets/waterfall-painting.jpg";
-import shellPainting from "@/assets/shell-painting.jpg";
-import boatNightPainting from "@/assets/boat-night-painting.jpg";
-import prideTreePainting from "@/assets/pride-tree-painting.jpg";
-
-const allArtworks = [
-  { id: 1, title: "Water falls", year: "1440", image: waterfallPainting, category: "Airbrush", medium: "Airbrush on Canvas" },
-  { id: 2, title: "Pride", year: "1440", image: prideTreePainting, category: "Airbrush", medium: "Airbrush on Canvas" },
-  { id: 3, title: "The shell", year: "1440", image: shellPainting, category: "Sketches", medium: "Pencil on Paper" },
-  { id: 4, title: "The bout & the night", year: "1440", image: boatNightPainting, category: "Sketches", medium: "Charcoal on Paper" },
-  { id: 5, title: "Desert Dreams", year: "1439", image: waterfallPainting, category: "Oil paint", medium: "Oil on Canvas" },
-  { id: 6, title: "Ocean Memories", year: "1441", image: prideTreePainting, category: "Oil paint", medium: "Oil on Canvas" },
-  { id: 7, title: "Mountain Serenity", year: "1442", image: shellPainting, category: "Airbrush", medium: "Airbrush on Canvas" },
-  { id: 8, title: "Evening Reflection", year: "1439", image: boatNightPainting, category: "Oil paint", medium: "Oil on Canvas" },
-];
-
-const categories = ["All", "Airbrush", "Sketches", "Oil paint"];
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Gallery() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,6 +14,42 @@ export default function Gallery() {
   const [sortBy, setSortBy] = useState("year");
   const [selectedArtwork, setSelectedArtwork] = useState<any>(null);
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [artworks, setArtworks] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch artworks from database
+  useEffect(() => {
+    fetchArtworks();
+  }, []);
+
+  const fetchArtworks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('artworks')
+        .select('id, title, created_year, image_url, medium')
+        .eq('is_available', true);
+      
+      if (error) throw error;
+      
+      if (data) {
+        setArtworks(data.map(artwork => ({
+          ...artwork,
+          year: artwork.created_year?.toString() || '',
+          image: artwork.image_url,
+          category: artwork.medium || 'Other'
+        })));
+        
+        // Extract unique categories
+        const uniqueCategories = ["All", ...new Set(data.map(artwork => artwork.medium).filter(Boolean))];
+        setCategories(uniqueCategories);
+      }
+    } catch (error) {
+      console.error('Error fetching artworks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Load favorites from localStorage on mount
   useEffect(() => {
@@ -54,22 +74,26 @@ export default function Gallery() {
   };
 
   const filteredArtworks = useMemo(() => {
-    let filtered = allArtworks.filter(artwork => {
+    let filtered = artworks.filter(artwork => {
       const matchesSearch = artwork.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          artwork.medium.toLowerCase().includes(searchTerm.toLowerCase());
+                          (artwork.medium && artwork.medium.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === "All" || artwork.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
 
     // Sort artworks
     filtered.sort((a, b) => {
-      if (sortBy === "year") return parseInt(b.year) - parseInt(a.year);
+      if (sortBy === "year") {
+        const yearA = parseInt(a.year) || 0;
+        const yearB = parseInt(b.year) || 0;
+        return yearB - yearA;
+      }
       if (sortBy === "title") return a.title.localeCompare(b.title);
       return 0;
     });
 
     return filtered;
-  }, [searchTerm, selectedCategory, sortBy]);
+  }, [artworks, searchTerm, selectedCategory, sortBy]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -129,22 +153,30 @@ export default function Gallery() {
 
         {/* Gallery Grid */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
-          <div className="grid grid-cols-2 gap-4">
-            {filteredArtworks.map((artwork) => (
-              <ArtGalleryCard
-                key={artwork.id}
-                title={artwork.title}
-                year={artwork.year}
-                image={artwork.image}
-                onClick={() => viewArtwork(artwork)}
-              />
-            ))}
-          </div>
-
-          {filteredArtworks.length === 0 && (
+          {loading ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No artworks found matching your criteria.</p>
+              <p className="text-muted-foreground">Loading artworks...</p>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                {filteredArtworks.map((artwork) => (
+                  <ArtGalleryCard
+                    key={artwork.id}
+                    title={artwork.title}
+                    year={artwork.year}
+                    image={artwork.image}
+                    onClick={() => viewArtwork(artwork)}
+                  />
+                ))}
+              </div>
+
+              {filteredArtworks.length === 0 && !loading && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No artworks found matching your criteria.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
 

@@ -6,53 +6,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, BookOpen, Palette, TrendingUp, Heart } from "lucide-react";
-import waterfallPainting from "@/assets/waterfall-painting.jpg";
-import shellPainting from "@/assets/shell-painting.jpg";
-import boatNightPainting from "@/assets/boat-night-painting.jpg";
-import prideTreePainting from "@/assets/pride-tree-painting.jpg";
-
-const featuredArtworks = [
-  {
-    id: 1,
-    title: "The shell",
-    year: "1440",
-    image: shellPainting,
-  },
-  {
-    id: 2,
-    title: "The bout & the night",
-    year: "1440", 
-    image: boatNightPainting,
-  },
-  {
-    id: 3,
-    title: "Water falls",
-    year: "1440",
-    image: waterfallPainting,
-  },
-  {
-    id: 4,
-    title: "Pride",
-    year: "1440",
-    image: prideTreePainting,
-  }
-];
-
-const recentLessons = [
-  { title: "Traditional Saudi Art", progress: 67, duration: "45min", difficulty: "Beginner", totalModules: 3 },
-  { title: "Color Theory", progress: 100, duration: "1h 30min", difficulty: "Advanced", totalModules: 3 },
-  { title: "Vanishing Point", progress: 0, duration: "2h 15min", difficulty: "Intermediate", totalModules: 4 },
-];
-
-const recentVideos = [
-  { title: "Watercolor Techniques", views: "2.4K", duration: "15:32", level: "Advanced" },
-  { title: "Oil Painting Fundamentals", views: "1.8K", duration: "22:45", level: "Beginner" },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
   const [artFavorites, setArtFavorites] = useState<number[]>([]);
   const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
+  const [featuredArtworks, setFeaturedArtworks] = useState<any[]>([]);
+  const [recentLessons, setRecentLessons] = useState<any[]>([]);
+  const [recentVideos, setRecentVideos] = useState<any[]>([]);
+  const [stats, setStats] = useState({ artworks: 0, videos: 0, lessons: 0 });
 
   useEffect(() => {
     // Load progress and favorites from localStorage
@@ -69,7 +32,81 @@ export default function Home() {
     if (savedVideoFavorites) {
       setVideoFavorites(JSON.parse(savedVideoFavorites));
     }
+
+    // Fetch data from database
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      // Fetch featured artworks
+      const { data: artworksData } = await supabase
+        .from('artworks')
+        .select('id, title, created_year, image_url')
+        .eq('is_featured', true)
+        .eq('is_available', true)
+        .limit(4);
+
+      if (artworksData) {
+        setFeaturedArtworks(artworksData.map(artwork => ({
+          ...artwork,
+          year: artwork.created_year?.toString() || '',
+          image: artwork.image_url
+        })));
+      }
+
+      // Fetch recent lessons
+      const { data: lessonsData } = await supabase
+        .from('lessons')
+        .select('title, duration_minutes, difficulty_level')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (lessonsData) {
+        setRecentLessons(lessonsData.map(lesson => ({
+          title: lesson.title,
+          progress: Math.floor(Math.random() * 100), // Random progress for demo
+          duration: lesson.duration_minutes ? `${lesson.duration_minutes}min` : '45min',
+          difficulty: lesson.difficulty_level || 'Beginner',
+          totalModules: 3
+        })));
+      }
+
+      // Fetch recent videos
+      const { data: videosData } = await supabase
+        .from('videos')
+        .select('title, view_count, duration_minutes')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(2);
+
+      if (videosData) {
+        setRecentVideos(videosData.map(video => ({
+          title: video.title,
+          views: video.view_count ? `${(video.view_count / 1000).toFixed(1)}K` : '0',
+          duration: video.duration_minutes ? `${Math.floor(video.duration_minutes / 60)}:${String(video.duration_minutes % 60).padStart(2, '0')}` : '15:32',
+          level: 'Beginner' // Default level
+        })));
+      }
+
+      // Get counts for stats
+      const [artworksCount, videosCount, lessonsCount] = await Promise.all([
+        supabase.from('artworks').select('id', { count: 'exact', head: true }),
+        supabase.from('videos').select('id', { count: 'exact', head: true }),
+        supabase.from('lessons').select('id', { count: 'exact', head: true })
+      ]);
+
+      setStats({
+        artworks: artworksCount.count || 0,
+        videos: videosCount.count || 0,
+        lessons: lessonsCount.count || 0
+      });
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   // Calculate overall progress
   const totalModules = recentLessons.reduce((acc, lesson) => acc + lesson.totalModules, 0);
@@ -77,9 +114,9 @@ export default function Home() {
   const overallProgress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
 
   const quickStats = [
-    { label: "Artworks", value: "8", icon: Palette, color: "text-warm-gold" },
-    { label: "Videos", value: "4", icon: Play, color: "text-blue-500" },
-    { label: "Lessons", value: "4", icon: BookOpen, color: "text-green-500" },
+    { label: "Artworks", value: stats.artworks.toString(), icon: Palette, color: "text-warm-gold" },
+    { label: "Videos", value: stats.videos.toString(), icon: Play, color: "text-blue-500" },
+    { label: "Lessons", value: stats.lessons.toString(), icon: BookOpen, color: "text-green-500" },
     { label: "Progress", value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
   ];
   return (
