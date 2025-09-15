@@ -188,7 +188,7 @@ export default function Gallery() {
                 <img 
                   src={selectedArtwork.image} 
                   alt={selectedArtwork.title}
-                  className="w-full h-64 md:h-96 object-cover rounded-t-2xl"
+                  className="w-full max-h-[60vh] object-contain bg-muted/10 rounded-t-2xl"
                 />
                 <Button
                   variant="ghost"
