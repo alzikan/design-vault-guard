@@ -1,10 +1,11 @@
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, BookOpen, Palette, TrendingUp } from "lucide-react";
+import { Play, BookOpen, Palette, TrendingUp, Heart } from "lucide-react";
 import waterfallPainting from "@/assets/waterfall-painting.jpg";
 import shellPainting from "@/assets/shell-painting.jpg";
 import boatNightPainting from "@/assets/boat-night-painting.jpg";
@@ -38,9 +39,9 @@ const featuredArtworks = [
 ];
 
 const recentLessons = [
-  { title: "Traditional Saudi Art", progress: 67, duration: "45min", difficulty: "Beginner" },
-  { title: "Color Theory", progress: 100, duration: "1h 30min", difficulty: "Advanced" },
-  { title: "Vanishing Point", progress: 0, duration: "2h 15min", difficulty: "Intermediate" },
+  { title: "Traditional Saudi Art", progress: 67, duration: "45min", difficulty: "Beginner", totalModules: 3 },
+  { title: "Color Theory", progress: 100, duration: "1h 30min", difficulty: "Advanced", totalModules: 3 },
+  { title: "Vanishing Point", progress: 0, duration: "2h 15min", difficulty: "Intermediate", totalModules: 4 },
 ];
 
 const recentVideos = [
@@ -48,14 +49,39 @@ const recentVideos = [
   { title: "Oil Painting Fundamentals", views: "1.8K", duration: "22:45", level: "Beginner" },
 ];
 
-const quickStats = [
-  { label: "Artworks", value: "8", icon: Palette, color: "text-warm-gold" },
-  { label: "Videos", value: "4", icon: Play, color: "text-blue-500" },
-  { label: "Lessons", value: "4", icon: BookOpen, color: "text-green-500" },
-  { label: "Progress", value: "42%", icon: TrendingUp, color: "text-purple-500" },
-];
-
 export default function Home() {
+  const [lessonsProgress, setLessonsProgress] = useState<any>({});
+  const [artFavorites, setArtFavorites] = useState<number[]>([]);
+  const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
+
+  useEffect(() => {
+    // Load progress and favorites from localStorage
+    const savedLessonsProgress = localStorage.getItem('lessonsProgress');
+    const savedArtFavorites = localStorage.getItem('artFavorites');
+    const savedVideoFavorites = localStorage.getItem('videoFavorites');
+    
+    if (savedLessonsProgress) {
+      setLessonsProgress(JSON.parse(savedLessonsProgress));
+    }
+    if (savedArtFavorites) {
+      setArtFavorites(JSON.parse(savedArtFavorites));
+    }
+    if (savedVideoFavorites) {
+      setVideoFavorites(JSON.parse(savedVideoFavorites));
+    }
+  }, []);
+
+  // Calculate overall progress
+  const totalModules = recentLessons.reduce((acc, lesson) => acc + lesson.totalModules, 0);
+  const completedModules = Object.values(lessonsProgress).filter(Boolean).length;
+  const overallProgress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
+
+  const quickStats = [
+    { label: "Artworks", value: "8", icon: Palette, color: "text-warm-gold" },
+    { label: "Videos", value: "4", icon: Play, color: "text-blue-500" },
+    { label: "Lessons", value: "4", icon: BookOpen, color: "text-green-500" },
+    { label: "Progress", value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
+  ];
   return (
     <div className="min-h-screen bg-background pb-24">
       <PageHeader title="Home" />
@@ -75,6 +101,26 @@ export default function Home() {
             </Card>
           ))}
         </div>
+
+        {/* Favorites Summary */}
+        {(artFavorites.length > 0 || videoFavorites.length > 0) && (
+          <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Heart className="w-5 h-5 text-red-500" />
+              <h2 className="text-lg font-bold text-card-foreground">Your Favorites</h2>
+            </div>
+            <div className="flex items-center gap-6 text-sm">
+              <div className="flex items-center gap-1">
+                <Palette className="w-4 h-4 text-warm-gold" />
+                <span className="text-muted-foreground">{artFavorites.length} artworks</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Play className="w-4 h-4 text-blue-500" />
+                <span className="text-muted-foreground">{videoFavorites.length} videos</span>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Featured Artworks */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">

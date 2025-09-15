@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Eye } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
 
 const videoCategories = [
   {
@@ -55,7 +56,12 @@ const videoCategories = [
   },
 ];
 
-const VideoCard = ({ video, onPlay }: { video: any; onPlay: (video: any) => void }) => (
+const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: { 
+  video: any; 
+  onPlay: (video: any) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (videoId: number) => void;
+}) => (
   <Card className="bg-muted/30 border-border/20 overflow-hidden">
     <div className="relative">
       <img 
@@ -72,6 +78,14 @@ const VideoCard = ({ video, onPlay }: { video: any; onPlay: (video: any) => void
         variant="ghost"
       >
         <Play className="w-8 h-8 text-white" />
+      </Button>
+      <Button
+        onClick={() => onToggleFavorite(video.id)}
+        className="absolute top-2 left-2 w-8 h-8 p-0 bg-black/50 hover:bg-black/70"
+        variant="ghost"
+        size="sm"
+      >
+        <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current text-red-500' : 'text-white'}`} />
       </Button>
       <Badge className="absolute top-2 right-2 bg-warm-gold text-background text-xs">
         {video.level}
@@ -100,13 +114,63 @@ const VideoCard = ({ video, onPlay }: { video: any; onPlay: (video: any) => void
 
 export default function Videos() {
   const [currentVideo, setCurrentVideo] = useState<any>(null);
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration] = useState(100); // Mock duration in seconds
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('videoFavorites');
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Mock video progress
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying && currentVideo) {
+      interval = setInterval(() => {
+        setCurrentTime(prev => {
+          if (prev >= duration) {
+            setIsPlaying(false);
+            return duration;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentVideo, duration]);
+
+  const toggleFavorite = (videoId: number) => {
+    const newFavorites = favorites.includes(videoId)
+      ? favorites.filter(id => id !== videoId)
+      : [...favorites, videoId];
+    
+    setFavorites(newFavorites);
+    localStorage.setItem('videoFavorites', JSON.stringify(newFavorites));
+  };
 
   const playVideo = (video: any) => {
     setCurrentVideo(video);
+    setCurrentTime(0);
+    setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const skipTime = (seconds: number) => {
+    setCurrentTime(prev => Math.max(0, Math.min(duration, prev + seconds)));
   };
 
   const closeVideo = () => {
     setCurrentVideo(null);
+    setIsPlaying(false);
+    setCurrentTime(0);
   };
 
   return (
@@ -126,8 +190,59 @@ export default function Videos() {
                   ✕
                 </Button>
               </div>
-              <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                <p className="text-muted-foreground">Video player would be integrated here</p>
+              <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-warm-gold/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                      {isPlaying ? (
+                        <Pause className="w-8 h-8 text-warm-gold" />
+                      ) : (
+                        <Play className="w-8 h-8 text-warm-gold" />
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      {isPlaying ? "Playing..." : "Video player simulation"}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Video Controls */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Progress value={(currentTime / duration) * 100} className="flex-1 h-1" />
+                    <span className="text-white text-xs">
+                      {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')} / 
+                      {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-4">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={() => skipTime(-10)}
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={togglePlayPause}
+                    >
+                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={() => skipTime(10)}
+                    >
+                      <SkipForward className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
               <p className="text-muted-foreground mb-4">
                 {currentVideo.description}
@@ -160,6 +275,8 @@ export default function Videos() {
                     key={video.id}
                     video={video}
                     onPlay={playVideo}
+                    isFavorite={favorites.includes(video.id)}
+                    onToggleFavorite={toggleFavorite}
                   />
                 ))}
               </div>

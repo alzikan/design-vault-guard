@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Circle, Clock, BookOpen, Star } from "lucide-react";
+import { CheckCircle, Circle, Clock, BookOpen, Star, Play } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const lessons = [
   {
@@ -124,9 +125,60 @@ const LessonCard = ({ lesson, onStart }: { lesson: any; onStart: (lesson: any) =
 
 export default function Lessons() {
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [lessonsProgress, setLessonsProgress] = useState<any>({});
+
+  // Load progress from localStorage
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('lessonsProgress');
+    if (savedProgress) {
+      setLessonsProgress(JSON.parse(savedProgress));
+    }
+  }, []);
+
+  // Update lesson progress
+  const updateProgress = (lessonId: number, moduleId: number, completed: boolean) => {
+    const newProgress = {
+      ...lessonsProgress,
+      [`${lessonId}-${moduleId}`]: completed
+    };
+    setLessonsProgress(newProgress);
+    localStorage.setItem('lessonsProgress', JSON.stringify(newProgress));
+    
+    if (completed) {
+      toast({
+        title: "Module Completed!",
+        description: "Great job! Keep up the excellent progress.",
+      });
+    }
+  };
+
+  // Calculate dynamic progress for lessons
+  const getLessonWithProgress = (lesson: any) => {
+    const completedModules = lesson.modules.filter((module: any) => 
+      lessonsProgress[`${lesson.id}-${module.id}`] === true
+    ).length;
+    const progress = Math.round((completedModules / lesson.modules.length) * 100);
+    
+    return {
+      ...lesson,
+      modules: lesson.modules.map((module: any) => ({
+        ...module,
+        completed: lessonsProgress[`${lesson.id}-${module.id}`] === true
+      })),
+      progress
+    };
+  };
 
   const startLesson = (lesson: any) => {
-    setSelectedLesson(lesson);
+    setSelectedLesson(getLessonWithProgress(lesson));
+  };
+
+  const startModule = (lessonId: number, moduleId: number, currentlyCompleted: boolean) => {
+    updateProgress(lessonId, moduleId, !currentlyCompleted);
+    // Update the selected lesson to reflect the change
+    if (selectedLesson && selectedLesson.id === lessonId) {
+      setSelectedLesson(getLessonWithProgress(selectedLesson));
+    }
   };
 
   const closeLesson = () => {
@@ -182,7 +234,9 @@ export default function Lessons() {
                       size="sm"
                       variant={module.completed ? "outline" : "default"}
                       disabled={!module.completed && index > 0 && !selectedLesson.modules[index - 1]?.completed}
+                      onClick={() => startModule(selectedLesson.id, module.id, module.completed)}
                     >
+                      <Play className="w-3 h-3 mr-1" />
                       {module.completed ? "Review" : "Start"}
                     </Button>
                   </div>
@@ -214,13 +268,16 @@ export default function Lessons() {
         {/* Lessons Grid */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
           <div className="space-y-4">
-            {lessons.map((lesson) => (
-              <LessonCard
-                key={lesson.id}
-                lesson={lesson}
-                onStart={startLesson}
-              />
-            ))}
+            {lessons.map((lesson) => {
+              const lessonWithProgress = getLessonWithProgress(lesson);
+              return (
+                <LessonCard
+                  key={lesson.id}
+                  lesson={lessonWithProgress}
+                  onStart={startLesson}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, Filter, Heart, X, Share2, Download } from "lucide-react";
 import waterfallPainting from "@/assets/waterfall-painting.jpg";
 import shellPainting from "@/assets/shell-painting.jpg";
 import boatNightPainting from "@/assets/boat-night-painting.jpg";
@@ -27,6 +28,30 @@ export default function Gallery() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
+  const [selectedArtwork, setSelectedArtwork] = useState<any>(null);
+  const [favorites, setFavorites] = useState<number[]>([]);
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('artFavorites');
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Save favorites to localStorage
+  const toggleFavorite = (artworkId: number) => {
+    const newFavorites = favorites.includes(artworkId)
+      ? favorites.filter(id => id !== artworkId)
+      : [...favorites, artworkId];
+    
+    setFavorites(newFavorites);
+    localStorage.setItem('artFavorites', JSON.stringify(newFavorites));
+  };
+
+  const viewArtwork = (artwork: any) => {
+    setSelectedArtwork(artwork);
+  };
 
   const filteredArtworks = useMemo(() => {
     let filtered = allArtworks.filter(artwork => {
@@ -111,7 +136,7 @@ export default function Gallery() {
                 title={artwork.title}
                 year={artwork.year}
                 image={artwork.image}
-                onClick={() => console.log(`Viewing ${artwork.title} - ${artwork.medium}`)}
+                onClick={() => viewArtwork(artwork)}
               />
             ))}
           </div>
@@ -122,6 +147,80 @@ export default function Gallery() {
             </div>
           )}
         </div>
+
+        {/* Artwork Detail Modal */}
+        {selectedArtwork && (
+          <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+            <div className="bg-card rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+              <div className="relative">
+                <img 
+                  src={selectedArtwork.image} 
+                  alt={selectedArtwork.title}
+                  className="w-full h-64 md:h-96 object-cover rounded-t-2xl"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
+                  onClick={() => setSelectedArtwork(null)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 left-4 bg-black/50 text-white hover:bg-black/70"
+                  onClick={() => toggleFavorite(selectedArtwork.id)}
+                >
+                  <Heart className={`w-4 h-4 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : ''}`} />
+                </Button>
+              </div>
+              
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h1 className="text-2xl font-bold text-card-foreground mb-2">
+                      {selectedArtwork.title}
+                    </h1>
+                    <p className="text-warm-gold font-medium mb-2">
+                      Created in {selectedArtwork.year}
+                    </p>
+                    <Badge variant="secondary" className="mb-4">
+                      {selectedArtwork.category}
+                    </Badge>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-card-foreground mb-2">Medium</h3>
+                    <p className="text-muted-foreground">{selectedArtwork.medium}</p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-semibold text-card-foreground mb-2">Description</h3>
+                    <p className="text-muted-foreground">
+                      This artwork represents the traditional techniques and cultural significance of Saudi Arabian art. 
+                      Created using {selectedArtwork.medium.toLowerCase()}, it showcases the mastery of light, shadow, and composition 
+                      that defines this artistic movement.
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 pt-4">
+                    <Button variant="outline" className="flex-1">
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <BottomNav />
