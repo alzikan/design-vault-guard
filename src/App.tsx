@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import Landing from "./pages/Landing";
 import Gallery from "./pages/Gallery";
 import Lessons from "./pages/Lessons";
 import Videos from "./pages/Videos";
@@ -18,7 +19,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/videos" element={<Videos />} />
