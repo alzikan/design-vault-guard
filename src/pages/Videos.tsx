@@ -69,7 +69,7 @@ export default function Videos() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(100); // Mock duration in seconds
+  const [duration, setDuration] = useState(0);
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -104,22 +104,31 @@ export default function Videos() {
     }
   }, []);
 
-  // Mock video progress
+  // Update current time from video element
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && currentVideo) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => {
-          if (prev >= duration) {
-            setIsPlaying(false);
-            return duration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentVideo, duration]);
+    const video = videoRef.current;
+    if (!video) return;
+
+    const updateTime = () => setCurrentTime(video.currentTime);
+    const updateDuration = () => setDuration(video.duration);
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleEnded = () => setIsPlaying(false);
+
+    video.addEventListener('timeupdate', updateTime);
+    video.addEventListener('loadedmetadata', updateDuration);
+    video.addEventListener('play', handlePlay);
+    video.addEventListener('pause', handlePause);
+    video.addEventListener('ended', handleEnded);
+
+    return () => {
+      video.removeEventListener('timeupdate', updateTime);
+      video.removeEventListener('loadedmetadata', updateDuration);
+      video.removeEventListener('play', handlePlay);
+      video.removeEventListener('pause', handlePause);
+      video.removeEventListener('ended', handleEnded);
+    };
+  }, [currentVideo]);
 
   const toggleFavorite = (videoId: string) => {
     const newFavorites = favorites.includes(videoId)
@@ -148,7 +157,10 @@ export default function Videos() {
   };
 
   const skipTime = (seconds: number) => {
-    setCurrentTime(prev => Math.max(0, Math.min(duration, prev + seconds)));
+    if (videoRef.current) {
+      const newTime = Math.max(0, Math.min(duration, videoRef.current.currentTime + seconds));
+      videoRef.current.currentTime = newTime;
+    }
   };
 
   const closeVideo = () => {
@@ -192,10 +204,16 @@ export default function Videos() {
                     <video 
                       ref={videoRef}
                       className="w-full h-full object-contain"
-                      autoPlay={isPlaying}
                       src={currentVideo.video_url}
+                      controls={false}
+                      playsInline
                       onError={(e) => {
                         console.error('Video failed to load:', currentVideo.video_url);
+                      }}
+                      onLoadedData={() => {
+                        if (videoRef.current && isPlaying) {
+                          videoRef.current.play();
+                        }
                       }}
                     >
                       Your browser does not support the video tag.
