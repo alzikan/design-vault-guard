@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      artist_profile: {
+        Row: {
+          about_content: string | null
+          achievements: string | null
+          artist_name: string
+          bio: string | null
+          created_at: string
+          education: string | null
+          exhibitions: string | null
+          id: string
+          profile_image_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          about_content?: string | null
+          achievements?: string | null
+          artist_name?: string
+          bio?: string | null
+          created_at?: string
+          education?: string | null
+          exhibitions?: string | null
+          id?: string
+          profile_image_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          about_content?: string | null
+          achievements?: string | null
+          artist_name?: string
+          bio?: string | null
+          created_at?: string
+          education?: string | null
+          exhibitions?: string | null
+          id?: string
+          profile_image_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       artworks: {
         Row: {
           artist_name: string | null

@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import artistProfile from "@/assets/artist-profile.jpg";
 
 interface PageHeaderProps {
@@ -16,19 +17,23 @@ export function PageHeader({
   showLanguageToggle = true,
   className 
 }: PageHeaderProps) {
+  const navigate = useNavigate();
   return (
     <header className={cn(
       "flex items-center justify-between p-4 pt-12",
       className
     )}>
       {/* Profile Image */}
-      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-warm-gold/30">
+      <button 
+        onClick={() => navigate('/about')}
+        className="w-12 h-12 rounded-full overflow-hidden border-2 border-warm-gold/30 hover:border-warm-gold/60 transition-colors"
+      >
         <img 
           src={artistProfile} 
           alt="Ibrahim alZikan"
           className="w-full h-full object-cover"
         />
-      </div>
+      </button>
 
       {/* Title */}
       <div className="flex-1 text-center">

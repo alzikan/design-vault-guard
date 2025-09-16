@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Palette, Image, BookOpen, Video, LogOut, Plus } from 'lucide-react';
+import { Palette, Image, BookOpen, Video, LogOut, Plus, User } from 'lucide-react';
 
 const AdminNav = () => {
   const location = useLocation();
@@ -84,6 +84,13 @@ const AdminNav = () => {
               <Button variant="outline" size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Video
+              </Button>
+            </Link>
+            
+            <Link to="/admin/profile">
+              <Button variant="outline" size="sm">
+                <User className="h-4 w-4 mr-2" />
+                Artist Profile
               </Button>
             </Link>
             

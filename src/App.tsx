@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import Gallery from "./pages/Gallery";
 import Lessons from "./pages/Lessons";
 import Videos from "./pages/Videos";
@@ -12,6 +13,7 @@ import Auth from "./pages/Auth";
 import AdminArtworks from "./pages/admin/AdminArtworks";
 import AdminLessons from "./pages/admin/AdminLessons";
 import AdminVideos from "./pages/admin/AdminVideos";
+import AdminProfile from "./pages/admin/AdminProfile";
 import { useAuth } from "./hooks/useAuth";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,7 @@ const App = () => (
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/videos" element={<Videos />} />
@@ -63,6 +66,11 @@ const App = () => (
           <Route path="/admin/videos" element={
             <ProtectedRoute>
               <AdminVideos />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/profile" element={
+            <ProtectedRoute>
+              <AdminProfile />
             </ProtectedRoute>
           } />
           
