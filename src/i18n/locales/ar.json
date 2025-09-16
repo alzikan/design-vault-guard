@@ -46,8 +46,10 @@
     "gallery": "معرض الفيديوهات",
     "videoError": "خطأ في الفيديو",
     "tryAgain": "حاول مرة أخرى",
+    "openExternally": "فتح خارجياً",
     "notVideo": "هذه صورة وليس ملف فيديو",
     "noVideoUrl": "لا يوجد رابط فيديو متاح",
+    "loadingVideo": "جاري تحميل الفيديو...",
     "views": "مشاهدة"
   },
   "language": {

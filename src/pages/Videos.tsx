@@ -210,16 +210,35 @@ export default function Videos() {
                 {videoError ? (
                   <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/20">
                     <div className="text-center p-4">
-                      <div className="text-red-600 dark:text-red-400 mb-2">Video Error</div>
-                      <div className="text-sm text-red-500 dark:text-red-300">{videoError}</div>
-                      <Button 
-                        onClick={() => setVideoError(null)} 
-                        variant="outline" 
-                        size="sm" 
-                        className="mt-2"
-                      >
-                        Try Again
-                      </Button>
+                      <div className="text-red-600 dark:text-red-400 mb-2">{t('videos.videoError')}</div>
+                      <div className="text-sm text-red-500 dark:text-red-300 mb-3 max-w-md">
+                        {videoError}
+                      </div>
+                      <div className="flex gap-2 justify-center">
+                        <Button 
+                          onClick={() => {
+                            setVideoError(null);
+                            // Try to reload the video
+                            if (videoRef.current) {
+                              videoRef.current.load();
+                            }
+                          }} 
+                          variant="outline" 
+                          size="sm"
+                        >
+                          {t('videos.tryAgain')}
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            // Open video in new tab as fallback
+                            window.open(currentVideo.video_url, '_blank');
+                          }} 
+                          variant="outline" 
+                          size="sm"
+                        >
+                          Open Externally
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : currentVideo.video_url ? (
@@ -232,32 +251,54 @@ export default function Videos() {
                         className="max-w-full max-h-full object-contain"
                       />
                       <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
-                        This is an image, not a video file
+                        {t('videos.notVideo')}
                       </div>
                     </div>
                   ) : (
-                    <video 
-                      ref={videoRef}
-                      className="w-full h-full object-contain"
-                      src={currentVideo.video_url}
-                      preload="metadata"
-                      controls={false}
-                      onLoadStart={() => setVideoError(null)}
-                      onError={(e) => {
-                        console.error('Video failed to load:', currentVideo.video_url);
-                        setVideoError(`Unable to load video. The video format may not be supported or the URL may be invalid: ${currentVideo.video_url}`);
-                      }}
-                      onCanPlay={() => {
-                        // Auto-play when video is ready
-                        if (videoRef.current && !isPlaying) {
-                          videoRef.current.play().catch((error) => {
-                            console.error('Auto-play failed:', error);
-                          });
-                        }
-                      }}
-                    >
-                      Your browser does not support the video tag.
-                    </video>
+                    <div className="w-full h-full relative">
+                      <video 
+                        ref={videoRef}
+                        className="w-full h-full object-contain"
+                        src={currentVideo.video_url}
+                        preload="metadata"
+                        controls={false}
+                        crossOrigin="anonymous"
+                        onLoadStart={() => {
+                          setVideoError(null);
+                          console.log('Video loading started:', currentVideo.video_url);
+                        }}
+                        onError={(e) => {
+                          console.error('Video failed to load:', currentVideo.video_url, e);
+                          const errorMessage = `Unable to load video from external source. This may be due to:\n• CORS restrictions\n• Invalid video format\n• Network connectivity issues\n• Server not accessible\n\nURL: ${currentVideo.video_url}`;
+                          setVideoError(errorMessage);
+                        }}
+                        onCanPlay={() => {
+                          console.log('Video can play:', currentVideo.video_url);
+                          // Auto-play when video is ready
+                          if (videoRef.current && !isPlaying) {
+                            videoRef.current.play().catch((error) => {
+                              console.error('Auto-play failed:', error);
+                              // Don't show error for auto-play failure, just don't auto-play
+                            });
+                          }
+                        }}
+                        onLoadedData={() => {
+                          console.log('Video data loaded successfully');
+                        }}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                      
+                      {/* Loading indicator */}
+                      {!videoError && duration === 0 && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <div className="text-white text-center">
+                            <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
+                            <div className="text-sm">Loading video...</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -266,7 +307,7 @@ export default function Videos() {
                         <Play className="w-8 h-8 text-warm-gold" />
                       </div>
                       <p className="text-muted-foreground text-sm">
-                        No video URL available
+                        {t('videos.noVideoUrl')}
                       </p>
                     </div>
                   </div>

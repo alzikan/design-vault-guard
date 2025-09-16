@@ -46,8 +46,10 @@
     "gallery": "Video Gallery",
     "videoError": "Video Error",
     "tryAgain": "Try Again",
+    "openExternally": "Open Externally",
     "notVideo": "This is an image, not a video file",
     "noVideoUrl": "No video URL available",
+    "loadingVideo": "Loading video...",
     "views": "views"
   },
   "language": {
