@@ -6,66 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
-
-const videoCategories = [
-  {
-    title: "Painting Techniques",
-    videos: [
-      {
-        id: 1,
-        title: "Watercolor Techniques",
-        description: "Learn advanced watercolor techniques from Ibrahim alZikan",
-        duration: "15:32",
-        views: "2.4K",
-        thumbnail: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
-        level: "Advanced"
-      },
-      {
-        id: 2,
-        title: "Oil Painting Fundamentals", 
-        description: "Master the basics of oil painting with step-by-step guidance",
-        duration: "22:45",
-        views: "1.8K",
-        thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
-        level: "Beginner"
-      },
-    ]
-  },
-  {
-    title: "Cultural & Traditional Art",
-    videos: [
-      {
-        id: 3,
-        title: "Sketching Arabic Landscapes",
-        description: "Capture the beauty of Middle Eastern landscapes in your sketches",
-        duration: "18:20",
-        views: "3.1K",
-        thumbnail: "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&h=300&fit=crop",
-        level: "Intermediate"
-      },
-      {
-        id: 4,
-        title: "Color Theory in Practice",
-        description: "Understanding how colors work together in traditional art",
-        duration: "12:15",
-        views: "2.7K",
-        thumbnail: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop",
-        level: "Intermediate"
-      }
-    ]
-  },
-];
+import { supabase } from "@/integrations/supabase/client";
 
 const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: { 
   video: any; 
   onPlay: (video: any) => void;
   isFavorite: boolean;
-  onToggleFavorite: (videoId: number) => void;
+  onToggleFavorite: (videoId: string) => void;
 }) => (
   <Card className="bg-muted/30 border-border/20 overflow-hidden">
     <div className="relative">
       <img 
-        src={video.thumbnail} 
+        src={video.thumbnail_url || "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop"} 
         alt={video.title}
         className="w-full h-32 object-cover"
         onError={(e) => {
@@ -88,7 +40,7 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
         <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current text-red-500' : 'text-white'}`} />
       </Button>
       <Badge className="absolute top-2 right-2 bg-warm-gold text-background text-xs">
-        {video.level}
+        {video.category || 'General'}
       </Badge>
     </div>
     <div className="p-3">
@@ -101,11 +53,11 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Clock className="w-3 h-3" />
-          {video.duration}
+          {video.duration_minutes ? `${video.duration_minutes}:00` : 'N/A'}
         </div>
         <div className="flex items-center gap-1">
           <Eye className="w-3 h-3" />
-          {video.views} views
+          {video.view_count || 0} views
         </div>
       </div>
     </div>
@@ -114,10 +66,34 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
 
 export default function Videos() {
   const [currentVideo, setCurrentVideo] = useState<any>(null);
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration] = useState(100); // Mock duration in seconds
+  const [videos, setVideos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch videos from Supabase
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setVideos(data || []);
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -144,7 +120,7 @@ export default function Videos() {
     return () => clearInterval(interval);
   }, [isPlaying, currentVideo, duration]);
 
-  const toggleFavorite = (videoId: number) => {
+  const toggleFavorite = (videoId: string) => {
     const newFavorites = favorites.includes(videoId)
       ? favorites.filter(id => id !== videoId)
       : [...favorites, videoId];
@@ -191,20 +167,31 @@ export default function Videos() {
                 </Button>
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-warm-gold/20 rounded-full flex items-center justify-center mb-4 mx-auto">
-                      {isPlaying ? (
-                        <Pause className="w-8 h-8 text-warm-gold" />
-                      ) : (
-                        <Play className="w-8 h-8 text-warm-gold" />
-                      )}
+                {currentVideo.video_url ? (
+                  <video 
+                    className="w-full h-full object-contain"
+                    controls
+                    autoPlay={isPlaying}
+                    src={currentVideo.video_url}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-warm-gold/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+                        {isPlaying ? (
+                          <Pause className="w-8 h-8 text-warm-gold" />
+                        ) : (
+                          <Play className="w-8 h-8 text-warm-gold" />
+                        )}
+                      </div>
+                      <p className="text-muted-foreground text-sm">
+                        No video URL available
+                      </p>
                     </div>
-                    <p className="text-muted-foreground text-sm">
-                      {isPlaying ? "Playing..." : "Video player simulation"}
-                    </p>
                   </div>
-                </div>
+                )}
                 
                 {/* Video Controls */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
@@ -262,15 +249,23 @@ export default function Videos() {
           </div>
         )}
 
-        {/* Video Categories */}
+        {/* Video Gallery */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
-          {videoCategories.map((category) => (
-            <div key={category.title} className="mb-8 last:mb-0">
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Loading videos...</p>
+            </div>
+          ) : videos.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No videos available yet.</p>
+            </div>
+          ) : (
+            <div>
               <h2 className="text-xl font-bold text-card-foreground mb-4">
-                {category.title}
+                Video Gallery
               </h2>
               <div className="grid grid-cols-1 gap-4">
-                {category.videos.map((video) => (
+                {videos.map((video) => (
                   <VideoCard
                     key={video.id}
                     video={video}
@@ -281,7 +276,7 @@ export default function Videos() {
                 ))}
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
 

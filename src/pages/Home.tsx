@@ -76,17 +76,19 @@ export default function Home() {
       // Fetch recent videos
       const { data: videosData } = await supabase
         .from('videos')
-        .select('title, view_count, duration_minutes')
+        .select('id, title, view_count, duration_minutes, category, video_url')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(2);
 
       if (videosData) {
         setRecentVideos(videosData.map(video => ({
+          id: video.id,
           title: video.title,
-          views: video.view_count ? `${(video.view_count / 1000).toFixed(1)}K` : '0',
-          duration: video.duration_minutes ? `${Math.floor(video.duration_minutes / 60)}:${String(video.duration_minutes % 60).padStart(2, '0')}` : '15:32',
-          level: 'Beginner' // Default level
+          views: video.view_count || 0,
+          duration: video.duration_minutes ? `${video.duration_minutes}min` : 'N/A',
+          level: video.category || 'General',
+          video_url: video.video_url
         })));
       }
 
@@ -221,9 +223,17 @@ export default function Home() {
             {recentVideos.map((video, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-8 bg-gradient-to-br from-warm-gold/20 to-accent/20 rounded flex items-center justify-center">
+                  <Button
+                    className="w-10 h-8 bg-gradient-to-br from-warm-gold/20 to-accent/20 rounded flex items-center justify-center p-0"
+                    variant="ghost"
+                    onClick={() => {
+                      if (video.video_url) {
+                        window.open(video.video_url, '_blank');
+                      }
+                    }}
+                  >
                     <Play className="w-4 h-4 text-warm-gold" />
-                  </div>
+                  </Button>
                   <div>
                     <h3 className="font-medium text-card-foreground text-sm">{video.title}</h3>
                     <div className="flex items-center gap-2 mt-1">
