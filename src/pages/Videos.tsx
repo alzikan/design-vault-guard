@@ -145,18 +145,25 @@ export default function Videos() {
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
                 {videoError ? (
-                  <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/20">
+                  <div className="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20">
                     <div className="text-center p-4 max-w-md">
-                      <div className="text-red-600 dark:text-red-400 mb-3 font-semibold">
+                      <div className="text-amber-600 dark:text-amber-400 mb-3 font-semibold">
                         {t('videos.videoError')}
                       </div>
-                      <div className="text-sm text-red-500 dark:text-red-300 mb-4">
-                        External video cannot be loaded. This may be due to:
-                        <br />• CORS restrictions
-                        <br />• Server access issues  
-                        <br />• Network connectivity problems
+                      <div className="text-sm text-amber-700 dark:text-amber-300 mb-4">
+                        External video cannot be accessed due to server restrictions.
                       </div>
                       <div className="flex gap-2 justify-center flex-wrap">
+                        <Button 
+                          onClick={() => {
+                            window.open(currentVideo.video_url, '_blank');
+                          }} 
+                          variant="default" 
+                          size="sm"
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          View Video Externally
+                        </Button>
                         <Button 
                           onClick={() => {
                             setVideoError(null);
@@ -169,16 +176,10 @@ export default function Videos() {
                         >
                           {t('videos.tryAgain')}
                         </Button>
-                        <Button 
-                          onClick={() => {
-                            window.open(currentVideo.video_url, '_blank');
-                          }} 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          Open in New Tab
-                        </Button>
                       </div>
+                      <p className="text-xs text-muted-foreground mt-3">
+                        💡 For better playback, consider uploading videos to secure storage
+                      </p>
                     </div>
                   </div>
                 ) : currentVideo.video_url ? (
