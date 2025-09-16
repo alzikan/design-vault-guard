@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/page-header";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { BottomNav } from "@/components/ui/bottom-nav";
@@ -9,6 +10,7 @@ import { Play, BookOpen, Palette, TrendingUp, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
+  const navigate = useNavigate();
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
   const [artFavorites, setArtFavorites] = useState<number[]>([]);
   const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
@@ -76,7 +78,7 @@ export default function Home() {
       // Fetch recent videos
       const { data: videosData } = await supabase
         .from('videos')
-        .select('id, title, view_count, duration_minutes, category, video_url')
+        .select('id, title, view_count, duration_minutes, category, video_url, thumbnail_url')
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(2);
@@ -88,7 +90,8 @@ export default function Home() {
           views: video.view_count || 0,
           duration: video.duration_minutes ? `${video.duration_minutes}min` : 'N/A',
           level: video.category || 'General',
-          video_url: video.video_url
+          video_url: video.video_url,
+          thumbnail_url: video.thumbnail_url
         })));
       }
 
@@ -221,27 +224,31 @@ export default function Home() {
           </div>
           <div className="space-y-3">
             {recentVideos.map((video, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <Button
-                    className="w-10 h-8 bg-gradient-to-br from-warm-gold/20 to-accent/20 rounded flex items-center justify-center p-0"
-                    variant="ghost"
-                    onClick={() => {
-                      if (video.video_url) {
-                        window.open(video.video_url, '_blank');
-                      }
+              <div key={index} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                <div className="relative">
+                  <img 
+                    src={video.thumbnail_url || "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=80&h=60&fit=crop"} 
+                    alt={video.title}
+                    className="w-16 h-12 object-cover rounded"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=80&h=60&fit=crop";
                     }}
+                  />
+                  <Button
+                    className="absolute inset-0 w-full h-full bg-black/50 hover:bg-black/30 transition-colors rounded"
+                    variant="ghost"
+                    onClick={() => navigate('/videos')}
                   >
-                    <Play className="w-4 h-4 text-warm-gold" />
+                    <Play className="w-4 h-4 text-white" />
                   </Button>
-                  <div>
-                    <h3 className="font-medium text-card-foreground text-sm">{video.title}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-muted-foreground">{video.duration}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {video.level}
-                      </Badge>
-                    </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-card-foreground text-sm">{video.title}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs text-muted-foreground">{video.duration}</span>
+                    <Badge variant="outline" className="text-xs">
+                      {video.level}
+                    </Badge>
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
