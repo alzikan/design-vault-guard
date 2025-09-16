@@ -1,19 +1,21 @@
 import { Home, Image, BookOpen, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface BottomNavProps {
   className?: string;
 }
 
-const navItems = [
-  { icon: Home, label: "Home", path: "/" },
-  { icon: Play, label: "Videos", path: "/videos" },
-  { icon: Image, label: "Gallery", path: "/gallery" },
-  { icon: BookOpen, label: "Lessons", path: "/lessons" },
-];
-
 export function BottomNav({ className }: BottomNavProps) {
+  const { t } = useTranslation();
+  
+  const navItems = [
+    { icon: Home, label: t('nav.home'), path: "/" },
+    { icon: Play, label: t('nav.videos'), path: "/videos" },
+    { icon: Image, label: t('nav.gallery'), path: "/gallery" },
+    { icon: BookOpen, label: t('nav.lessons'), path: "/lessons" },
+  ];
   return (
     <nav className={cn(
       "fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border",
