@@ -207,41 +207,7 @@ export default function Videos() {
                 </Button>
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
-                {videoError ? (
-                  <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/20">
-                    <div className="text-center p-4">
-                      <div className="text-red-600 dark:text-red-400 mb-2">{t('videos.videoError')}</div>
-                      <div className="text-sm text-red-500 dark:text-red-300 mb-3 max-w-md">
-                        {videoError}
-                      </div>
-                      <div className="flex gap-2 justify-center">
-                        <Button 
-                          onClick={() => {
-                            setVideoError(null);
-                            // Try to reload the video
-                            if (videoRef.current) {
-                              videoRef.current.load();
-                            }
-                          }} 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          {t('videos.tryAgain')}
-                        </Button>
-                        <Button 
-                          onClick={() => {
-                            // Open video in new tab as fallback
-                            window.open(currentVideo.video_url, '_blank');
-                          }} 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          Open Externally
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : currentVideo.video_url ? (
+                {currentVideo.video_url ? (
                   // Check if URL is an image or video
                   /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
                     <div className="w-full h-full flex items-center justify-center bg-black">
@@ -255,50 +221,18 @@ export default function Videos() {
                       </div>
                     </div>
                   ) : (
-                    <div className="w-full h-full relative">
-                      <video 
-                        ref={videoRef}
-                        className="w-full h-full object-contain"
-                        src={currentVideo.video_url}
-                        preload="metadata"
-                        controls={false}
-                        crossOrigin="anonymous"
-                        onLoadStart={() => {
-                          setVideoError(null);
-                          console.log('Video loading started:', currentVideo.video_url);
-                        }}
-                        onError={(e) => {
-                          console.error('Video failed to load:', currentVideo.video_url, e);
-                          const errorMessage = `Unable to load video from external source. This may be due to:\n• CORS restrictions\n• Invalid video format\n• Network connectivity issues\n• Server not accessible\n\nURL: ${currentVideo.video_url}`;
-                          setVideoError(errorMessage);
-                        }}
-                        onCanPlay={() => {
-                          console.log('Video can play:', currentVideo.video_url);
-                          // Auto-play when video is ready
-                          if (videoRef.current && !isPlaying) {
-                            videoRef.current.play().catch((error) => {
-                              console.error('Auto-play failed:', error);
-                              // Don't show error for auto-play failure, just don't auto-play
-                            });
-                          }
-                        }}
-                        onLoadedData={() => {
-                          console.log('Video data loaded successfully');
-                        }}
-                      >
-                        Your browser does not support the video tag.
-                      </video>
-                      
-                      {/* Loading indicator */}
-                      {!videoError && duration === 0 && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <div className="text-white text-center">
-                            <div className="animate-spin w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-2"></div>
-                            <div className="text-sm">Loading video...</div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <video 
+                      ref={videoRef}
+                      className="w-full h-full object-contain"
+                      src={currentVideo.video_url}
+                      controls
+                      autoPlay
+                      onError={(e) => {
+                        console.error('Video failed to load:', currentVideo.video_url, e);
+                      }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
                   )
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
@@ -313,8 +247,8 @@ export default function Videos() {
                   </div>
                 )}
                 
-                {/* Video Controls */}
-                {!videoError && currentVideo.video_url && !/\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) && (
+                {/* Custom Controls - Only show if video is not using native controls */}
+                {currentVideo.video_url && !/\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) && false && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
                     <div className="flex items-center gap-2 mb-2">
                       <Progress value={duration > 0 ? (currentTime / duration) * 100 : 0} className="flex-1 h-1" />
@@ -324,31 +258,31 @@ export default function Videos() {
                       </span>
                     </div>
                   
-                  <div className="flex items-center justify-center gap-4">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={() => skipTime(-10)}
-                    >
-                      <SkipBack className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={togglePlayPause}
-                    >
-                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={() => skipTime(10)}
-                    >
-                      <SkipForward className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center justify-center gap-4">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-white hover:text-warm-gold"
+                        onClick={() => skipTime(-10)}
+                      >
+                        <SkipBack className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-white hover:text-warm-gold"
+                        onClick={togglePlayPause}
+                      >
+                        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-white hover:text-warm-gold"
+                        onClick={() => skipTime(10)}
+                      >
+                        <SkipForward className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 )}
