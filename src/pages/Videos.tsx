@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
@@ -72,6 +72,7 @@ export default function Videos() {
   const [duration] = useState(100); // Mock duration in seconds
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fetch videos from Supabase
   useEffect(() => {
@@ -136,6 +137,13 @@ export default function Videos() {
   };
 
   const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+    }
     setIsPlaying(!isPlaying);
   };
 
@@ -182,6 +190,7 @@ export default function Videos() {
                     </div>
                   ) : (
                     <video 
+                      ref={videoRef}
                       className="w-full h-full object-contain"
                       controls
                       autoPlay={isPlaying}
