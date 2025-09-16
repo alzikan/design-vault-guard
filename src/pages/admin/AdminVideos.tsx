@@ -29,12 +29,12 @@ const AdminVideos = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    video_url: '',
     duration_minutes: 0,
     category: '',
     is_featured: false,
     is_published: true,
   });
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -58,6 +58,24 @@ const AdminVideos = () => {
     }
   };
 
+  const uploadVideo = async (file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `videos/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from('videos')
+      .upload(filePath, file);
+
+    if (error) throw error;
+
+    const { data } = supabase.storage
+      .from('videos')
+      .getPublicUrl(filePath);
+
+    return data.publicUrl;
+  };
+
   const uploadThumbnail = async (file: File) => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
@@ -78,18 +96,37 @@ const AdminVideos = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.title.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
+
+    if (!editingId && !selectedVideo) {
+      toast.error('Please select a video file');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      let videoUrl = '';
       let thumbnailUrl = '';
       
+      // Upload video if selected
+      if (selectedVideo) {
+        videoUrl = await uploadVideo(selectedVideo);
+      }
+      
+      // Upload thumbnail if selected
       if (selectedThumbnail) {
         thumbnailUrl = await uploadThumbnail(selectedThumbnail);
       }
 
       const videoData = {
         ...formData,
-        thumbnail_url: thumbnailUrl || undefined,
+        ...(videoUrl && { video_url: videoUrl }),
+        ...(thumbnailUrl && { thumbnail_url: thumbnailUrl }),
       };
 
       if (editingId) {
@@ -103,7 +140,7 @@ const AdminVideos = () => {
       } else {
         const { error } = await supabase
           .from('videos')
-          .insert([videoData]);
+          .insert([{ ...videoData, video_url: videoUrl }]);
 
         if (error) throw error;
         toast.success('Video created successfully');
@@ -113,16 +150,24 @@ const AdminVideos = () => {
       setFormData({
         title: '',
         description: '',
-        video_url: '',
         duration_minutes: 0,
         category: '',
         is_featured: false,
         is_published: true,
       });
+      setSelectedVideo(null);
       setSelectedThumbnail(null);
       setEditingId(null);
+      
+      // Reset file inputs
+      const videoInput = document.querySelector('input[type="file"][accept*="video"]') as HTMLInputElement;
+      const thumbnailInput = document.querySelector('input[type="file"][accept*="image"]') as HTMLInputElement;
+      if (videoInput) videoInput.value = '';
+      if (thumbnailInput) thumbnailInput.value = '';
+      
       fetchVideos();
     } catch (error) {
+      console.error('Error saving video:', error);
       toast.error('Failed to save video');
     } finally {
       setLoading(false);
@@ -133,12 +178,13 @@ const AdminVideos = () => {
     setFormData({
       title: video.title,
       description: video.description || '',
-      video_url: video.video_url,
       duration_minutes: video.duration_minutes || 0,
       category: video.category || '',
       is_featured: video.is_featured,
       is_published: video.is_published,
     });
+    setSelectedVideo(null); // Cannot pre-populate file input
+    setSelectedThumbnail(null);
     setEditingId(video.id);
   };
 
@@ -191,14 +237,18 @@ const AdminVideos = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="video_url">Video URL</Label>
+                  <Label htmlFor="video_file">Video File {!editingId && '*'}</Label>
                   <Input
-                    id="video_url"
-                    type="url"
-                    value={formData.video_url}
-                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                    required
+                    id="video_file"
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => setSelectedVideo(e.target.files?.[0] || null)}
                   />
+                  {editingId && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Leave empty to keep existing video
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -264,12 +314,13 @@ const AdminVideos = () => {
                       setFormData({
                         title: '',
                         description: '',
-                        video_url: '',
                         duration_minutes: 0,
                         category: '',
                         is_featured: false,
                         is_published: true,
                       });
+                      setSelectedVideo(null);
+                      setSelectedThumbnail(null);
                     }}
                   >
                     Cancel Edit
