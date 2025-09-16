@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, Clock, Eye, Heart } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: { 
@@ -65,12 +65,13 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
 );
 
 export default function Videos() {
-  const { t } = useTranslation();
   const [currentVideo, setCurrentVideo] = useState<any>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration] = useState(100); // Mock duration in seconds
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [videoError, setVideoError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fetch videos from Supabase
@@ -103,6 +104,23 @@ export default function Videos() {
     }
   }, []);
 
+  // Mock video progress
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying && currentVideo) {
+      interval = setInterval(() => {
+        setCurrentTime(prev => {
+          if (prev >= duration) {
+            setIsPlaying(false);
+            return duration;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentVideo, duration]);
+
   const toggleFavorite = (videoId: string) => {
     const newFavorites = favorites.includes(videoId)
       ? favorites.filter(id => id !== videoId)
@@ -114,21 +132,34 @@ export default function Videos() {
 
   const playVideo = (video: any) => {
     setCurrentVideo(video);
-    setVideoError(null);
+    setCurrentTime(0);
+    setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const skipTime = (seconds: number) => {
+    setCurrentTime(prev => Math.max(0, Math.min(duration, prev + seconds)));
   };
 
   const closeVideo = () => {
     setCurrentVideo(null);
-    setVideoError(null);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
+    setIsPlaying(false);
+    setCurrentTime(0);
   };
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title={t('nav.videos')} />
+      <PageHeader title="Video Tutorials" />
       
       <div className="px-4">
         {/* Video Player Modal */}
@@ -144,45 +175,7 @@ export default function Videos() {
                 </Button>
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
-                {videoError ? (
-                  <div className="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20">
-                    <div className="text-center p-4 max-w-md">
-                      <div className="text-amber-600 dark:text-amber-400 mb-3 font-semibold">
-                        {t('videos.videoError')}
-                      </div>
-                      <div className="text-sm text-amber-700 dark:text-amber-300 mb-4">
-                        External video cannot be accessed due to server restrictions.
-                      </div>
-                      <div className="flex gap-2 justify-center flex-wrap">
-                        <Button 
-                          onClick={() => {
-                            window.open(currentVideo.video_url, '_blank');
-                          }} 
-                          variant="default" 
-                          size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          View Video Externally
-                        </Button>
-                        <Button 
-                          onClick={() => {
-                            setVideoError(null);
-                            if (videoRef.current) {
-                              videoRef.current.load();
-                            }
-                          }} 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          {t('videos.tryAgain')}
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-3">
-                        💡 For better playback, consider uploading videos to secure storage
-                      </p>
-                    </div>
-                  </div>
-                ) : currentVideo.video_url ? (
+                {currentVideo.video_url ? (
                   // Check if URL is an image or video
                   /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
                     <div className="w-full h-full flex items-center justify-center bg-black">
@@ -192,29 +185,17 @@ export default function Videos() {
                         className="max-w-full max-h-full object-contain"
                       />
                       <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
-                        {t('videos.notVideo')}
+                        This is an image, not a video file
                       </div>
                     </div>
                   ) : (
                     <video 
                       ref={videoRef}
                       className="w-full h-full object-contain"
+                      autoPlay={isPlaying}
                       src={currentVideo.video_url}
-                      controls
-                      preload="metadata"
-                      onLoadStart={() => {
-                        console.log('Video loading started...');
-                        setVideoError(null);
-                      }}
-                      onCanPlay={() => {
-                        console.log('Video can play - attempting auto-play...');
-                        videoRef.current?.play().catch((error) => {
-                          console.log('Auto-play prevented by browser:', error);
-                        });
-                      }}
                       onError={(e) => {
                         console.error('Video failed to load:', currentVideo.video_url);
-                        setVideoError('Cannot load video from external source');
                       }}
                     >
                       Your browser does not support the video tag.
@@ -224,14 +205,56 @@ export default function Videos() {
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                     <div className="text-center">
                       <div className="w-16 h-16 bg-warm-gold/20 rounded-full flex items-center justify-center mb-4 mx-auto">
-                        <Play className="w-8 h-8 text-warm-gold" />
+                        {isPlaying ? (
+                          <Pause className="w-8 h-8 text-warm-gold" />
+                        ) : (
+                          <Play className="w-8 h-8 text-warm-gold" />
+                        )}
                       </div>
                       <p className="text-muted-foreground text-sm">
-                        {t('videos.noVideoUrl')}
+                        No video URL available
                       </p>
                     </div>
                   </div>
                 )}
+                
+                {/* Video Controls */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Progress value={(currentTime / duration) * 100} className="flex-1 h-1" />
+                    <span className="text-white text-xs">
+                      {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')} / 
+                      {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-center gap-4">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={() => skipTime(-10)}
+                    >
+                      <SkipBack className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={togglePlayPause}
+                    >
+                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-white hover:text-warm-gold"
+                      onClick={() => skipTime(10)}
+                    >
+                      <SkipForward className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
               </div>
               <p className="text-muted-foreground mb-4">
                 {currentVideo.description}
@@ -239,13 +262,13 @@ export default function Videos() {
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {currentVideo.duration_minutes ? `${currentVideo.duration_minutes}:00` : 'N/A'}
+                  {currentVideo.duration}
                 </span>
                 <span className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
-                  {currentVideo.view_count || 0} {t('videos.views')}
+                  {currentVideo.views} views
                 </span>
-                <Badge variant="secondary">{currentVideo.category || 'General'}</Badge>
+                <Badge variant="secondary">{currentVideo.level}</Badge>
               </div>
             </div>
           </div>
@@ -255,16 +278,16 @@ export default function Videos() {
         <div className="bg-card rounded-2xl p-6 shadow-xl">
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('videos.loading')}</p>
+              <p className="text-muted-foreground">Loading videos...</p>
             </div>
           ) : videos.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">{t('videos.noVideos')}</p>
+              <p className="text-muted-foreground">No videos available yet.</p>
             </div>
           ) : (
             <div>
               <h2 className="text-xl font-bold text-card-foreground mb-4">
-                {t('videos.gallery')}
+                Video Gallery
               </h2>
               <div className="grid grid-cols-1 gap-4">
                 {videos.map((video) => (
