@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAdminAccess } from "@/hooks/useAdminAccess";
+import { useAuth } from "@/hooks/useAuth";
 import artistProfile from "@/assets/artist-profile.jpg";
 
 interface PageHeaderProps {
@@ -23,7 +23,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const navigate = useNavigate();
   const { toggleLanguage, t } = useLanguage();
-  const { hasAdminAccess } = useAdminAccess();
+  const { user } = useAuth();
   const [profileImage, setProfileImage] = useState<string>(artistProfile);
   const [artistName, setArtistName] = useState<string>("Ibrahim alZikan");
 
@@ -86,18 +86,16 @@ export function PageHeader({
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
-        {hasAdminAccess && (
-          <Link to="/admin/artworks">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="text-foreground hover:bg-accent/20"
-              title="Admin Panel"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-          </Link>
-        )}
+        <Link to={user ? "/admin/artworks" : "/auth"}>
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-foreground hover:bg-accent/20"
+            title={user ? "Admin Panel" : "Login"}
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
+        </Link>
         
         {/* Language Toggle */}
         {showLanguageToggle && (

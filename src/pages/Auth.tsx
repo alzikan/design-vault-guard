@@ -19,7 +19,15 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate('/');
+        // Check if user has admin access before redirecting
+        const emailDomain = session.user.email?.split('@')[1];
+        const hasAdminAccess = emailDomain && ['alzikan.com', 'alzakan.net'].includes(emailDomain);
+        
+        if (hasAdminAccess) {
+          navigate('/admin/artworks');
+        } else {
+          navigate('/');
+        }
       }
     });
 
