@@ -168,14 +168,31 @@ export default function Videos() {
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
                 {currentVideo.video_url ? (
-                  <video 
-                    className="w-full h-full object-contain"
-                    controls
-                    autoPlay={isPlaying}
-                    src={currentVideo.video_url}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
+                  // Check if URL is an image or video
+                  /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
+                    <div className="w-full h-full flex items-center justify-center bg-black">
+                      <img 
+                        src={currentVideo.video_url}
+                        alt={currentVideo.title}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                      <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm">
+                        This is an image, not a video file
+                      </div>
+                    </div>
+                  ) : (
+                    <video 
+                      className="w-full h-full object-contain"
+                      controls
+                      autoPlay={isPlaying}
+                      src={currentVideo.video_url}
+                      onError={(e) => {
+                        console.error('Video failed to load:', currentVideo.video_url);
+                      }}
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  )
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                     <div className="text-center">
