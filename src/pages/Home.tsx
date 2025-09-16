@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { PageHeader } from "@/components/page-header";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { BottomNav } from "@/components/ui/bottom-nav";
@@ -11,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
   const [artFavorites, setArtFavorites] = useState<number[]>([]);
   const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
@@ -119,14 +121,14 @@ export default function Home() {
   const overallProgress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
 
   const quickStats = [
-    { label: "Artworks", value: stats.artworks.toString(), icon: Palette, color: "text-warm-gold" },
-    { label: "Videos", value: stats.videos.toString(), icon: Play, color: "text-blue-500" },
-    { label: "Lessons", value: stats.lessons.toString(), icon: BookOpen, color: "text-green-500" },
-    { label: "Progress", value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
+    { label: t('home.artworks'), value: stats.artworks.toString(), icon: Palette, color: "text-warm-gold" },
+    { label: t('home.videos'), value: stats.videos.toString(), icon: Play, color: "text-blue-500" },
+    { label: t('home.lessons'), value: stats.lessons.toString(), icon: BookOpen, color: "text-green-500" },
+    { label: t('home.progress'), value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
   ];
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Home" />
+      <PageHeader title={t('nav.home')} />
       
       <div className="px-4">
         {/* Quick Stats */}
@@ -149,7 +151,7 @@ export default function Home() {
           <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-bold text-card-foreground">Your Favorites</h2>
+              <h2 className="text-lg font-bold text-card-foreground">{t('home.yourFavorites')}</h2>
             </div>
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-1">
@@ -166,7 +168,7 @@ export default function Home() {
 
         {/* Featured Artworks */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-          <h2 className="text-xl font-bold text-card-foreground mb-4">Featured Artworks</h2>
+          <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.featuredArtworks')}</h2>
           <div className="grid grid-cols-2 gap-4">
             {featuredArtworks.map((artwork) => (
               <ArtGalleryCard
@@ -183,7 +185,7 @@ export default function Home() {
         {/* Recent Lessons Progress */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-card-foreground">Recent Lessons</h2>
+            <h2 className="text-xl font-bold text-card-foreground">{t('home.recentLessons')}</h2>
             <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
               View All
             </Button>
@@ -217,7 +219,7 @@ export default function Home() {
         {/* Recent Videos */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-card-foreground">Recent Videos</h2>
+            <h2 className="text-xl font-bold text-card-foreground">{t('home.recentVideos')}</h2>
             <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
               View All
             </Button>
@@ -252,7 +254,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {video.views} views
+                  {video.views} {t('home.views')}
                 </div>
               </div>
             ))}

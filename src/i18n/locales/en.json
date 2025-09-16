@@ -1,0 +1,49 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "gallery": "Gallery",
+    "lessons": "Lessons",
+    "videos": "Videos"
+  },
+  "home": {
+    "title": "Welcome",
+    "subtitle": "Discover the world of art",
+    "quickStats": "Quick Stats",
+    "artworks": "Artworks",
+    "videos": "Videos",
+    "lessons": "Lessons",
+    "progress": "Progress",
+    "yourFavorites": "Your Favorites",
+    "favoritesSubtitle": "Items you've marked as favorites",
+    "featuredArtworks": "Featured Artworks",
+    "recentLessons": "Recent Lessons",
+    "recentVideos": "Recent Videos",
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "views": "views"
+  },
+  "about": {
+    "title": "About",
+    "subtitle": "Learn about the artist"
+  },
+  "gallery": {
+    "title": "Gallery",
+    "subtitle": "Explore beautiful artworks"
+  },
+  "lessons": {
+    "title": "Lessons",
+    "subtitle": "Learn with step-by-step tutorials"
+  },
+  "videos": {
+    "title": "Videos",
+    "subtitle": "Watch and learn"
+  },
+  "language": {
+    "arabic": "عربي",
+    "english": "English"
+  }
+}
