@@ -40,7 +40,15 @@
   },
   "videos": {
     "title": "Videos",
-    "subtitle": "Watch and learn"
+    "subtitle": "Watch and learn",
+    "loading": "Loading videos...",
+    "noVideos": "No videos available yet.",
+    "gallery": "Video Gallery",
+    "videoError": "Video Error",
+    "tryAgain": "Try Again",
+    "notVideo": "This is an image, not a video file",
+    "noVideoUrl": "No video URL available",
+    "views": "views"
   },
   "language": {
     "arabic": "عربي",
