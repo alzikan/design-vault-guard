@@ -70,6 +70,7 @@ export default function Videos() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [videoError, setVideoError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fetch videos from Supabase
@@ -113,10 +114,12 @@ export default function Videos() {
 
   const playVideo = (video: any) => {
     setCurrentVideo(video);
+    setVideoError(null);
   };
 
   const closeVideo = () => {
     setCurrentVideo(null);
+    setVideoError(null);
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
@@ -141,7 +144,44 @@ export default function Videos() {
                 </Button>
               </div>
               <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
-                {currentVideo.video_url ? (
+                {videoError ? (
+                  <div className="w-full h-full flex items-center justify-center bg-red-50 dark:bg-red-900/20">
+                    <div className="text-center p-4 max-w-md">
+                      <div className="text-red-600 dark:text-red-400 mb-3 font-semibold">
+                        {t('videos.videoError')}
+                      </div>
+                      <div className="text-sm text-red-500 dark:text-red-300 mb-4">
+                        External video cannot be loaded. This may be due to:
+                        <br />• CORS restrictions
+                        <br />• Server access issues  
+                        <br />• Network connectivity problems
+                      </div>
+                      <div className="flex gap-2 justify-center flex-wrap">
+                        <Button 
+                          onClick={() => {
+                            setVideoError(null);
+                            if (videoRef.current) {
+                              videoRef.current.load();
+                            }
+                          }} 
+                          variant="outline" 
+                          size="sm"
+                        >
+                          {t('videos.tryAgain')}
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            window.open(currentVideo.video_url, '_blank');
+                          }} 
+                          variant="outline" 
+                          size="sm"
+                        >
+                          Open in New Tab
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : currentVideo.video_url ? (
                   // Check if URL is an image or video
                   /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
                     <div className="w-full h-full flex items-center justify-center bg-black">
@@ -160,10 +200,20 @@ export default function Videos() {
                       className="w-full h-full object-contain"
                       src={currentVideo.video_url}
                       controls
-                      autoPlay
-                      playsInline
+                      preload="metadata"
+                      onLoadStart={() => {
+                        console.log('Video loading started...');
+                        setVideoError(null);
+                      }}
+                      onCanPlay={() => {
+                        console.log('Video can play - attempting auto-play...');
+                        videoRef.current?.play().catch((error) => {
+                          console.log('Auto-play prevented by browser:', error);
+                        });
+                      }}
                       onError={(e) => {
-                        console.error('Video failed to load:', currentVideo.video_url, e);
+                        console.error('Video failed to load:', currentVideo.video_url);
+                        setVideoError('Cannot load video from external source');
                       }}
                     >
                       Your browser does not support the video tag.
