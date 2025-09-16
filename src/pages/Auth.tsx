@@ -48,7 +48,7 @@ const Auth = () => {
         toast.error(error.message);
       } else {
         toast.success('Successfully signed in!');
-        navigate('/');
+        // Navigation is handled by onAuthStateChange
       }
     } catch (error) {
       toast.error('An unexpected error occurred');
