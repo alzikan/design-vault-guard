@@ -27,7 +27,7 @@ export default function Gallery() {
     try {
       const { data, error } = await supabase
         .from('artworks')
-        .select('id, title, created_year, image_url, medium')
+        .select('id, title, created_year, image_url, medium, description')
         .eq('is_available', true);
       
       if (error) throw error;
@@ -232,9 +232,7 @@ export default function Gallery() {
                   <div>
                     <h3 className="font-semibold text-card-foreground mb-2">Description</h3>
                     <p className="text-muted-foreground">
-                      This artwork represents the traditional techniques and cultural significance of Saudi Arabian art. 
-                      Created using {selectedArtwork.medium.toLowerCase()}, it showcases the mastery of light, shadow, and composition 
-                      that defines this artistic movement.
+                      {selectedArtwork.description || 'No description available for this artwork.'}
                     </p>
                   </div>
 
