@@ -86,16 +86,15 @@ export function PageHeader({
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
-        <Link to={user ? "/admin/artworks" : "/auth"}>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="text-foreground hover:bg-accent/20"
-            title={user ? "Admin Panel" : "Login"}
-          >
-            <Settings className="w-4 h-4" />
-          </Button>
-        </Link>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="text-foreground hover:bg-accent/20"
+          title={user ? "Admin Panel" : "Login"}
+          onClick={() => navigate(user ? "/admin/artworks" : "/auth")}
+        >
+          <Settings className="w-4 h-4" />
+        </Button>
         
         {/* Language Toggle */}
         {showLanguageToggle && (
