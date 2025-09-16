@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 interface BottomNavProps {
   className?: string;
@@ -11,6 +12,7 @@ interface BottomNavProps {
 export function BottomNav({ className }: BottomNavProps) {
   const { t } = useLanguage();
   const { user } = useAuth();
+  const { hasAdminAccess } = useAdminAccess();
   
   const navItems = [
     { icon: Home, labelKey: "nav.home", path: "/" },

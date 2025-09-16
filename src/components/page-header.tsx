@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 import artistProfile from "@/assets/artist-profile.jpg";
 
 interface PageHeaderProps {
@@ -23,7 +23,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const navigate = useNavigate();
   const { toggleLanguage, t } = useLanguage();
-  const { user } = useAuth();
+  const { hasAdminAccess } = useAdminAccess();
   const [profileImage, setProfileImage] = useState<string>(artistProfile);
   const [artistName, setArtistName] = useState<string>("Ibrahim alZikan");
 
@@ -86,7 +86,7 @@ export function PageHeader({
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
-        {user && (
+        {hasAdminAccess && (
           <Link to="/admin/artworks">
             <Button 
               variant="ghost" 

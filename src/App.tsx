@@ -15,13 +15,15 @@ import AdminLessons from "./pages/admin/AdminLessons";
 import AdminVideos from "./pages/admin/AdminVideos";
 import AdminProfile from "./pages/admin/AdminProfile";
 import { useAuth } from "./hooks/useAuth";
+import { useAdminAccess } from "./hooks/useAdminAccess";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
-// Protected Route Component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+// Protected Admin Route Component
+const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
+  const { hasAdminAccess } = useAdminAccess();
 
   if (loading) {
     return (
@@ -33,6 +35,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  if (!hasAdminAccess) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -56,24 +62,24 @@ const App = () => (
           
           {/* Protected Admin Routes */}
           <Route path="/admin/artworks" element={
-            <ProtectedRoute>
+            <ProtectedAdminRoute>
               <AdminArtworks />
-            </ProtectedRoute>
+            </ProtectedAdminRoute>
           } />
           <Route path="/admin/lessons" element={
-            <ProtectedRoute>
+            <ProtectedAdminRoute>
               <AdminLessons />
-            </ProtectedRoute>
+            </ProtectedAdminRoute>
           } />
           <Route path="/admin/videos" element={
-            <ProtectedRoute>
+            <ProtectedAdminRoute>
               <AdminVideos />
-            </ProtectedRoute>
+            </ProtectedAdminRoute>
           } />
           <Route path="/admin/profile" element={
-            <ProtectedRoute>
+            <ProtectedAdminRoute>
               <AdminProfile />
-            </ProtectedRoute>
+            </ProtectedAdminRoute>
           } />
           
           {/* Catch-all route */}
