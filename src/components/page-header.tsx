@@ -157,7 +157,7 @@ export function PageHeader({
               {hasAdminAccess && (
                 <>
                   <DropdownMenuItem 
-                    onSelect={() => navigate("/admin/artworks")}
+                    onClick={() => navigate("/admin/artworks")}
                     className="cursor-pointer"
                   >
                     <Shield className="w-4 h-4 mr-2" />
