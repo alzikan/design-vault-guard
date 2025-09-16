@@ -1,11 +1,17 @@
 import { cn } from "@/lib/utils";
-import { Globe, Settings } from "lucide-react";
+import { Globe, Settings, LogOut, Key, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import artistProfile from "@/assets/artist-profile.jpg";
 
 interface PageHeaderProps {
@@ -24,8 +30,14 @@ export function PageHeader({
   const navigate = useNavigate();
   const { toggleLanguage, t } = useLanguage();
   const { user } = useAuth();
+  const { hasAdminAccess } = useAdminAccess();
   const [profileImage, setProfileImage] = useState<string>(artistProfile);
   const [artistName, setArtistName] = useState<string>("Ibrahim alZikan");
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchArtistProfile = async () => {
@@ -55,6 +67,49 @@ export function PageHeader({
 
     fetchArtistProfile();
   }, []);
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error('Error signing out');
+    } else {
+      toast.success('Signed out successfully');
+      navigate('/');
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ 
+        password: newPassword 
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password updated successfully');
+        setIsChangePasswordOpen(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <header className={cn(
       "flex items-center justify-between p-4 pt-12",
@@ -86,15 +141,110 @@ export function PageHeader({
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          className="text-foreground hover:bg-accent/20"
-          title={user ? "Admin Panel" : "Login"}
-          onClick={() => navigate(user ? "/admin/artworks" : "/auth")}
-        >
-          <Settings className="w-4 h-4" />
-        </Button>
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="text-foreground hover:bg-accent/20"
+                title="User Menu"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 bg-card border border-border">
+              {hasAdminAccess && (
+                <>
+                  <DropdownMenuItem 
+                    onClick={() => navigate("/admin/artworks")}
+                    className="cursor-pointer"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin Panel
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem 
+                    onSelect={(e) => e.preventDefault()}
+                    className="cursor-pointer"
+                  >
+                    <Key className="w-4 h-4 mr-2" />
+                    Change Password
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Change Password</DialogTitle>
+                    <DialogDescription>
+                      Enter your new password below.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleChangePassword}>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">New Password</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          required
+                          minLength={6}
+                          placeholder="Enter new password"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Confirm New Password</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          minLength={6}
+                          placeholder="Confirm new password"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter className="mt-6">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsChangePasswordOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={loading}>
+                        {loading ? 'Updating...' : 'Update Password'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <DropdownMenuItem 
+                onClick={handleSignOut}
+                className="cursor-pointer text-destructive focus:text-destructive"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            className="text-foreground hover:bg-accent/20"
+            title="Login"
+            onClick={() => navigate("/auth")}
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
+        )}
         
         {/* Language Toggle */}
         {showLanguageToggle && (
