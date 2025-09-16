@@ -27,7 +27,7 @@ export default function Gallery() {
     try {
       const { data, error } = await supabase
         .from('artworks')
-        .select('id, title, created_year, image_url, medium, description')
+        .select('id, title, created_year, image_url, medium, description, price')
         .eq('is_available', true);
       
       if (error) throw error;
@@ -220,6 +220,11 @@ export default function Gallery() {
                     <Badge variant="secondary" className="mb-4">
                       {selectedArtwork.category}
                     </Badge>
+                    {selectedArtwork.price && (
+                      <div className="text-2xl font-bold text-warm-gold mb-4">
+                        ${selectedArtwork.price}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
