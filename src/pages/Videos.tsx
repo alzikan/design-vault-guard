@@ -192,7 +192,6 @@ export default function Videos() {
                     <video 
                       ref={videoRef}
                       className="w-full h-full object-contain"
-                      controls
                       autoPlay={isPlaying}
                       src={currentVideo.video_url}
                       onError={(e) => {
