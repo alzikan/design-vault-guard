@@ -7,12 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
-const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: { 
+const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite, t }: { 
   video: any; 
   onPlay: (video: any) => void;
   isFavorite: boolean;
   onToggleFavorite: (videoId: string) => void;
+  t: (key: string) => string;
 }) => (
   <Card className="bg-muted/30 border-border/20 overflow-hidden">
     <div className="relative">
@@ -40,7 +42,7 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
         <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current text-red-500' : 'text-white'}`} />
       </Button>
       <Badge className="absolute top-2 right-2 bg-warm-gold text-background text-xs">
-        {video.category || 'General'}
+        {video.category || t('videos.general')}
       </Badge>
     </div>
     <div className="p-3">
@@ -57,7 +59,7 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
         </div>
         <div className="flex items-center gap-1">
           <Eye className="w-3 h-3" />
-          {video.view_count || 0} views
+          {video.view_count || 0} {t('videos.views')}
         </div>
       </div>
     </div>
@@ -65,6 +67,7 @@ const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: {
 );
 
 export default function Videos() {
+  const { t } = useLanguage();
   const [currentVideo, setCurrentVideo] = useState<any>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -180,7 +183,7 @@ export default function Videos() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Video Tutorials" />
+      <PageHeader title={t('nav.videos')} />
       
       <div className="px-4">
         {/* Video Player Modal */}
@@ -320,16 +323,16 @@ export default function Videos() {
         <div className="bg-card rounded-2xl p-6 shadow-xl">
           {loading ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading videos...</p>
+              <p className="text-muted-foreground">{t('videos.loading')}</p>
             </div>
           ) : videos.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-muted-foreground">No videos available yet.</p>
+              <p className="text-muted-foreground">{t('videos.noVideos')}</p>
             </div>
           ) : (
             <div>
               <h2 className="text-xl font-bold text-card-foreground mb-4">
-                Video Gallery
+                {t('videos.gallery')}
               </h2>
               <div className="grid grid-cols-1 gap-4">
                 {videos.map((video) => (
@@ -339,6 +342,7 @@ export default function Videos() {
                     onPlay={playVideo}
                     isFavorite={favorites.includes(video.id)}
                     onToggleFavorite={toggleFavorite}
+                    t={t}
                   />
                 ))}
               </div>

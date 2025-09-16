@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, BookOpen, Palette, TrendingUp, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
   const [artFavorites, setArtFavorites] = useState<number[]>([]);
   const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
@@ -126,7 +128,7 @@ export default function Home() {
   ];
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Home" />
+      <PageHeader title={t('nav.home')} />
       
       <div className="px-4">
         {/* Quick Stats */}
@@ -166,7 +168,7 @@ export default function Home() {
 
         {/* Featured Artworks */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-          <h2 className="text-xl font-bold text-card-foreground mb-4">Featured Artworks</h2>
+          <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.featured')}</h2>
           <div className="grid grid-cols-2 gap-4">
             {featuredArtworks.map((artwork) => (
               <ArtGalleryCard
@@ -183,9 +185,9 @@ export default function Home() {
         {/* Recent Lessons Progress */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-card-foreground">Recent Lessons</h2>
+            <h2 className="text-xl font-bold text-card-foreground">{t('home.recentLessons')}</h2>
             <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
-              View All
+              {t('home.viewAll')}
             </Button>
           </div>
           <div className="space-y-3">
@@ -217,9 +219,9 @@ export default function Home() {
         {/* Recent Videos */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-card-foreground">Recent Videos</h2>
+            <h2 className="text-xl font-bold text-card-foreground">{t('home.recentVideos')}</h2>
             <Button variant="ghost" size="sm" className="text-warm-gold hover:text-accent-foreground">
-              View All
+              {t('home.viewAll')}
             </Button>
           </div>
           <div className="space-y-3">

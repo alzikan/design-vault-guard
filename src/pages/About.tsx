@@ -17,9 +17,12 @@ interface ArtistProfile {
   exhibitions: string;
 }
 
+import { useLanguage } from "@/contexts/LanguageContext";
+
 export default function About() {
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchProfile();
@@ -47,7 +50,7 @@ export default function About() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background pb-24">
-        <PageHeader title="About the Artist" />
+        <PageHeader title={t('nav.about')} />
         <div className="px-4">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Loading artist profile...</p>
@@ -61,7 +64,7 @@ export default function About() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-background pb-24">
-        <PageHeader title="About the Artist" />
+        <PageHeader title={t('nav.about')} />
         <div className="px-4">
           <div className="text-center py-12">
             <p className="text-muted-foreground">Artist profile not found.</p>
@@ -74,7 +77,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="About the Artist" />
+      <PageHeader title={t('nav.about')} />
       
       <div className="px-4">
         {/* Artist Profile Header */}

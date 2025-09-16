@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Circle, Clock, BookOpen, Star, Play } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const lessons = [
   {
@@ -64,7 +65,7 @@ const lessons = [
   },
 ];
 
-const LessonCard = ({ lesson, onStart }: { lesson: any; onStart: (lesson: any) => void }) => {
+const LessonCard = ({ lesson, onStart, t }: { lesson: any; onStart: (lesson: any) => void; t: (key: string) => string }) => {
   const completedModules = lesson.modules.filter((m: any) => m.completed).length;
   const totalModules = lesson.modules.length;
 
@@ -117,13 +118,14 @@ const LessonCard = ({ lesson, onStart }: { lesson: any; onStart: (lesson: any) =
         className="w-full"
         variant={lesson.progress > 0 ? "outline" : "default"}
       >
-        {lesson.progress === 0 ? "Start Lesson" : lesson.progress === 100 ? "Review" : "Continue"}
+        {lesson.progress === 0 ? t('lessons.startLesson') : lesson.progress === 100 ? t('lessons.review') : t('lessons.continue')}
       </Button>
     </Card>
   );
 };
 
 export default function Lessons() {
+  const { t } = useLanguage();
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
 
@@ -275,6 +277,7 @@ export default function Lessons() {
                   key={lesson.id}
                   lesson={lessonWithProgress}
                   onStart={startLesson}
+                  t={t}
                 />
               );
             })}

@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, Heart, X, Share2, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Gallery() {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
@@ -97,7 +99,7 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Gallery" />
+      <PageHeader title={t('nav.gallery')} />
       
       <div className="px-4">
         {/* Search and Filters */}
@@ -105,7 +107,7 @@ export default function Gallery() {
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search artworks..."
+              placeholder={t('gallery.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-muted/30 border-border/20"
@@ -139,7 +141,7 @@ export default function Gallery() {
               onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
               className="bg-muted/30 border-border/20 hover:bg-muted/50"
             >
-              Sort by {sortBy === "year" ? "Year" : "Title"}
+              {t('gallery.sortBy')} {sortBy === "year" ? t('gallery.year') : t('gallery.title_sort')}
             </Button>
           </div>
         </div>
@@ -244,11 +246,11 @@ export default function Gallery() {
                   <div className="flex gap-2 pt-4">
                     <Button variant="outline" className="flex-1">
                       <Share2 className="w-4 h-4 mr-2" />
-                      Share
+                      {t('gallery.share')}
                     </Button>
                     <Button variant="outline" className="flex-1">
                       <Download className="w-4 h-4 mr-2" />
-                      Download
+                      {t('gallery.download')}
                     </Button>
                   </div>
                 </div>

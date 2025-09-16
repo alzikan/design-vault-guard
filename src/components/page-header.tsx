@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 import artistProfile from "@/assets/artist-profile.jpg";
 
 interface PageHeaderProps {
@@ -20,6 +21,7 @@ export function PageHeader({
   className 
 }: PageHeaderProps) {
   const navigate = useNavigate();
+  const { toggleLanguage, t } = useLanguage();
   const [profileImage, setProfileImage] = useState<string>(artistProfile);
   const [artistName, setArtistName] = useState<string>("Ibrahim alZikan");
 
@@ -86,8 +88,9 @@ export function PageHeader({
           variant="ghost" 
           size="sm"
           className="text-foreground hover:bg-accent/20"
+          onClick={toggleLanguage}
         >
-          <span className="text-sm font-medium mr-1">عربي</span>
+          <span className="text-sm font-medium mr-1">{t('nav.language')}</span>
           <Globe className="w-4 h-4" />
         </Button>
       )}
