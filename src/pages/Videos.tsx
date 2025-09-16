@@ -150,7 +150,17 @@ export default function Videos() {
     setCurrentTime(0);
     setDuration(0);
     setVideoError(null);
-    setIsPlaying(false); // Will be set to true by video event handler
+    setIsPlaying(false);
+    
+    // Ensure video plays when modal opens
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.load();
+        videoRef.current.play().catch((error) => {
+          console.log('Auto-play blocked, user needs to click play:', error);
+        });
+      }
+    }, 100);
   };
 
   const togglePlayPause = () => {
@@ -227,6 +237,14 @@ export default function Videos() {
                       src={currentVideo.video_url}
                       controls
                       autoPlay
+                      playsInline
+                      muted={false}
+                      onLoadedData={() => {
+                        console.log('Video loaded, attempting to play...');
+                        if (videoRef.current) {
+                          videoRef.current.play().catch(console.log);
+                        }
+                      }}
                       onError={(e) => {
                         console.error('Video failed to load:', currentVideo.video_url, e);
                       }}
