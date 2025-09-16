@@ -174,7 +174,7 @@ export default function Home() {
                 title={artwork.title}
                 year={artwork.year}
                 image={artwork.image}
-                onClick={() => console.log(`Viewing ${artwork.title}`)}
+                onClick={() => navigate('/gallery')}
               />
             ))}
           </div>
