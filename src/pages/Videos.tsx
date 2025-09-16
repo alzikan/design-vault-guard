@@ -149,8 +149,17 @@ export default function Videos() {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
+        console.log('Video paused');
       } else {
-        videoRef.current.play();
+        videoRef.current.play().then(() => {
+          console.log('Video playing');
+        }).catch(err => {
+          console.error('Play error:', err);
+          // Fallback: show native controls if autoplay fails
+          if (videoRef.current) {
+            videoRef.current.controls = true;
+          }
+        });
       }
     }
     setIsPlaying(!isPlaying);
@@ -207,12 +216,27 @@ export default function Videos() {
                       src={currentVideo.video_url}
                       controls={false}
                       playsInline
+                      crossOrigin="anonymous"
+                      onLoadStart={() => {
+                        console.log('Video loading started:', currentVideo.video_url);
+                      }}
+                      onCanPlay={() => {
+                        console.log('Video can play');
+                        if (isPlaying && videoRef.current) {
+                          videoRef.current.play().catch(err => {
+                            console.error('Play failed:', err);
+                          });
+                        }
+                      }}
                       onError={(e) => {
-                        console.error('Video failed to load:', currentVideo.video_url);
+                        console.error('Video failed to load:', currentVideo.video_url, e);
                       }}
                       onLoadedData={() => {
+                        console.log('Video data loaded');
                         if (videoRef.current && isPlaying) {
-                          videoRef.current.play();
+                          videoRef.current.play().catch(err => {
+                            console.error('Auto-play failed:', err);
+                          });
                         }
                       }}
                     >
