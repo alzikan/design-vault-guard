@@ -110,5 +110,4 @@ const AdminNav = () => {
   );
 };
 
-// Fixed export to ensure proper default export
 export default AdminNav;

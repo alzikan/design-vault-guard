@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-// Fixed import issue - using default export
 import AdminNav from "@/components/admin-nav";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
