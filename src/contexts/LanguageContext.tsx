@@ -20,6 +20,7 @@ const translations = {
     'nav.videos': 'Videos',
     'nav.signOut': 'Sign Out',
     'nav.language': 'عربي',
+    'nav.login': 'Login',
     
     // Home Page
     'home.title': 'Welcome to Art Studio',
@@ -121,6 +122,7 @@ const translations = {
     'nav.videos': 'الفيديوهات',
     'nav.signOut': 'تسجيل الخروج',
     'nav.language': 'English',
+    'nav.login': 'تسجيل الدخول',
     
     // Home Page
     'home.title': 'مرحباً بك في استوديو الفن',

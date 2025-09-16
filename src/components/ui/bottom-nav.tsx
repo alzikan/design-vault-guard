@@ -1,21 +1,24 @@
-import { Home, Image, BookOpen, Play } from "lucide-react";
+import { Home, Image, BookOpen, Play, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 interface BottomNavProps {
   className?: string;
 }
 
-const navItems = [
-  { icon: Home, labelKey: "nav.home", path: "/" },
-  { icon: Play, labelKey: "nav.videos", path: "/videos" },
-  { icon: Image, labelKey: "nav.gallery", path: "/gallery" },
-  { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" },
-];
-
 export function BottomNav({ className }: BottomNavProps) {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  
+  const navItems = [
+    { icon: Home, labelKey: "nav.home", path: "/" },
+    { icon: Play, labelKey: "nav.videos", path: "/videos" },
+    { icon: Image, labelKey: "nav.gallery", path: "/gallery" },
+    { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" },
+    ...(user ? [] : [{ icon: LogIn, labelKey: "nav.login", path: "/auth" }]),
+  ];
   return (
     <nav className={cn(
       "fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border",
