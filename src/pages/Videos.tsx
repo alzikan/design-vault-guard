@@ -265,8 +265,8 @@ export default function Videos() {
                   <div className="flex items-center gap-2 mb-2">
                     <Progress value={(currentTime / duration) * 100} className="flex-1 h-1" />
                     <span className="text-white text-xs">
-                      {Math.floor(currentTime / 60)}:{(currentTime % 60).toString().padStart(2, '0')} / 
-                      {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+                      {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / 
+                      {Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}
                     </span>
                   </div>
                   
