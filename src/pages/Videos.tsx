@@ -5,8 +5,7 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
+import { Play, Clock, Eye, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite }: { 
@@ -69,12 +68,8 @@ export default function Videos() {
   const { t } = useTranslation();
   const [currentVideo, setCurrentVideo] = useState<any>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [videoError, setVideoError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fetch videos from Supabase
@@ -107,35 +102,6 @@ export default function Videos() {
     }
   }, []);
 
-  // Video event handlers
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
-    const handleLoadedMetadata = () => setDuration(video.duration);
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleError = () => {
-      setVideoError(`Failed to load video: ${currentVideo?.video_url}`);
-      setIsPlaying(false);
-    };
-
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
-    video.addEventListener('error', handleError);
-
-    return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
-      video.removeEventListener('error', handleError);
-    };
-  }, [currentVideo]);
-
   const toggleFavorite = (videoId: string) => {
     const newFavorites = favorites.includes(videoId)
       ? favorites.filter(id => id !== videoId)
@@ -147,56 +113,14 @@ export default function Videos() {
 
   const playVideo = (video: any) => {
     setCurrentVideo(video);
-    setCurrentTime(0);
-    setDuration(0);
-    setVideoError(null);
-    setIsPlaying(false);
-    
-    // Ensure video plays when modal opens
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.load();
-        videoRef.current.play().catch((error) => {
-          console.log('Auto-play blocked, user needs to click play:', error);
-        });
-      }
-    }, 100);
-  };
-
-  const togglePlayPause = () => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isPlaying) {
-      video.pause();
-    } else {
-      video.play().catch((error) => {
-        console.error('Video play failed:', error);
-        setVideoError('Failed to play video. The video format may not be supported or the URL may be invalid.');
-      });
-    }
-  };
-
-  const skipTime = (seconds: number) => {
-    const video = videoRef.current;
-    if (video && duration > 0) {
-      const newTime = Math.max(0, Math.min(duration, video.currentTime + seconds));
-      video.currentTime = newTime;
-      setCurrentTime(newTime);
-    }
   };
 
   const closeVideo = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.pause();
-      video.currentTime = 0;
-    }
     setCurrentVideo(null);
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setVideoError(null);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
   };
 
   return (
@@ -238,13 +162,6 @@ export default function Videos() {
                       controls
                       autoPlay
                       playsInline
-                      muted={false}
-                      onLoadedData={() => {
-                        console.log('Video loaded, attempting to play...');
-                        if (videoRef.current) {
-                          videoRef.current.play().catch(console.log);
-                        }
-                      }}
                       onError={(e) => {
                         console.error('Video failed to load:', currentVideo.video_url, e);
                       }}
@@ -264,46 +181,6 @@ export default function Videos() {
                     </div>
                   </div>
                 )}
-                
-                {/* Custom Controls - Only show if video is not using native controls */}
-                {currentVideo.video_url && !/\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) && false && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Progress value={duration > 0 ? (currentTime / duration) * 100 : 0} className="flex-1 h-1" />
-                      <span className="text-white text-xs">
-                        {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / 
-                        {Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}
-                      </span>
-                    </div>
-                  
-                    <div className="flex items-center justify-center gap-4">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:text-warm-gold"
-                        onClick={() => skipTime(-10)}
-                      >
-                        <SkipBack className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:text-warm-gold"
-                        onClick={togglePlayPause}
-                      >
-                        {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-white hover:text-warm-gold"
-                        onClick={() => skipTime(10)}
-                      >
-                        <SkipForward className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
               <p className="text-muted-foreground mb-4">
                 {currentVideo.description}
@@ -311,13 +188,13 @@ export default function Videos() {
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  {currentVideo.duration}
+                  {currentVideo.duration_minutes ? `${currentVideo.duration_minutes}:00` : 'N/A'}
                 </span>
                 <span className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
-                  {currentVideo.views} views
+                  {currentVideo.view_count || 0} {t('videos.views')}
                 </span>
-                <Badge variant="secondary">{currentVideo.level}</Badge>
+                <Badge variant="secondary">{currentVideo.category || 'General'}</Badge>
               </div>
             </div>
           </div>
