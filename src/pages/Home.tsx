@@ -151,16 +151,16 @@ export default function Home() {
           <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <Heart className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-bold text-card-foreground">Your Favorites</h2>
+              <h2 className="text-lg font-bold text-card-foreground">{t('home.favorites')}</h2>
             </div>
             <div className="flex items-center gap-6 text-sm">
               <div className="flex items-center gap-1">
                 <Palette className="w-4 h-4 text-warm-gold" />
-                <span className="text-muted-foreground">{artFavorites.length} artworks</span>
+                <span className="text-muted-foreground">{artFavorites.length} {t('home.artworks')}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Play className="w-4 h-4 text-blue-500" />
-                <span className="text-muted-foreground">{videoFavorites.length} videos</span>
+                <span className="text-muted-foreground">{videoFavorites.length} {t('nav.videos')}</span>
               </div>
             </div>
           </Card>
@@ -248,13 +248,13 @@ export default function Home() {
                   <h3 className="font-medium text-card-foreground text-sm">{video.title}</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-xs text-muted-foreground">{video.duration}</span>
-                    <Badge variant="outline" className="text-xs">
-                      {video.level}
+                    <Badge variant="outline" className="text-xs text-muted-foreground border-muted">
+                      {video.level === 'General' ? t('videos.general') : video.level}
                     </Badge>
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {video.views} views
+                  {video.views} {t('home.views')}
                 </div>
               </div>
             ))}

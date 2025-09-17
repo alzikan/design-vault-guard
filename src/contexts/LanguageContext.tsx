@@ -171,6 +171,9 @@ const translations = {
     'stats.videos': 'Videos',
     'stats.lessons': 'Lessons',
     'stats.progress': 'Progress',
+    'home.views': 'views',
+    'home.favorites': 'Your Favorites',
+    'home.artworks': 'artworks',
   },
   ar: {
     // Navigation & Header
@@ -332,6 +335,9 @@ const translations = {
     'stats.videos': 'الفيديوهات',
     'stats.lessons': 'الدروس',
     'stats.progress': 'التقدم',
+    'home.views': 'مشاهدة',
+    'home.favorites': 'المفضلة لديك',
+    'home.artworks': 'أعمال فنية',
   }
 };
 
