@@ -157,8 +157,10 @@ export function PageHeader({
               {hasAdminAccess && (
                 <>
                   <DropdownMenuItem 
-                    onSelect={() => {
-                      setTimeout(() => navigate("/admin"), 0);
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      console.log('Admin panel clicked - forcing navigation');
+                      window.location.href = '/admin';
                     }}
                     className="cursor-pointer"
                   >
