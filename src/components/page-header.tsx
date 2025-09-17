@@ -157,7 +157,13 @@ export function PageHeader({
               {hasAdminAccess && (
                 <>
                   <DropdownMenuItem 
-                    onClick={() => navigate("/admin")}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      console.log('Admin panel clicked, navigating to /admin');
+                      console.log('hasAdminAccess:', hasAdminAccess);
+                      console.log('user:', user);
+                      navigate("/admin");
+                    }}
                     className="cursor-pointer"
                   >
                     <Shield className="w-4 h-4 mr-2" />
