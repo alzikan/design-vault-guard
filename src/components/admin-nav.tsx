@@ -5,9 +5,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Palette, Image, BookOpen, Video, LogOut, Plus, User, MoreVertical } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AdminNav = () => {
   const location = useLocation();
+  const { t } = useLanguage();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -27,7 +29,7 @@ const AdminNav = () => {
           <div className="flex items-center space-x-8">
             <Link to="/" className="flex items-center space-x-2">
               <Palette className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">Art Admin</span>
+              <span className="text-xl font-bold">{t('admin.title')}</span>
             </Link>
             
             <div className="hidden md:flex items-center space-x-4">
@@ -38,7 +40,7 @@ const AdminNav = () => {
                   className="flex items-center space-x-2"
                 >
                   <Image className="h-4 w-4" />
-                  <span>Gallery</span>
+                  <span>{t('nav.gallery')}</span>
                 </Button>
               </Link>
               
@@ -49,7 +51,7 @@ const AdminNav = () => {
                   className="flex items-center space-x-2"
                 >
                   <BookOpen className="h-4 w-4" />
-                  <span>Lessons</span>
+                  <span>{t('nav.lessons')}</span>
                 </Button>
               </Link>
               
@@ -60,7 +62,7 @@ const AdminNav = () => {
                   className="flex items-center space-x-2"
                 >
                   <Video className="h-4 w-4" />
-                  <span>Videos</span>
+                  <span>{t('nav.videos')}</span>
                 </Button>
               </Link>
             </div>
@@ -72,28 +74,28 @@ const AdminNav = () => {
               <Link to="/admin/artworks">
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Artwork
+                  {t('admin.addArtwork')}
                 </Button>
               </Link>
               
               <Link to="/admin/lessons">
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Lesson
+                  {t('admin.addLesson')}
                 </Button>
               </Link>
               
               <Link to="/admin/videos">
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Video
+                  {t('admin.addVideo')}
                 </Button>
               </Link>
               
               <Link to="/admin/profile">
                 <Button variant="outline" size="sm">
                   <User className="h-4 w-4 mr-2" />
-                  Artist Profile
+                  {t('admin.artistProfile')}
                 </Button>
               </Link>
               
@@ -104,7 +106,7 @@ const AdminNav = () => {
                 className="flex items-center space-x-2"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
+                <span>{t('nav.signOut')}</span>
               </Button>
             </div>
 
@@ -120,34 +122,34 @@ const AdminNav = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/admin/artworks" className="flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Artwork
+                      {t('admin.addArtwork')}
                     </Link>
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem asChild>
                     <Link to="/admin/lessons" className="flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Lesson
+                      {t('admin.addLesson')}
                     </Link>
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem asChild>
                     <Link to="/admin/videos" className="flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
-                      Add Video
+                      {t('admin.addVideo')}
                     </Link>
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem asChild>
                     <Link to="/admin/profile" className="flex items-center">
                       <User className="h-4 w-4 mr-2" />
-                      Artist Profile
+                      {t('admin.artistProfile')}
                     </Link>
                   </DropdownMenuItem>
                   
                   <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
                     <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
+                    {t('nav.signOut')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
