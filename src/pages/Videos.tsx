@@ -198,7 +198,8 @@ export default function Videos() {
                   ✕
                 </Button>
               </div>
-              <div className="aspect-video bg-muted rounded-lg mb-4 relative overflow-hidden">
+              {/* Video Container with separated controls */}
+              <div className="aspect-video bg-muted rounded-lg mb-2 relative overflow-hidden">
                 {currentVideo.video_url ? (
                   // Check if URL is an image or video
                   /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
@@ -262,43 +263,43 @@ export default function Videos() {
                     </div>
                   </div>
                 )}
+              </div>
+              
+              {/* Video Controls - Separated from video container */}
+              <div className="bg-card/90 backdrop-blur-sm rounded-lg p-3 mb-4 border border-border/20">
+                <div className="flex items-center gap-2 mb-3">
+                  <Progress value={(currentTime / duration) * 100} className="flex-1 h-2" />
+                  <span className="text-muted-foreground text-xs min-w-0 whitespace-nowrap">
+                    {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / 
+                    {Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
                 
-                {/* Video Controls */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/70 p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Progress value={(currentTime / duration) * 100} className="flex-1 h-1" />
-                    <span className="text-white text-xs">
-                      {Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / 
-                      {Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center justify-center gap-4">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={() => skipTime(-10)}
-                    >
-                      <SkipBack className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={togglePlayPause}
-                    >
-                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="text-white hover:text-warm-gold"
-                      onClick={() => skipTime(10)}
-                    >
-                      <SkipForward className="w-4 h-4" />
-                    </Button>
-                  </div>
+                <div className="flex items-center justify-center gap-4">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-foreground hover:text-primary"
+                    onClick={() => skipTime(-10)}
+                  >
+                    <SkipBack className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="default"
+                    className="bg-primary hover:bg-primary/90"
+                    onClick={togglePlayPause}
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-foreground hover:text-primary"
+                    onClick={() => skipTime(10)}
+                  >
+                    <SkipForward className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
               <p className="text-muted-foreground mb-4">
