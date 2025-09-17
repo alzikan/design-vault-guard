@@ -64,6 +64,15 @@ const translations = {
     'lessons.beginner': 'Beginner',
     'lessons.intermediate': 'Intermediate',
     'lessons.advanced': 'Advanced',
+    'lessons.progress': 'Progress',
+    'lessons.modules': 'modules',
+    'lessons.duration': 'Duration',
+    'lessons.learningProgress': 'Your Learning Progress',
+    'lessons.inProgress': 'In Progress',
+    'lessons.available': 'Available',
+    'lessons.start': 'Start',
+    'lessons.moduleCompleted': 'Module Completed!',
+    'lessons.moduleCompletedDesc': 'Great job! Keep up the excellent progress.',
     
     // Videos Page
     'videos.title': 'Video Tutorials',
@@ -166,6 +175,15 @@ const translations = {
     'lessons.beginner': 'مبتدئ',
     'lessons.intermediate': 'متوسط',
     'lessons.advanced': 'متقدم',
+    'lessons.progress': 'التقدم',
+    'lessons.modules': 'وحدات',
+    'lessons.duration': 'المدة',
+    'lessons.learningProgress': 'تقدمك في التعلم',
+    'lessons.inProgress': 'قيد التقدم',
+    'lessons.available': 'متاح',
+    'lessons.start': 'بدء',
+    'lessons.moduleCompleted': 'تم إكمال الوحدة!',
+    'lessons.moduleCompletedDesc': 'أحسنت! استمر في هذا التقدم الممتاز.',
     
     // Videos Page
     'videos.title': 'دروس الفيديو',

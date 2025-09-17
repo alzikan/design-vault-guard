@@ -86,10 +86,10 @@ const LessonCard = ({ lesson, onStart, t }: { lesson: any; onStart: (lesson: any
             </span>
             <span className="flex items-center gap-1">
               <BookOpen className="w-3 h-3" />
-              {totalModules} modules
+              {totalModules} {t('lessons.modules')}
             </span>
             <Badge variant={lesson.difficulty === "Beginner" ? "default" : lesson.difficulty === "Intermediate" ? "secondary" : "destructive"}>
-              {lesson.difficulty}
+              {lesson.difficulty === "Beginner" ? t('lessons.beginner') : lesson.difficulty === "Intermediate" ? t('lessons.intermediate') : t('lessons.advanced')}
             </Badge>
           </div>
         </div>
@@ -104,7 +104,7 @@ const LessonCard = ({ lesson, onStart, t }: { lesson: any; onStart: (lesson: any
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm text-muted-foreground">
-            Progress: {completedModules}/{totalModules} modules
+            {t('lessons.progress')}: {completedModules}/{totalModules} {t('lessons.modules')}
           </span>
           <span className="text-sm text-muted-foreground">
             {lesson.progress}%
@@ -148,8 +148,8 @@ export default function Lessons() {
     
     if (completed) {
       toast({
-        title: "Module Completed!",
-        description: "Great job! Keep up the excellent progress.",
+        title: t('lessons.moduleCompleted'),
+        description: t('lessons.moduleCompletedDesc'),
       });
     }
   };
@@ -189,7 +189,7 @@ export default function Lessons() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <PageHeader title="Art Lessons" />
+      <PageHeader title={t('lessons.title')} />
       
       <div className="px-4">
         {/* Lesson Detail Modal */}
@@ -229,7 +229,7 @@ export default function Lessons() {
                         {module.title}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Duration: {module.duration}
+                        {t('lessons.duration')}: {module.duration}
                       </p>
                     </div>
                     <Button 
@@ -239,7 +239,7 @@ export default function Lessons() {
                       onClick={() => startModule(selectedLesson.id, module.id, module.completed)}
                     >
                       <Play className="w-3 h-3 mr-1" />
-                      {module.completed ? "Review" : "Start"}
+                      {module.completed ? t('lessons.review') : t('lessons.start')}
                     </Button>
                   </div>
                 ))}
@@ -250,19 +250,19 @@ export default function Lessons() {
 
         {/* Statistics */}
         <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
-          <h2 className="text-lg font-bold text-card-foreground mb-4">Your Learning Progress</h2>
+          <h2 className="text-lg font-bold text-card-foreground mb-4">{t('lessons.learningProgress')}</h2>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-warm-gold">1</div>
-              <div className="text-sm text-muted-foreground">Completed</div>
+              <div className="text-sm text-muted-foreground">{t('lessons.completed')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-accent">1</div>
-              <div className="text-sm text-muted-foreground">In Progress</div>
+              <div className="text-sm text-muted-foreground">{t('lessons.inProgress')}</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-muted-foreground">2</div>
-              <div className="text-sm text-muted-foreground">Available</div>
+              <div className="text-sm text-muted-foreground">{t('lessons.available')}</div>
             </div>
           </div>
         </Card>
