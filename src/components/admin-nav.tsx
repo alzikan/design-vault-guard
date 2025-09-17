@@ -116,7 +116,7 @@ const AdminNav = () => {
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-background border-border">
+                <DropdownMenuContent align="end" className="w-48 bg-card border border-border shadow-lg">
                   <DropdownMenuItem asChild>
                     <Link to="/admin/artworks" className="flex items-center">
                       <Plus className="h-4 w-4 mr-2" />
