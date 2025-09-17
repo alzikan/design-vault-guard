@@ -167,6 +167,10 @@ const translations = {
     'common.notFound': 'Page Not Found',
     'common.notFoundMessage': 'The page you are looking for does not exist.',
     'common.returnHome': 'Return to Home',
+    'stats.artworks': 'Artworks',
+    'stats.videos': 'Videos',
+    'stats.lessons': 'Lessons',
+    'stats.progress': 'Progress',
   },
   ar: {
     // Navigation & Header
@@ -324,6 +328,10 @@ const translations = {
     'common.notFound': 'الصفحة غير موجودة',
     'common.notFoundMessage': 'الصفحة التي تبحث عنها غير موجودة.',
     'common.returnHome': 'العودة للرئيسية',
+    'stats.artworks': 'الأعمال الفنية',
+    'stats.videos': 'الفيديوهات',
+    'stats.lessons': 'الدروس',
+    'stats.progress': 'التقدم',
   }
 };
 

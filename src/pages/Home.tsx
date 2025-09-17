@@ -121,10 +121,10 @@ export default function Home() {
   const overallProgress = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
 
   const quickStats = [
-    { label: "Artworks", value: stats.artworks.toString(), icon: Palette, color: "text-warm-gold" },
-    { label: "Videos", value: stats.videos.toString(), icon: Play, color: "text-blue-500" },
-    { label: "Lessons", value: stats.lessons.toString(), icon: BookOpen, color: "text-green-500" },
-    { label: "Progress", value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
+    { label: t('stats.artworks'), value: stats.artworks.toString(), icon: Palette, color: "text-warm-gold" },
+    { label: t('stats.videos'), value: stats.videos.toString(), icon: Play, color: "text-blue-500" },
+    { label: t('stats.lessons'), value: stats.lessons.toString(), icon: BookOpen, color: "text-green-500" },
+    { label: t('stats.progress'), value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
   ];
   return (
     <div className="min-h-screen bg-background pb-24">
