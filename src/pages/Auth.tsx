@@ -5,23 +5,61 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Palette } from 'lucide-react';
+import { Palette, ArrowLeft } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [isResetMode, setIsResetMode] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    // Check URL parameters for reset flow or errors
+    const urlParams = new URLSearchParams(location.hash.substring(1));
+    const error = urlParams.get('error');
+    const errorCode = urlParams.get('error_code');
+    const errorDescription = urlParams.get('error_description');
+    const accessToken = urlParams.get('access_token');
+    const refreshToken = urlParams.get('refresh_token');
+    const type = urlParams.get('type');
+
+    if (error) {
+      if (errorCode === 'otp_expired') {
+        toast.error('Password reset link has expired. Please request a new one.');
+      } else {
+        toast.error(errorDescription || 'Authentication error occurred');
+      }
+      // Clear the URL parameters
+      window.history.replaceState({}, document.title, location.pathname);
+      return;
+    }
+
+    if (type === 'recovery' && accessToken && refreshToken) {
+      // Set the session from URL parameters for password reset
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      }).then(() => {
+        setIsResetMode(true);
+        toast.success('You can now set a new password');
+        // Clear the URL parameters
+        window.history.replaceState({}, document.title, location.pathname);
+      });
+      return;
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
+      if (session && !isResetMode) {
         // Check if user has admin access before redirecting
         const emailDomain = session.user.email?.split('@')[1];
-        const hasAdminAccess = emailDomain && ['alzikan.com', 'alzakan.net'].includes(emailDomain);
+        const hasAdminAccess = emailDomain && ['alzikan.com', 'alzikan.net'].includes(emailDomain);
         
         if (hasAdminAccess) {
           navigate('/admin/artworks');
@@ -32,7 +70,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, location, isResetMode]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +144,117 @@ const Auth = () => {
       setResetLoading(false);
     }
   };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newPassword || !confirmPassword) {
+      toast.error('Please fill in both password fields');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password updated successfully!');
+        setIsResetMode(false);
+        setNewPassword('');
+        setConfirmPassword('');
+        // Navigate to appropriate page
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.email) {
+          const emailDomain = user.email.split('@')[1];
+          const hasAdminAccess = emailDomain && ['alzikan.com', 'alzikan.net'].includes(emailDomain);
+          
+          if (hasAdminAccess) {
+            navigate('/admin/artworks');
+          } else {
+            navigate('/');
+          }
+        }
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isResetMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <Palette className="h-12 w-12 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+            <CardDescription>
+              Enter your new password below
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleResetPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  placeholder="Enter your new password"
+                  minLength={6}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="Confirm your new password"
+                  minLength={6}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Updating password...' : 'Update Password'}
+              </Button>
+              <div className="text-center mt-4">
+                <Button
+                  type="button"
+                  variant="link"
+                  onClick={() => setIsResetMode(false)}
+                  className="text-sm"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Sign In
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
