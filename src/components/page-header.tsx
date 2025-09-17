@@ -156,19 +156,12 @@ export function PageHeader({
             <DropdownMenuContent align="end" className="w-48 bg-card border border-border">
               {hasAdminAccess && (
                 <>
-                  <DropdownMenuItem 
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      console.log('Admin panel clicked, navigating to /admin');
-                      console.log('hasAdminAccess:', hasAdminAccess);
-                      console.log('user:', user);
-                      navigate("/admin");
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <Shield className="w-4 h-4 mr-2" />
-                    Admin Panel
-                  </DropdownMenuItem>
+                  <Link to="/admin">
+                    <DropdownMenuItem className="cursor-pointer">
+                      <Shield className="w-4 h-4 mr-2" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuSeparator />
                 </>
               )}
