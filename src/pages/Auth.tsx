@@ -22,13 +22,13 @@ const Auth = () => {
 
   useEffect(() => {
     // Check URL parameters for reset flow or errors
-    const urlParams = new URLSearchParams(location.hash.substring(1));
-    const error = urlParams.get('error');
-    const errorCode = urlParams.get('error_code');
-    const errorDescription = urlParams.get('error_description');
-    const accessToken = urlParams.get('access_token');
-    const refreshToken = urlParams.get('refresh_token');
-    const type = urlParams.get('type');
+    const hashParams = new URLSearchParams(location.hash.substring(1));
+    const error = hashParams.get('error');
+    const errorCode = hashParams.get('error_code');
+    const errorDescription = hashParams.get('error_description');
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
 
     if (error) {
       if (errorCode === 'otp_expired') {
