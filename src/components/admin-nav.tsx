@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Palette, Image, BookOpen, Video, LogOut, Plus, User } from 'lucide-react';
+import { Palette, Image, BookOpen, Video, LogOut, Plus, User, MoreVertical } from 'lucide-react';
 
 const AdminNav = () => {
   const location = useLocation();
@@ -65,44 +66,92 @@ const AdminNav = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <Link to="/admin/artworks">
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Artwork
+          <div className="flex items-center space-x-2">
+            {/* Desktop view - show first 2 buttons */}
+            <div className="hidden lg:flex items-center space-x-2">
+              <Link to="/admin/artworks">
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Artwork
+                </Button>
+              </Link>
+              
+              <Link to="/admin/lessons">
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Lesson
+                </Button>
+              </Link>
+              
+              <Link to="/admin/videos">
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Video
+                </Button>
+              </Link>
+              
+              <Link to="/admin/profile">
+                <Button variant="outline" size="sm">
+                  <User className="h-4 w-4 mr-2" />
+                  Artist Profile
+                </Button>
+              </Link>
+              
+              <Button 
+                onClick={handleSignOut}
+                variant="ghost" 
+                size="sm"
+                className="flex items-center space-x-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Sign Out</span>
               </Button>
-            </Link>
-            
-            <Link to="/admin/lessons">
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Lesson
-              </Button>
-            </Link>
-            
-            <Link to="/admin/videos">
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Video
-              </Button>
-            </Link>
-            
-            <Link to="/admin/profile">
-              <Button variant="outline" size="sm">
-                <User className="h-4 w-4 mr-2" />
-                Artist Profile
-              </Button>
-            </Link>
-            
-            <Button 
-              onClick={handleSignOut}
-              variant="ghost" 
-              size="sm"
-              className="flex items-center space-x-2"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Sign Out</span>
-            </Button>
+            </div>
+
+            {/* Mobile/Tablet dropdown menu */}
+            <div className="lg:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-background border-border">
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/artworks" className="flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Artwork
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/lessons" className="flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Lesson
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/videos" className="flex items-center">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Video
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/profile" className="flex items-center">
+                      <User className="h-4 w-4 mr-2" />
+                      Artist Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={handleSignOut} className="flex items-center">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
