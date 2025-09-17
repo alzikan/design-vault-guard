@@ -30,6 +30,14 @@ const Auth = () => {
     const refreshToken = hashParams.get('refresh_token');
     const type = hashParams.get('type');
 
+    console.log('Auth page - hash params:', {
+      error,
+      errorCode,
+      type,
+      hasAccessToken: !!accessToken,
+      hasRefreshToken: !!refreshToken
+    });
+
     if (error) {
       if (errorCode === 'otp_expired') {
         toast.error('Password reset link has expired. Please request a new one.');
@@ -42,13 +50,19 @@ const Auth = () => {
     }
 
     if (type === 'recovery' && accessToken && refreshToken) {
+      console.log('Setting session for password reset...');
       // Set the session from URL parameters for password reset
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken
-      }).then(() => {
-        setIsResetMode(true);
-        toast.success('You can now set a new password');
+      }).then((result) => {
+        console.log('Session set result:', result);
+        if (result.error) {
+          toast.error('Failed to authenticate. Please try again.');
+        } else {
+          setIsResetMode(true);
+          toast.success('You can now set a new password');
+        }
         // Clear the URL parameters
         window.history.replaceState({}, document.title, location.pathname);
       });
@@ -56,6 +70,7 @@ const Auth = () => {
     }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, !!session);
       if (session && !isResetMode) {
         // Check if user has admin access before redirecting
         const emailDomain = session.user.email?.split('@')[1];
@@ -70,7 +85,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, location, isResetMode]);
+  }, [navigate, location.hash, isResetMode]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
