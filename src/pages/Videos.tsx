@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward, ArrowLeft, X } from "lucide-react";
+import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -190,28 +190,14 @@ export default function Videos() {
         {currentVideo && (
           <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
             <div className="bg-card rounded-2xl p-6 w-full max-w-2xl">
-              {/* Header with Back Button */}
               <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-3">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={closeVideo}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    {t('common.back')}
-                  </Button>
-                </div>
-                <Button variant="ghost" size="sm" onClick={closeVideo} className="w-8 h-8 p-0">
-                  <X className="w-4 h-4" />
+                <h2 className="text-xl font-bold text-card-foreground">
+                  {currentVideo.title}
+                </h2>
+                <Button variant="ghost" onClick={closeVideo}>
+                  ✕
                 </Button>
               </div>
-              
-              {/* Video Title */}
-              <h2 className="text-xl font-bold text-card-foreground mb-4">
-                {currentVideo.title}
-              </h2>
               {/* Video Container with separated controls */}
               <div className="aspect-video bg-muted rounded-lg mb-2 relative overflow-hidden">
                 {currentVideo.video_url ? (
