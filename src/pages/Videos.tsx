@@ -203,7 +203,7 @@ export default function Videos() {
                     {t('common.back')}
                   </Button>
                 </div>
-                <Button variant="ghost" size="sm" onClick={closeVideo} className="w-8 h-8 p-0">
+                <Button variant="ghost" size="sm" onClick={closeVideo} className="w-8 h-8 p-0 text-foreground hover:text-foreground/80 hover:bg-muted">
                   <X className="w-4 h-4" />
                 </Button>
               </div>
@@ -213,7 +213,7 @@ export default function Videos() {
                 {currentVideo.title}
               </h2>
               {/* Video Container with separated controls */}
-              <div className="aspect-video bg-muted rounded-lg mb-2 relative overflow-hidden">
+              <div className="w-full bg-black rounded-lg mb-2 relative overflow-hidden">
                 {currentVideo.video_url ? (
                   // Check if URL is an image or video
                   /\.(jpg|jpeg|png|gif|webp)$/i.test(currentVideo.video_url) ? (
@@ -230,7 +230,7 @@ export default function Videos() {
                   ) : (
                     <video 
                       ref={videoRef}
-                      className="w-full h-full object-contain"
+                      className="w-full aspect-video object-contain"
                       src={currentVideo.video_url}
                       controls={false}
                       playsInline
