@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Upload, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ArtistProfile {
   id: string;
@@ -21,6 +22,7 @@ interface ArtistProfile {
 }
 
 export default function AdminProfile() {
+  const { t } = useLanguage();
   const [profile, setProfile] = useState<ArtistProfile | null>(null);
   const [formData, setFormData] = useState({
     artist_name: '',
@@ -153,7 +155,7 @@ export default function AdminProfile() {
         <AdminNav />
         <div className="p-6">
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading artist profile...</p>
+            <p className="text-muted-foreground">{t('admin.loadingProfile')}</p>
           </div>
         </div>
       </div>
@@ -166,13 +168,13 @@ export default function AdminProfile() {
       
       <div className="p-6">
         <Card className="bg-card border-border/20 p-6 shadow-xl">
-          <h1 className="text-2xl font-bold text-card-foreground mb-6">Manage Artist Profile</h1>
+          <h1 className="text-2xl font-bold text-card-foreground mb-6">{t('admin.manageProfile')}</h1>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="artist_name">Artist Name</Label>
+                <Label htmlFor="artist_name">{t('admin.artistName')}</Label>
                 <Input
                   id="artist_name"
                   value={formData.artist_name}
@@ -183,7 +185,7 @@ export default function AdminProfile() {
               </div>
               
               <div>
-                <Label htmlFor="bio">Short Bio</Label>
+                <Label htmlFor="bio">{t('admin.shortBio')}</Label>
                 <Input
                   id="bio"
                   value={formData.bio}
@@ -195,7 +197,7 @@ export default function AdminProfile() {
 
             {/* Profile Image */}
             <div>
-              <Label htmlFor="profile_image">Profile Image</Label>
+              <Label htmlFor="profile_image">{t('admin.profileImage')}</Label>
               <div className="mt-2">
                 <input
                   type="file"
@@ -218,7 +220,7 @@ export default function AdminProfile() {
 
             {/* About Content */}
             <div>
-              <Label htmlFor="about_content">About Me Content</Label>
+              <Label htmlFor="about_content">{t('admin.aboutContent')}</Label>
               <Textarea
                 id="about_content"
                 value={formData.about_content}
@@ -230,7 +232,7 @@ export default function AdminProfile() {
 
             {/* Education */}
             <div>
-              <Label htmlFor="education">Education</Label>
+              <Label htmlFor="education">{t('admin.education')}</Label>
               <Textarea
                 id="education"
                 value={formData.education}
@@ -242,7 +244,7 @@ export default function AdminProfile() {
 
             {/* Achievements */}
             <div>
-              <Label htmlFor="achievements">Achievements</Label>
+              <Label htmlFor="achievements">{t('admin.achievements')}</Label>
               <Textarea
                 id="achievements"
                 value={formData.achievements}
@@ -254,7 +256,7 @@ export default function AdminProfile() {
 
             {/* Exhibitions */}
             <div>
-              <Label htmlFor="exhibitions">Exhibitions</Label>
+              <Label htmlFor="exhibitions">{t('admin.exhibitions')}</Label>
               <Textarea
                 id="exhibitions"
                 value={formData.exhibitions}
@@ -272,12 +274,12 @@ export default function AdminProfile() {
               {saving ? (
                 <>
                   <Upload className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
+                  {t('admin.saving')}
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Save Profile
+                  {t('admin.saveProfile')}
                 </>
               )}
             </Button>

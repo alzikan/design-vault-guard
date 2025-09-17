@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Edit, Trash2 } from 'lucide-react';
 import AdminNav from '@/components/admin-nav';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Lesson {
   id: string;
@@ -26,6 +27,7 @@ interface Lesson {
 }
 
 const AdminLessons = () => {
+  const { t } = useLanguage();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -151,7 +153,7 @@ const AdminLessons = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this lesson?')) return;
+    if (!confirm(t('admin.deleteLessonConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -175,12 +177,12 @@ const AdminLessons = () => {
           {/* Form */}
           <Card>
             <CardHeader>
-              <CardTitle>{editingId ? 'Edit Lesson' : 'Add New Lesson'}</CardTitle>
+              <CardTitle>{editingId ? t('admin.editLesson') : t('admin.addNewLesson')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">{t('admin.title_field')}</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -190,7 +192,7 @@ const AdminLessons = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('admin.description')}</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -199,7 +201,7 @@ const AdminLessons = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="content">Content</Label>
+                  <Label htmlFor="content">{t('admin.content')}</Label>
                   <Textarea
                     id="content"
                     value={formData.content}
@@ -209,7 +211,7 @@ const AdminLessons = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="video_url">Video URL</Label>
+                  <Label htmlFor="video_url">{t('admin.videoUrl')}</Label>
                   <Input
                     id="video_url"
                     type="url"
@@ -219,7 +221,7 @@ const AdminLessons = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="thumbnail">Thumbnail Image</Label>
+                  <Label htmlFor="thumbnail">{t('admin.thumbnail')}</Label>
                   <Input
                     id="thumbnail"
                     type="file"
@@ -230,7 +232,7 @@ const AdminLessons = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="duration">Duration (minutes)</Label>
+                    <Label htmlFor="duration">{t('admin.duration')}</Label>
                     <Input
                       id="duration"
                       type="number"
@@ -239,7 +241,7 @@ const AdminLessons = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="order">Order Index</Label>
+                    <Label htmlFor="order">{t('admin.orderIndex')}</Label>
                     <Input
                       id="order"
                       type="number"
@@ -251,23 +253,23 @@ const AdminLessons = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="difficulty">Difficulty Level</Label>
+                    <Label htmlFor="difficulty">{t('admin.difficulty')}</Label>
                     <Select
                       value={formData.difficulty_level}
                       onValueChange={(value) => setFormData({ ...formData, difficulty_level: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select difficulty" />
+                        <SelectValue placeholder={t('admin.selectDifficulty')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="beginner">Beginner</SelectItem>
-                        <SelectItem value="intermediate">Intermediate</SelectItem>
-                        <SelectItem value="advanced">Advanced</SelectItem>
+                        <SelectItem value="beginner">{t('lessons.beginner')}</SelectItem>
+                        <SelectItem value="intermediate">{t('lessons.intermediate')}</SelectItem>
+                        <SelectItem value="advanced">{t('lessons.advanced')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('admin.category')}</Label>
                     <Input
                       id="category"
                       value={formData.category}
@@ -282,11 +284,11 @@ const AdminLessons = () => {
                     checked={formData.is_published}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
                   />
-                  <Label htmlFor="is_published">Published</Label>
+                  <Label htmlFor="is_published">{t('admin.published')}</Label>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Saving...' : editingId ? 'Update Lesson' : 'Add Lesson'}
+                  {loading ? t('admin.saving') : editingId ? t('admin.updateLesson') : t('admin.addLesson')}
                 </Button>
 
                 {editingId && (
@@ -309,7 +311,7 @@ const AdminLessons = () => {
                       });
                     }}
                   >
-                    Cancel Edit
+                    {t('admin.cancelEdit')}
                   </Button>
                 )}
               </form>
@@ -319,7 +321,7 @@ const AdminLessons = () => {
           {/* Lessons List */}
           <Card>
             <CardHeader>
-              <CardTitle>Existing Lessons</CardTitle>
+              <CardTitle>{t('admin.existingLessons')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -340,7 +342,7 @@ const AdminLessons = () => {
                       <div className="flex space-x-2 mt-2">
                         {lesson.is_published && (
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Published
+                            {t('admin.published')}
                           </span>
                         )}
                         {lesson.category && (

@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Upload, Trash2, Edit } from 'lucide-react';
 import AdminNav from '@/components/admin-nav';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Artwork {
   id: string;
@@ -25,6 +26,7 @@ interface Artwork {
 }
 
 const AdminArtworks = () => {
+  const { t } = useLanguage();
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -150,7 +152,7 @@ const AdminArtworks = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this artwork?')) return;
+    if (!confirm(t('admin.deleteConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -174,12 +176,12 @@ const AdminArtworks = () => {
           {/* Form */}
           <Card>
             <CardHeader>
-              <CardTitle>{editingId ? 'Edit Artwork' : 'Add New Artwork'}</CardTitle>
+              <CardTitle>{editingId ? t('admin.editArtwork') : t('admin.addNewArtwork')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">{t('admin.title_field')}</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -189,7 +191,7 @@ const AdminArtworks = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('admin.description')}</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -198,7 +200,7 @@ const AdminArtworks = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="image">Image</Label>
+                  <Label htmlFor="image">{t('admin.image')}</Label>
                   <Input
                     id="image"
                     type="file"
@@ -209,7 +211,7 @@ const AdminArtworks = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="created_year">Year Created</Label>
+                    <Label htmlFor="created_year">{t('admin.yearCreated')}</Label>
                     <Input
                       id="created_year"
                       type="number"
@@ -218,7 +220,7 @@ const AdminArtworks = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="price">Price ($)</Label>
+                    <Label htmlFor="price">{t('admin.price')}</Label>
                     <Input
                       id="price"
                       type="number"
@@ -231,7 +233,7 @@ const AdminArtworks = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="medium">Medium</Label>
+                    <Label htmlFor="medium">{t('admin.medium')}</Label>
                     <Input
                       id="medium"
                       value={formData.medium}
@@ -239,7 +241,7 @@ const AdminArtworks = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="dimensions">Dimensions</Label>
+                    <Label htmlFor="dimensions">{t('admin.dimensions')}</Label>
                     <Input
                       id="dimensions"
                       value={formData.dimensions}
@@ -255,7 +257,7 @@ const AdminArtworks = () => {
                       checked={formData.is_featured}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
                     />
-                    <Label htmlFor="is_featured">Featured</Label>
+                    <Label htmlFor="is_featured">{t('admin.featured')}</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -263,12 +265,12 @@ const AdminArtworks = () => {
                       checked={formData.is_available}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_available: checked })}
                     />
-                    <Label htmlFor="is_available">Available</Label>
+                    <Label htmlFor="is_available">{t('admin.available')}</Label>
                   </div>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Saving...' : editingId ? 'Update Artwork' : 'Add Artwork'}
+                  {loading ? t('admin.saving') : editingId ? t('admin.updateArtwork') : t('admin.addArtwork')}
                 </Button>
 
                 {editingId && (
@@ -291,7 +293,7 @@ const AdminArtworks = () => {
                       });
                     }}
                   >
-                    Cancel Edit
+                    {t('admin.cancelEdit')}
                   </Button>
                 )}
               </form>
@@ -301,7 +303,7 @@ const AdminArtworks = () => {
           {/* Artworks List */}
           <Card>
             <CardHeader>
-              <CardTitle>Existing Artworks</CardTitle>
+              <CardTitle>{t('admin.existingArtworks')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -322,12 +324,12 @@ const AdminArtworks = () => {
                       <div className="flex space-x-2 mt-2">
                         {artwork.is_featured && (
                           <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                            Featured
+                            {t('admin.featured')}
                           </span>
                         )}
                         {artwork.is_available && (
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Available
+                            {t('admin.available')}
                           </span>
                         )}
                       </div>

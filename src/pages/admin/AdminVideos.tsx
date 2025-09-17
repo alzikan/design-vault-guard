@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Edit, Trash2 } from 'lucide-react';
 import AdminNav from '@/components/admin-nav';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Video {
   id: string;
@@ -24,6 +25,7 @@ interface Video {
 }
 
 const AdminVideos = () => {
+  const { t } = useLanguage();
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -189,7 +191,7 @@ const AdminVideos = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this video?')) return;
+    if (!confirm(t('admin.deleteVideoConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -213,12 +215,12 @@ const AdminVideos = () => {
           {/* Form */}
           <Card>
             <CardHeader>
-              <CardTitle>{editingId ? 'Edit Video' : 'Add New Video'}</CardTitle>
+              <CardTitle>{editingId ? t('admin.editVideo') : t('admin.addNewVideo')}</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">{t('admin.title_field')}</Label>
                   <Input
                     id="title"
                     value={formData.title}
@@ -228,7 +230,7 @@ const AdminVideos = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('admin.description')}</Label>
                   <Textarea
                     id="description"
                     value={formData.description}
@@ -237,7 +239,7 @@ const AdminVideos = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="video_file">Video File {!editingId && '*'}</Label>
+                  <Label htmlFor="video_file">{t('admin.videoFile')} {!editingId && '*'}</Label>
                   <Input
                     id="video_file"
                     type="file"
@@ -252,7 +254,7 @@ const AdminVideos = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="thumbnail">Thumbnail Image</Label>
+                  <Label htmlFor="thumbnail">{t('admin.thumbnail')}</Label>
                   <Input
                     id="thumbnail"
                     type="file"
@@ -263,7 +265,7 @@ const AdminVideos = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="duration">Duration (minutes)</Label>
+                    <Label htmlFor="duration">{t('admin.duration')}</Label>
                     <Input
                       id="duration"
                       type="number"
@@ -272,7 +274,7 @@ const AdminVideos = () => {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="category">Category</Label>
+                    <Label htmlFor="category">{t('admin.category')}</Label>
                     <Input
                       id="category"
                       value={formData.category}
@@ -288,7 +290,7 @@ const AdminVideos = () => {
                       checked={formData.is_featured}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
                     />
-                    <Label htmlFor="is_featured">Featured</Label>
+                    <Label htmlFor="is_featured">{t('admin.featured')}</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Switch
@@ -296,12 +298,12 @@ const AdminVideos = () => {
                       checked={formData.is_published}
                       onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
                     />
-                    <Label htmlFor="is_published">Published</Label>
+                    <Label htmlFor="is_published">{t('admin.published')}</Label>
                   </div>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Saving...' : editingId ? 'Update Video' : 'Add Video'}
+                  {loading ? t('admin.saving') : editingId ? t('admin.updateVideo') : t('admin.addVideo')}
                 </Button>
 
                 {editingId && (
@@ -323,7 +325,7 @@ const AdminVideos = () => {
                       setSelectedThumbnail(null);
                     }}
                   >
-                    Cancel Edit
+                    {t('admin.cancelEdit')}
                   </Button>
                 )}
               </form>
@@ -333,7 +335,7 @@ const AdminVideos = () => {
           {/* Videos List */}
           <Card>
             <CardHeader>
-              <CardTitle>Existing Videos</CardTitle>
+              <CardTitle>{t('admin.existingVideos')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -349,17 +351,17 @@ const AdminVideos = () => {
                     <div className="flex-1">
                       <h3 className="font-semibold">{video.title}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {video.duration_minutes}min • {video.view_count} views
+                        {video.duration_minutes}min • {video.view_count} {t('admin.views')}
                       </p>
                       <div className="flex space-x-2 mt-2">
                         {video.is_featured && (
                           <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                            Featured
+                            {t('admin.featured')}
                           </span>
                         )}
                         {video.is_published && (
                           <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Published
+                            {t('admin.published')}
                           </span>
                         )}
                         {video.category && (
