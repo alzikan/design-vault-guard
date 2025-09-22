@@ -74,13 +74,13 @@ export default function Gallery() {
   };
 
   const filteredArtworks = useMemo(() => {
-    let filtered = artworks.filter(artwork => {
-      const matchesCategory = selectedCategory === "All" || artwork.category === selectedCategory;
-      return matchesCategory;
+    // Filter by category
+    const categoryFiltered = artworks.filter(artwork => {
+      return selectedCategory === "All" || artwork.category === selectedCategory;
     });
 
     // Sort artworks
-    filtered.sort((a, b) => {
+    const sorted = [...categoryFiltered].sort((a, b) => {
       if (sortBy === "year") {
         const yearA = parseInt(a.year) || 0;
         const yearB = parseInt(b.year) || 0;
@@ -90,7 +90,7 @@ export default function Gallery() {
       return 0;
     });
 
-    return filtered;
+    return sorted;
   }, [artworks, selectedCategory, sortBy]);
 
   const featuredArtwork = filteredArtworks.find(artwork => artwork.is_featured) || filteredArtworks[0];
