@@ -188,7 +188,7 @@ export default function Lessons() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('lessons.title')} />
       
       <div className="px-4">

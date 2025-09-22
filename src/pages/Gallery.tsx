@@ -98,7 +98,7 @@ export default function Gallery() {
   }, [artworks, searchTerm, selectedCategory, sortBy]);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('nav.gallery')} />
       
       <div className="px-4">

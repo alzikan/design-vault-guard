@@ -49,7 +49,7 @@ export default function About() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background pb-24">
+      <div className="min-h-screen bg-background pb-32">
         <PageHeader title={t('nav.about')} />
         <div className="px-4">
           <div className="text-center py-12">
@@ -63,7 +63,7 @@ export default function About() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-background pb-24">
+      <div className="min-h-screen bg-background pb-32">
         <PageHeader title={t('nav.about')} />
         <div className="px-4">
           <div className="text-center py-12">
@@ -76,7 +76,7 @@ export default function About() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('nav.about')} />
       
       <div className="px-4">

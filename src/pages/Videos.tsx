@@ -182,7 +182,7 @@ export default function Videos() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('nav.videos')} />
       
       <div className="px-4">

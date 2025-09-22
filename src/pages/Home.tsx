@@ -168,7 +168,7 @@ export default function Home() {
     { label: t('stats.progress'), value: `${overallProgress}%`, icon: TrendingUp, color: "text-purple-500" },
   ];
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('nav.home')} />
       
       <div className="px-4">
