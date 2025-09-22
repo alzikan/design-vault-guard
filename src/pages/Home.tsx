@@ -224,11 +224,11 @@ export default function Home() {
         </div>
 
         {/* Categories */}
-        {categories.length > 0 && (
+        {categories.filter(category => category.artworkCount > 0).length > 0 && (
           <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-            <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.categories') || 'Categories'}</h2>
+            <h2 className="text-xl font-bold text-card-foreground mb-4">Categories</h2>
             <div className="grid grid-cols-2 gap-4">
-              {categories.map((category) => (
+              {categories.filter(category => category.artworkCount > 0).map((category) => (
                 <Card key={category.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105" onClick={() => navigate('/gallery')}>
                   <div className="relative">
                     {/* Thumbnail Image */}
