@@ -333,6 +333,7 @@ const AdminArtworks = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEditCategory(category)}
+                          className="border-gray-300 hover:bg-gray-100 hover:text-gray-900 text-gray-700 bg-white"
                         >
                           <Edit className="h-3 w-3" />
                         </Button>
@@ -340,6 +341,7 @@ const AdminArtworks = () => {
                           size="sm"
                           variant="destructive"
                           onClick={() => handleDeleteCategory(category.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
