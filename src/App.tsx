@@ -29,6 +29,7 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   console.log('ProtectedAdminRoute - Auth loading:', authLoading, 'Admin loading:', adminLoading);
   console.log('ProtectedAdminRoute - User:', user?.email, 'Has admin access:', hasAdminAccess);
 
+  // Wait for both auth and admin loading to complete
   if (authLoading || adminLoading) {
     console.log('Still loading, showing loading screen');
     return (
@@ -38,13 +39,15 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  if (!user) {
-    console.log('No user, redirecting to auth');
+  // Only redirect if we're sure there's no user (not loading and no user)
+  if (!authLoading && !user) {
+    console.log('No user and not loading, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
 
-  if (!hasAdminAccess) {
-    console.log('User does not have admin access, redirecting to home');
+  // Only redirect if we're sure user doesn't have admin access (not loading and no access)
+  if (!authLoading && !adminLoading && user && !hasAdminAccess) {
+    console.log('User authenticated but no admin access, redirecting to home');
     return <Navigate to="/" replace />;
   }
 

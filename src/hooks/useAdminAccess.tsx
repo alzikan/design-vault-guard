@@ -12,12 +12,16 @@ export const useAdminAccess = () => {
       console.log('Checking admin access for user:', user?.id);
       
       if (!user?.id) {
-        console.log('No user found, setting isAdmin to false');
-        setIsAdmin(false);
-        setLoading(false);
+        console.log('No user found, keeping current admin status and not loading');
+        // Don't reset isAdmin to false if user is temporarily undefined
+        // Only set loading to false if we never had a user
+        if (!loading) {
+          setLoading(false);
+        }
         return;
       }
 
+      setLoading(true);
       try {
         console.log('Querying profiles table for user:', user.id);
         const { data: profile, error } = await supabase
