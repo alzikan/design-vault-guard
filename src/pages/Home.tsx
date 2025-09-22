@@ -269,9 +269,6 @@ export default function Home() {
                         {category.description || `Browse ${category.artworkCount} ${category.artworkCount === 1 ? 'artwork' : 'artworks'} in this category`}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-warm-gold font-medium">
-                          {category.artworkCount === 1 ? (t('home.artwork') || 'Artwork') : (t('home.artworks') || 'Artworks')}
-                        </span>
                         <div className="text-lg font-bold text-warm-gold">{category.artworkCount}</div>
                       </div>
                     </div>
