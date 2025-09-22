@@ -220,35 +220,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Admin and Auth Access */}
-        {(hasAdminAccess || !user) && (
-          <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-            <div className="flex gap-3 justify-center">
-              {hasAdminAccess && (
-                <Button 
-                  onClick={() => {
-                    console.log('Admin panel clicked - forcing navigation');
-                    console.log('User:', user?.email, 'Has admin access:', hasAdminAccess);
-                    navigate('/admin');
-                  }}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Admin Panel
-                </Button>
-              )}
-              {!user && (
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/auth')}
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  {t('auth.signin') || 'Login'}
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Recent Videos */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
