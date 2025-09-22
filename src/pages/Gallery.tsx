@@ -2,17 +2,14 @@ import { useState, useMemo, useEffect } from "react";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Filter, Heart, X, Share2, Download, ChevronRight } from "lucide-react";
+import { Filter, Heart, X, Share2, Download, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Gallery() {
   const { t } = useLanguage();
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
   const [selectedArtwork, setSelectedArtwork] = useState<any>(null);
@@ -78,10 +75,8 @@ export default function Gallery() {
 
   const filteredArtworks = useMemo(() => {
     let filtered = artworks.filter(artwork => {
-      const matchesSearch = artwork.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (artwork.medium && artwork.medium.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = selectedCategory === "All" || artwork.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      return matchesCategory;
     });
 
     // Sort artworks
@@ -96,164 +91,118 @@ export default function Gallery() {
     });
 
     return filtered;
-  }, [artworks, searchTerm, selectedCategory, sortBy]);
+  }, [artworks, selectedCategory, sortBy]);
 
   const featuredArtwork = filteredArtworks.find(artwork => artwork.is_featured) || filteredArtworks[0];
   const otherArtworks = filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).slice(0, 6);
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <PageHeader title="Gallery & Lessons" />
+      <PageHeader title="Gallery" />
       
       <div className="px-4">
-        {/* Tabs Navigation */}
-        <Tabs defaultValue="designs" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-card/50 backdrop-blur-sm border border-border/20 rounded-2xl p-1">
-            <TabsTrigger 
-              value="designs" 
-              className="rounded-xl data-[state=active]:bg-warm-gold data-[state=active]:text-background font-medium"
+        {/* Filters and Sort Options */}
+        <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-4 border border-border/20 mb-6">
+          {/* Category Filter */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className={selectedCategory === category 
+                  ? "bg-warm-gold text-background hover:bg-warm-gold/90 rounded-full" 
+                  : "bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
+                }
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+
+          {/* Sort Options */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
+              className="bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
             >
-              Designs
-            </TabsTrigger>
-            <TabsTrigger 
-              value="lessons" 
-              className="rounded-xl data-[state=active]:bg-warm-gold data-[state=active]:text-background font-medium"
-            >
-              Lessons
-            </TabsTrigger>
-          </TabsList>
+              {t('gallery.sortBy')} {sortBy === "year" ? t('gallery.year') : t('gallery.title_sort')}
+            </Button>
+          </div>
+        </div>
 
-          {/* Designs Tab Content */}
-          <TabsContent value="designs" className="space-y-6">
-            {/* Search and Filters */}
-            <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-4 border border-border/20">
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('gallery.search')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-background/50 border-border/30 rounded-xl"
-                />
-              </div>
-
-              {/* Category Filter */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category 
-                      ? "bg-warm-gold text-background hover:bg-warm-gold/90 rounded-full" 
-                      : "bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
-                    }
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-
-              {/* Sort Options */}
-              <div className="flex items-center gap-2">
-                <Filter className="w-4 h-4 text-muted-foreground" />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
-                  className="bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading artworks...</p>
+          </div>
+        ) : (
+          <>
+            {/* Featured Artwork */}
+            {featuredArtwork && (
+              <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
+                <h2 className="text-xl font-bold text-foreground mb-4 text-center">
+                  {featuredArtwork.title}
+                </h2>
+                <div 
+                  className="relative group cursor-pointer"
+                  onClick={() => viewArtwork(featuredArtwork)}
                 >
-                  {t('gallery.sortBy')} {sortBy === "year" ? t('gallery.year') : t('gallery.title_sort')}
-                </Button>
+                  <img 
+                    src={featuredArtwork.image} 
+                    alt={featuredArtwork.title}
+                    className="w-full h-64 object-cover rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <div className="p-4 text-white">
+                      <p className="font-medium">{featuredArtwork.medium}</p>
+                      <p className="text-sm opacity-90">Created in {featuredArtwork.year}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            {loading ? (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">Loading artworks...</p>
-              </div>
-            ) : (
-              <>
-                {/* Featured Artwork */}
-                {featuredArtwork && (
-                  <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
-                    <h2 className="text-xl font-bold text-foreground mb-4 text-center">
-                      {featuredArtwork.title}
-                    </h2>
+            {/* Other Artworks Grid */}
+            {otherArtworks.length > 0 && (
+              <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">More Designs</h3>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {otherArtworks.map((artwork) => (
                     <div 
+                      key={artwork.id}
                       className="relative group cursor-pointer"
-                      onClick={() => viewArtwork(featuredArtwork)}
+                      onClick={() => viewArtwork(artwork)}
                     >
                       <img 
-                        src={featuredArtwork.image} 
-                        alt={featuredArtwork.title}
-                        className="w-full h-64 object-cover rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
+                        src={artwork.image} 
+                        alt={artwork.title}
+                        className="w-full h-24 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                        <div className="p-4 text-white">
-                          <p className="font-medium">{featuredArtwork.medium}</p>
-                          <p className="text-sm opacity-90">Created in {featuredArtwork.year}</p>
-                        </div>
+                      <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <p className="text-white text-xs font-medium text-center px-2">
+                          {artwork.title}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Other Artworks Grid */}
-                {otherArtworks.length > 0 && (
-                  <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-foreground">More Designs</h3>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      {otherArtworks.map((artwork) => (
-                        <div 
-                          key={artwork.id}
-                          className="relative group cursor-pointer"
-                          onClick={() => viewArtwork(artwork)}
-                        >
-                          <img 
-                            src={artwork.image} 
-                            alt={artwork.title}
-                            className="w-full h-24 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
-                          />
-                          <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <p className="text-white text-xs font-medium text-center px-2">
-                              {artwork.title}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {filteredArtworks.length === 0 && (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground">No artworks found matching your criteria.</p>
-                  </div>
-                )}
-              </>
+                  ))}
+                </div>
+              </div>
             )}
-          </TabsContent>
 
-          {/* Lessons Tab Content */}
-          <TabsContent value="lessons" className="space-y-6">
-            <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20 text-center">
-              <h3 className="text-lg font-semibold text-foreground mb-2">Art Lessons</h3>
-              <p className="text-muted-foreground mb-4">Learn painting techniques and artistic skills</p>
-              <Button 
-                variant="outline" 
-                className="bg-warm-gold/10 border-warm-gold/30 text-warm-gold hover:bg-warm-gold/20"
-                onClick={() => window.location.href = '/lessons'}
-              >
-                View All Lessons
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
+            {filteredArtworks.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No artworks found matching your criteria.</p>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Artwork Detail Modal */}
         {selectedArtwork && (
