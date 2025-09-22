@@ -23,6 +23,7 @@ export default function Home() {
   const [featuredArtworks, setFeaturedArtworks] = useState<any[]>([]);
   const [recentLessons, setRecentLessons] = useState<any[]>([]);
   const [recentVideos, setRecentVideos] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [stats, setStats] = useState({ artworks: 0, videos: 0, lessons: 0 });
 
   useEffect(() => {
@@ -61,6 +62,31 @@ export default function Home() {
           year: artwork.created_year?.toString() || '',
           image: artwork.image_url
         })));
+      }
+
+      // Fetch categories with artwork counts
+      const { data: categoriesData } = await supabase
+        .from('artwork_categories')
+        .select('*')
+        .order('name');
+
+      if (categoriesData) {
+        // For each category, count the artworks
+        const categoriesWithCounts = await Promise.all(
+          categoriesData.map(async (category) => {
+            const { count } = await supabase
+              .from('artworks')
+              .select('id', { count: 'exact', head: true })
+              .eq('category', category.name)
+              .eq('is_available', true);
+            
+            return {
+              ...category,
+              artworkCount: count || 0
+            };
+          })
+        );
+        setCategories(categoriesWithCounts);
       }
 
       // Fetch recent lessons
@@ -185,6 +211,29 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Categories */}
+        {categories.length > 0 && (
+          <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
+            <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.categories') || 'Categories'}</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {categories.map((category) => (
+                <Card key={category.id} className="p-4 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/gallery')}>
+                  <div className="text-center">
+                    <h3 className="font-semibold text-card-foreground text-sm mb-1">{category.name}</h3>
+                    <div className="text-2xl font-bold text-warm-gold mb-1">{category.artworkCount}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {category.artworkCount === 1 ? (t('home.artwork') || 'Artwork') : (t('home.artworks') || 'Artworks')}
+                    </div>
+                    {category.description && (
+                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{category.description}</p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Recent Lessons Progress */}
         <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
