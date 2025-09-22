@@ -184,74 +184,98 @@ export default function Gallery() {
 
         {/* Artwork Detail Modal */}
         {selectedArtwork && (
-          <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-            <div className="bg-card rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="relative">
-                <img 
-                  src={selectedArtwork.image} 
-                  alt={selectedArtwork.title}
-                  className="w-full max-h-[60vh] object-contain bg-muted/10 rounded-t-2xl"
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
-                  onClick={() => setSelectedArtwork(null)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 left-4 bg-black/50 text-white hover:bg-black/70"
-                  onClick={() => toggleFavorite(selectedArtwork.id)}
-                >
-                  <Heart className={`w-4 h-4 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : ''}`} />
-                </Button>
-              </div>
-              
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h1 className="text-2xl font-bold text-card-foreground mb-2">
-                      {selectedArtwork.title}
-                    </h1>
-                    <p className="text-warm-gold font-medium mb-2">
-                      Created in {selectedArtwork.year}
-                    </p>
-                    <Badge variant="secondary" className="mb-4">
-                      {selectedArtwork.category}
-                    </Badge>
-                    {selectedArtwork.price && (
-                      <div className="text-2xl font-bold text-warm-gold mb-4">
-                        ${selectedArtwork.price}
-                      </div>
-                    )}
+          <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-background border border-border rounded-3xl w-full max-w-5xl max-h-[95vh] overflow-hidden shadow-2xl">
+              {/* Header with close and favorite buttons */}
+              <div className="relative bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-sm p-4 border-b border-border/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
+                      onClick={() => toggleFavorite(selectedArtwork.id)}
+                    >
+                      <Heart className={`w-5 h-5 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
+                    </Button>
+                    <div>
+                      <h1 className="text-xl font-bold text-foreground">
+                        {selectedArtwork.title}
+                      </h1>
+                      <p className="text-sm text-warm-gold font-medium">
+                        Created in {selectedArtwork.year}
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
+                    onClick={() => setSelectedArtwork(null)}
+                  >
+                    <X className="w-5 h-5 text-muted-foreground" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col lg:flex-row max-h-[calc(95vh-100px)]">
+                {/* Image Section */}
+                <div className="flex-1 bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-8">
+                  <img 
+                    src={selectedArtwork.image} 
+                    alt={selectedArtwork.title}
+                    className="max-w-full max-h-[60vh] object-contain rounded-2xl shadow-lg ring-1 ring-border/20"
+                  />
                 </div>
                 
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-semibold text-card-foreground mb-2">Medium</h3>
-                    <p className="text-muted-foreground">{selectedArtwork.medium}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-card-foreground mb-2">Description</h3>
-                    <p className="text-muted-foreground">
-                      {selectedArtwork.description || 'No description available for this artwork.'}
-                    </p>
-                  </div>
+                {/* Details Section */}
+                <div className="lg:w-96 bg-card/50 backdrop-blur-sm border-l border-border/20 overflow-y-auto">
+                  <div className="p-6 space-y-6">
+                    {/* Category and Price */}
+                    <div className="space-y-3">
+                      <Badge variant="secondary" className="bg-warm-gold/10 text-warm-gold border-warm-gold/20">
+                        {selectedArtwork.category}
+                      </Badge>
+                      {selectedArtwork.price && (
+                        <div className="text-3xl font-bold text-warm-gold">
+                          ${selectedArtwork.price}
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex gap-2 pt-4">
-                    <Button variant="outline" className="flex-1">
-                      <Share2 className="w-4 h-4 mr-2" />
-                      {t('gallery.share')}
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <Download className="w-4 h-4 mr-2" />
-                      {t('gallery.download')}
-                    </Button>
+                    {/* Medium */}
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
+                        Medium
+                      </h3>
+                      <p className="text-muted-foreground bg-muted/30 rounded-lg p-3 border border-border/20">
+                        {selectedArtwork.medium || 'Not specified'}
+                      </p>
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
+                        Description
+                      </h3>
+                      <p className="text-muted-foreground bg-muted/30 rounded-lg p-3 border border-border/20 leading-relaxed">
+                        {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
+                      </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-3 pt-4 border-t border-border/20">
+                      <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20">
+                        <Share2 className="w-4 h-4 mr-2" />
+                        {t('gallery.share')}
+                      </Button>
+                      <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20">
+                        <Download className="w-4 h-4 mr-2" />
+                        {t('gallery.download')}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
