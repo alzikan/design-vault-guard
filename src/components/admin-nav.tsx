@@ -12,11 +12,25 @@ const AdminNav = () => {
   const { t } = useLanguage();
 
   const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error('Error signing out');
-    } else {
+    try {
+      // Use signOut with scope 'local' to avoid server-side session issues
+      const { error } = await supabase.auth.signOut({ scope: 'local' });
+      
+      if (error) {
+        console.error('Signout error:', error);
+        // Even if there's an error, clear local session and redirect
+        // This handles cases where the server session is already invalid
+      }
+      
+      // Always show success and redirect, even if there was a server error
+      // because we've cleared the local session
       toast.success('Signed out successfully');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Signout error:', error);
+      // Force clear local session and redirect even on error
+      toast.success('Signed out successfully');
+      window.location.href = '/';
     }
   };
 
