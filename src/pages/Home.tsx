@@ -64,25 +64,36 @@ export default function Home() {
         })));
       }
 
-      // Fetch categories with artwork counts
+      // Fetch categories with artwork counts and sample images
       const { data: categoriesData } = await supabase
         .from('artwork_categories')
         .select('*')
         .order('name');
 
       if (categoriesData) {
-        // For each category, count the artworks
+        // For each category, count the artworks and get a sample image
         const categoriesWithCounts = await Promise.all(
           categoriesData.map(async (category) => {
+            // Count artworks in this category
             const { count } = await supabase
               .from('artworks')
               .select('id', { count: 'exact', head: true })
               .eq('category', category.name)
               .eq('is_available', true);
             
+            // Get a sample artwork image for this category
+            const { data: sampleArtwork } = await supabase
+              .from('artworks')
+              .select('image_url')
+              .eq('category', category.name)
+              .eq('is_available', true)
+              .limit(1)
+              .maybeSingle();
+            
             return {
               ...category,
-              artworkCount: count || 0
+              artworkCount: count || 0,
+              thumbnailUrl: sampleArtwork?.image_url || null
             };
           })
         );
@@ -216,18 +227,54 @@ export default function Home() {
         {categories.length > 0 && (
           <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
             <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.categories') || 'Categories'}</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {categories.map((category) => (
-                <Card key={category.id} className="p-4 cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate('/gallery')}>
-                  <div className="text-center">
-                    <h3 className="font-semibold text-card-foreground text-sm mb-1">{category.name}</h3>
-                    <div className="text-2xl font-bold text-warm-gold mb-1">{category.artworkCount}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {category.artworkCount === 1 ? (t('home.artwork') || 'Artwork') : (t('home.artworks') || 'Artworks')}
+                <Card key={category.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105" onClick={() => navigate('/gallery')}>
+                  <div className="relative">
+                    {/* Thumbnail Image */}
+                    <div className="relative h-32 bg-gradient-to-br from-muted/30 to-muted/60 overflow-hidden">
+                      {category.thumbnailUrl ? (
+                        <img 
+                          src={category.thumbnailUrl} 
+                          alt={category.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const img = e.currentTarget;
+                            const fallback = img.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
+                            img.style.display = 'none';
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      {/* Fallback placeholder */}
+                      <div 
+                        className={`fallback-placeholder absolute inset-0 flex items-center justify-center bg-gradient-to-br from-warm-gold/20 to-warm-gold/40 ${category.thumbnailUrl ? 'hidden' : 'flex'}`}
+                      >
+                        <Palette className="w-12 h-12 text-warm-gold/60" />
+                      </div>
+                      {/* Overlay gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                      {/* Count badge */}
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="secondary" className="bg-black/50 text-white border-none">
+                          {category.artworkCount}
+                        </Badge>
+                      </div>
                     </div>
-                    {category.description && (
-                      <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{category.description}</p>
-                    )}
+                    
+                    {/* Content */}
+                    <div className="p-4">
+                      <h3 className="font-bold text-card-foreground text-sm mb-1">{category.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+                        {category.description || `Browse ${category.artworkCount} ${category.artworkCount === 1 ? 'artwork' : 'artworks'} in this category`}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-warm-gold font-medium">
+                          {category.artworkCount === 1 ? (t('home.artwork') || 'Artwork') : (t('home.artworks') || 'Artworks')}
+                        </span>
+                        <div className="text-lg font-bold text-warm-gold">{category.artworkCount}</div>
+                      </div>
+                    </div>
                   </div>
                 </Card>
               ))}
