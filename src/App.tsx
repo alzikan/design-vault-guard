@@ -21,7 +21,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
-// Protected Admin Route Component
+// Protected Admin Route Component - SECURE: Deny by default, allow only when explicitly confirmed
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
   const { hasAdminAccess, loading: adminLoading } = useAdminAccess();
@@ -29,7 +29,7 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   console.log('ProtectedAdminRoute - Auth loading:', authLoading, 'Admin loading:', adminLoading);
   console.log('ProtectedAdminRoute - User:', user?.email, 'Has admin access:', hasAdminAccess);
 
-  // Wait for both auth and admin loading to complete
+  // SECURITY: Wait for both auth and admin loading to complete before making any decisions
   if (authLoading || adminLoading) {
     console.log('Still loading, showing loading screen');
     return (
@@ -39,19 +39,25 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Only redirect if we're sure there's no user (not loading and no user)
-  if (!authLoading && !user) {
-    console.log('No user and not loading, redirecting to auth');
+  // SECURITY: No user means redirect to auth
+  if (!user) {
+    console.log('No user, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
 
-  // Only redirect if we're sure user doesn't have admin access (not loading and no access)
-  if (!authLoading && !adminLoading && user && !hasAdminAccess) {
-    console.log('User authenticated but no admin access, redirecting to home');
+  // SECURITY: DENY BY DEFAULT - Only allow access if user is explicitly confirmed as admin
+  // This prevents race conditions and ensures no unauthorized access
+  if (!hasAdminAccess) {
+    console.log('User authenticated but no admin access confirmed, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
-  console.log('Admin access granted, rendering children');
+  // SECURITY: Only grant access when all conditions are met:
+  // 1. Not loading auth
+  // 2. Not loading admin status  
+  // 3. User exists
+  // 4. User has confirmed admin access
+  console.log('Admin access explicitly confirmed, rendering children');
   return <>{children}</>;
 };
 
