@@ -64,7 +64,7 @@ const App = () => (
           {/* Protected Admin Routes */}
           <Route path="/admin" element={
             <ProtectedAdminRoute>
-              <Navigate to="/admin/artworks" replace />
+              <Navigate to="/admin/users" replace />
             </ProtectedAdminRoute>
           } />
           <Route path="/admin/artworks" element={

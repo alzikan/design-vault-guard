@@ -6,13 +6,17 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play, BookOpen, Palette, TrendingUp, Heart } from "lucide-react";
+import { Play, BookOpen, Palette, TrendingUp, Heart, Settings, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 export default function Home() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const { hasAdminAccess } = useAdminAccess();
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
   const [artFavorites, setArtFavorites] = useState<number[]>([]);
   const [videoFavorites, setVideoFavorites] = useState<number[]>([]);
@@ -215,6 +219,32 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Admin and Auth Access */}
+        {(hasAdminAccess || !user) && (
+          <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
+            <div className="flex gap-3 justify-center">
+              {hasAdminAccess && (
+                <Button 
+                  onClick={() => navigate('/admin')}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Admin Panel
+                </Button>
+              )}
+              {!user && (
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/auth')}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  {t('auth.signin') || 'Login'}
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Recent Videos */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
