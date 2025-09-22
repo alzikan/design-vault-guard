@@ -423,9 +423,13 @@ const AdminArtworks = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
-                    <SelectContent className="bg-background border border-border">
+                    <SelectContent className="bg-card border border-border shadow-lg z-50">
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
+                        <SelectItem 
+                          key={category.id} 
+                          value={category.name}
+                          className="text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                        >
                           {category.name}
                         </SelectItem>
                       ))}
