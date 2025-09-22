@@ -496,7 +496,7 @@ const AdminArtworks = () => {
                   <Button 
                     type="button" 
                     variant="outline" 
-                    className="w-full"
+                    className="w-full border-gray-300 hover:bg-gray-100 hover:text-gray-900 text-gray-700 bg-white"
                     onClick={() => {
                       setEditingId(null);
                       setFormData({
