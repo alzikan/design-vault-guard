@@ -26,7 +26,11 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
   const { hasAdminAccess, loading: adminLoading } = useAdminAccess();
 
+  console.log('ProtectedAdminRoute - Auth loading:', authLoading, 'Admin loading:', adminLoading);
+  console.log('ProtectedAdminRoute - User:', user?.email, 'Has admin access:', hasAdminAccess);
+
   if (authLoading || adminLoading) {
+    console.log('Still loading, showing loading screen');
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg">Loading...</div>
@@ -35,13 +39,16 @@ const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) {
+    console.log('No user, redirecting to auth');
     return <Navigate to="/auth" replace />;
   }
 
   if (!hasAdminAccess) {
+    console.log('User does not have admin access, redirecting to home');
     return <Navigate to="/" replace />;
   }
 
+  console.log('Admin access granted, rendering children');
   return <>{children}</>;
 };
 

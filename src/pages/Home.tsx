@@ -226,7 +226,11 @@ export default function Home() {
             <div className="flex gap-3 justify-center">
               {hasAdminAccess && (
                 <Button 
-                  onClick={() => navigate('/admin')}
+                  onClick={() => {
+                    console.log('Admin panel clicked - forcing navigation');
+                    console.log('User:', user?.email, 'Has admin access:', hasAdminAccess);
+                    navigate('/admin');
+                  }}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <Settings className="w-4 h-4 mr-2" />
