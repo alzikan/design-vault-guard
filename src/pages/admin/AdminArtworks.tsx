@@ -185,6 +185,14 @@ const AdminArtworks = () => {
       category: artwork.category || '',
     });
     setEditingId(artwork.id);
+    
+    // Scroll to the form section to make editing obvious
+    setTimeout(() => {
+      const formElement = document.querySelector('[data-form-section]');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const handleDelete = async (id: string) => {
@@ -359,7 +367,7 @@ const AdminArtworks = () => {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form */}
-          <Card>
+          <Card data-form-section>
             <CardHeader>
               <CardTitle>{editingId ? t('admin.editArtwork') : t('admin.addNewArtwork')}</CardTitle>
             </CardHeader>
