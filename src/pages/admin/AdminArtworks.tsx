@@ -420,8 +420,11 @@ const AdminArtworks = () => {
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                    <SelectTrigger className="text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                      <SelectValue 
+                        placeholder="Select a category" 
+                        className="text-gray-900 dark:text-gray-100"
+                      />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50">
                       {categories.map((category) => (
