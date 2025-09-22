@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Palette, Image, BookOpen, Video, LogOut, Plus, User, MoreVertical } from 'lucide-react';
+import { Palette, Image, BookOpen, Video, LogOut, Plus, User, MoreVertical, Users } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const AdminNav = () => {
@@ -99,7 +99,14 @@ const AdminNav = () => {
                 </Button>
               </Link>
               
-              <Button 
+              <Link to="/admin/users">
+                <Button variant="outline" size="sm">
+                  <Users className="h-4 w-4 mr-2" />
+                  Users
+                </Button>
+              </Link>
+              
+              <Button
                 onClick={handleSignOut}
                 variant="ghost" 
                 size="sm"
@@ -144,6 +151,13 @@ const AdminNav = () => {
                     <Link to="/admin/profile" className="flex items-center">
                       <User className="h-4 w-4 mr-2" />
                       {t('admin.artistProfile')}
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin/users" className="flex items-center">
+                      <Users className="h-4 w-4 mr-2" />
+                      Users
                     </Link>
                   </DropdownMenuItem>
                   

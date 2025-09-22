@@ -14,6 +14,7 @@ import AdminArtworks from "./pages/admin/AdminArtworks";
 import AdminLessons from "./pages/admin/AdminLessons";
 import AdminVideos from "./pages/admin/AdminVideos";
 import AdminProfile from "./pages/admin/AdminProfile";
+import AdminUsers from "./pages/admin/AdminUsers";
 import { useAuth } from "./hooks/useAuth";
 import { useAdminAccess } from "./hooks/useAdminAccess";
 import { LanguageProvider } from "./contexts/LanguageContext";
@@ -84,6 +85,11 @@ const App = () => (
           <Route path="/admin/profile" element={
             <ProtectedAdminRoute>
               <AdminProfile />
+            </ProtectedAdminRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedAdminRoute>
+              <AdminUsers />
             </ProtectedAdminRoute>
           } />
           
