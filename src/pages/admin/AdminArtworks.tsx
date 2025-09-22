@@ -420,7 +420,7 @@ const AdminArtworks = () => {
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger className="text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                    <SelectTrigger className="text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 pl-4 pr-10">
                       <SelectValue 
                         placeholder="Select a category" 
                         className="text-gray-900 dark:text-gray-100"
@@ -431,7 +431,7 @@ const AdminArtworks = () => {
                         <SelectItem 
                           key={category.id} 
                           value={category.name}
-                          className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer px-3 py-2"
+                          className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer pl-8 pr-4 py-2"
                         >
                           {category.name}
                         </SelectItem>
