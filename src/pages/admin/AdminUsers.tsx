@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, User, Calendar } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { PageHeader } from '@/components/page-header';
 
 interface Profile {
   id: string;
@@ -19,7 +20,6 @@ interface Profile {
 export default function AdminUsers() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function AdminUsers() {
       console.error('Error fetching profiles:', error);
       toast({
         title: "Error",
-        description: "Failed to load users",
+        description: "Failed to fetch user profiles",
         variant: "destructive",
       });
     } finally {
@@ -47,107 +47,85 @@ export default function AdminUsers() {
     }
   };
 
-  const toggleAdminStatus = async (userId: string, currentStatus: boolean) => {
-    setUpdating(userId);
+  const toggleAdminAccess = async (userId: string, currentAdminStatus: boolean) => {
     try {
       const { error } = await supabase
         .from('profiles')
-        .update({ is_admin: !currentStatus })
+        .update({ is_admin: !currentAdminStatus })
         .eq('user_id', userId);
 
       if (error) throw error;
 
       setProfiles(profiles.map(profile => 
         profile.user_id === userId 
-          ? { ...profile, is_admin: !currentStatus }
+          ? { ...profile, is_admin: !currentAdminStatus }
           : profile
       ));
 
       toast({
         title: "Success",
-        description: `User ${!currentStatus ? 'granted' : 'removed'} admin access`,
+        description: `Admin access ${!currentAdminStatus ? 'granted' : 'revoked'} successfully`,
       });
     } catch (error) {
-      console.error('Error updating admin status:', error);
+      console.error('Error updating admin access:', error);
       toast({
         title: "Error",
-        description: "Failed to update admin status",
+        description: "Failed to update admin access",
         variant: "destructive",
       });
-    } finally {
-      setUpdating(null);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="container mx-auto p-6">
+        <PageHeader title="User Management" subtitle="Manage user access and permissions" />
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">User Management</h1>
-        <p className="text-muted-foreground">Manage user access and admin permissions</p>
-      </div>
-
+    <div className="container mx-auto p-6">
+      <PageHeader title="User Management" subtitle="Manage user access and permissions" />
+      
       <div className="grid gap-4">
         {profiles.map((profile) => (
-          <Card key={profile.id} className="border border-border">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-foreground">
-                        {profile.full_name || 'Unnamed User'}
-                      </h3>
-                      {profile.is_admin && (
-                        <Badge variant="secondary" className="text-xs">
-                          Admin
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        {profile.email}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        Joined {new Date(profile.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <Card key={profile.id} className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <h3 className="font-semibold">{profile.full_name}</h3>
+                <p className="text-sm text-muted-foreground">{profile.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  Joined: {new Date(profile.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Badge variant={profile.is_admin ? "default" : "secondary"}>
+                  {profile.is_admin ? "Admin" : "User"}
+                </Badge>
                 
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-muted-foreground">Admin Access</span>
+                  <Label htmlFor={`admin-${profile.id}`} className="text-sm">
+                    Admin Access
+                  </Label>
                   <Switch
+                    id={`admin-${profile.id}`}
                     checked={profile.is_admin}
-                    onCheckedChange={() => toggleAdminStatus(profile.user_id, profile.is_admin)}
-                    disabled={updating === profile.user_id}
+                    onCheckedChange={() => toggleAdminAccess(profile.user_id, profile.is_admin)}
                   />
-                  {updating === profile.user_id && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  )}
                 </div>
               </div>
-            </CardContent>
+            </div>
           </Card>
         ))}
-
+        
         {profiles.length === 0 && (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">No users found</p>
-            </CardContent>
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">No users found</p>
           </Card>
         )}
       </div>

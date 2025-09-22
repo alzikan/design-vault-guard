@@ -23,10 +23,10 @@ const queryClient = new QueryClient();
 
 // Protected Admin Route Component
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-  const { hasAdminAccess } = useAdminAccess();
+  const { user, loading: authLoading } = useAuth();
+  const { hasAdminAccess, loading: adminLoading } = useAdminAccess();
 
-  if (loading) {
+  if (authLoading || adminLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg">Loading...</div>

@@ -1,49 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useAdminAccess = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
+    const checkAdminAccess = async () => {
+      if (!user?.id) {
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
       try {
-        const { data, error } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('is_admin')
           .eq('user_id', user.id)
           .maybeSingle();
 
         if (error) {
-          console.error('Error checking admin status:', error);
+          console.error('Error checking admin access:', error);
           setIsAdmin(false);
         } else {
-          setIsAdmin(data?.is_admin || false);
+          setIsAdmin(profile?.is_admin || false);
         }
       } catch (error) {
-        console.error('Error checking admin status:', error);
+        console.error('Error checking admin access:', error);
         setIsAdmin(false);
       } finally {
         setLoading(false);
       }
     };
 
-    if (!authLoading) {
-      checkAdminStatus();
-    }
-  }, [user, authLoading]);
+    checkAdminAccess();
+  }, [user?.id]);
 
   return {
     hasAdminAccess: isAdmin,
-    user,
-    loading: authLoading || loading
+    loading,
+    user
   };
 };
