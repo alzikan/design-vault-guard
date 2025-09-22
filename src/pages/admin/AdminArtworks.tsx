@@ -5,9 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Upload, Trash2, Edit } from 'lucide-react';
+import { Upload, Trash2, Edit, Plus, Tag } from 'lucide-react';
 import AdminNav from '@/components/admin-nav';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -23,11 +25,19 @@ interface Artwork {
   price: number;
   is_featured: boolean;
   is_available: boolean;
+  category: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description: string;
 }
 
 const AdminArtworks = () => {
   const { t } = useLanguage();
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
@@ -39,12 +49,22 @@ const AdminArtworks = () => {
     price: 0,
     is_featured: false,
     is_available: true,
+    category: '',
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+  // Category management state
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: '',
+    description: '',
+  });
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
 
   useEffect(() => {
     fetchArtworks();
+    fetchCategories();
   }, []);
 
   const fetchArtworks = async () => {
@@ -60,6 +80,20 @@ const AdminArtworks = () => {
       toast.error('Failed to fetch artworks');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('artwork_categories')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setCategories(data || []);
+    } catch (error) {
+      toast.error('Failed to fetch categories');
     }
   };
 
@@ -125,6 +159,7 @@ const AdminArtworks = () => {
         price: 0,
         is_featured: false,
         is_available: true,
+        category: '',
       });
       setSelectedFile(null);
       setEditingId(null);
@@ -147,6 +182,7 @@ const AdminArtworks = () => {
       price: artwork.price || 0,
       is_featured: artwork.is_featured,
       is_available: artwork.is_available,
+      category: artwork.category || '',
     });
     setEditingId(artwork.id);
   };
@@ -168,10 +204,157 @@ const AdminArtworks = () => {
     }
   };
 
+  // Category management functions
+  const handleCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (editingCategoryId) {
+        const { error } = await supabase
+          .from('artwork_categories')
+          .update(categoryFormData)
+          .eq('id', editingCategoryId);
+
+        if (error) throw error;
+        toast.success('Category updated successfully');
+      } else {
+        const { error } = await supabase
+          .from('artwork_categories')
+          .insert([categoryFormData]);
+
+        if (error) throw error;
+        toast.success('Category created successfully');
+      }
+
+      setCategoryFormData({ name: '', description: '' });
+      setEditingCategoryId(null);
+      setShowCategoryDialog(false);
+      fetchCategories();
+    } catch (error) {
+      toast.error('Failed to save category');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditCategory = (category: Category) => {
+    setCategoryFormData({
+      name: category.name,
+      description: category.description || '',
+    });
+    setEditingCategoryId(category.id);
+    setShowCategoryDialog(true);
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this category?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('artwork_categories')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      toast.success('Category deleted successfully');
+      fetchCategories();
+    } catch (error) {
+      toast.error('Failed to delete category');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AdminNav />
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Category Management Section */}
+        <div className="mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardTitle className="flex items-center gap-2">
+                <Tag className="h-5 w-5" />
+                Category Management
+              </CardTitle>
+              <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+                <DialogTrigger asChild>
+                  <Button onClick={() => {
+                    setCategoryFormData({ name: '', description: '' });
+                    setEditingCategoryId(null);
+                  }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Category
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {editingCategoryId ? 'Edit Category' : 'Add New Category'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <form onSubmit={handleCategorySubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="categoryName">Category Name</Label>
+                      <Input
+                        id="categoryName"
+                        value={categoryFormData.name}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="categoryDescription">Description</Label>
+                      <Textarea
+                        id="categoryDescription"
+                        value={categoryFormData.description}
+                        onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit" disabled={loading}>
+                        {loading ? 'Saving...' : editingCategoryId ? 'Update' : 'Create'}
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setShowCategoryDialog(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {categories.map((category) => (
+                  <div key={category.id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">{category.name}</h3>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditCategory(category)}
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteCategory(category.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    {category.description && (
+                      <p className="text-sm text-muted-foreground mt-2">{category.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form */}
           <Card>
@@ -229,6 +412,25 @@ const AdminArtworks = () => {
                       onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border border-border">
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -290,6 +492,7 @@ const AdminArtworks = () => {
                         price: 0,
                         is_featured: false,
                         is_available: true,
+                        category: '',
                       });
                     }}
                   >
@@ -320,6 +523,7 @@ const AdminArtworks = () => {
                       <h3 className="font-semibold">{artwork.title}</h3>
                       <p className="text-sm text-muted-foreground">
                         {artwork.created_year} • {artwork.medium}
+                        {artwork.category && ` • ${artwork.category}`}
                       </p>
                       <div className="flex space-x-2 mt-2">
                         {artwork.is_featured && (

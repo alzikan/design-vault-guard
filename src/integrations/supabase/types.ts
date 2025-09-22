@@ -53,9 +53,34 @@ export type Database = {
         }
         Relationships: []
       }
+      artwork_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       artworks: {
         Row: {
           artist_name: string | null
+          category: string | null
           created_at: string
           created_year: number | null
           description: string | null
@@ -71,6 +96,7 @@ export type Database = {
         }
         Insert: {
           artist_name?: string | null
+          category?: string | null
           created_at?: string
           created_year?: number | null
           description?: string | null
@@ -86,6 +112,7 @@ export type Database = {
         }
         Update: {
           artist_name?: string | null
+          category?: string | null
           created_at?: string
           created_year?: number | null
           description?: string | null
