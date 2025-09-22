@@ -101,37 +101,37 @@ export default function Gallery() {
       <PageHeader title="Gallery" />
       
       <div className="px-4">
-        {/* Filters and Sort Options */}
-        <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-4 border border-border/20 mb-6">
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2 mb-4">
+        {/* Compact Filters */}
+        <div className="bg-card/20 backdrop-blur-sm rounded-xl p-3 border border-border/10 mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Category Pills */}
             {categories.map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                variant={selectedCategory === category ? "default" : "ghost"}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className={selectedCategory === category 
-                  ? "bg-warm-gold text-background hover:bg-warm-gold/90 rounded-full" 
-                  : "bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
+                  ? "bg-warm-gold text-background hover:bg-warm-gold/90 rounded-full h-7 px-3 text-xs font-medium" 
+                  : "bg-transparent hover:bg-muted/40 rounded-full h-7 px-3 text-xs"
                 }
               >
                 {category}
               </Button>
             ))}
-          </div>
-
-          {/* Sort Options */}
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
-              className="bg-background/50 border-border/30 hover:bg-background/70 rounded-full"
-            >
-              {t('gallery.sortBy')} {sortBy === "year" ? t('gallery.year') : t('gallery.title_sort')}
-            </Button>
+            
+            {/* Sort Button */}
+            <div className="flex items-center ml-auto">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
+                className="bg-muted/20 hover:bg-muted/40 rounded-full h-7 px-3 text-xs gap-1"
+              >
+                <Filter className="w-3 h-3" />
+                {sortBy === "year" ? "Year" : "A-Z"}
+              </Button>
+            </div>
           </div>
         </div>
 
