@@ -63,13 +63,13 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    let testMode = true;
+    let testMode = false; // Changed to false for full import
     try {
       const body = await req.json();
-      testMode = body.testMode !== undefined ? body.testMode : true;
+      testMode = body.testMode !== undefined ? body.testMode : false;
     } catch (error) {
-      // No JSON body provided, use default testMode = true
-      console.log('No JSON body provided, using default testMode = true');
+      // No JSON body provided, use default testMode = false for full import
+      console.log('No JSON body provided, using default testMode = false for full import');
     }
     
 const csvData = `thumb_url,title,year,full_image_url
