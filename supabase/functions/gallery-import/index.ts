@@ -63,7 +63,14 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { testMode = true } = await req.json();
+    let testMode = true;
+    try {
+      const body = await req.json();
+      testMode = body.testMode !== undefined ? body.testMode : true;
+    } catch (error) {
+      // No JSON body provided, use default testMode = true
+      console.log('No JSON body provided, using default testMode = true');
+    }
     
     console.log(`Starting gallery import - Test mode: ${testMode}`);
 
