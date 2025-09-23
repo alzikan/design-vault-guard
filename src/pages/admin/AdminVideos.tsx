@@ -39,10 +39,35 @@ const AdminVideos = () => {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetchVideos();
   }, []);
+
+  const handleVideoImport = async () => {
+    setImporting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('video-import');
+      
+      if (error) throw error;
+      
+      console.log('Import result:', data);
+      toast.success(`Video import completed: ${data.results.successful} successful, ${data.results.failed} failed`);
+      
+      if (data.results.errors && data.results.errors.length > 0) {
+        console.log('Import errors:', data.results.errors);
+      }
+      
+      // Refresh the videos list
+      fetchVideos();
+    } catch (error) {
+      console.error('Video import error:', error);
+      toast.error('Failed to import videos');
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const fetchVideos = async () => {
     try {
@@ -335,7 +360,17 @@ const AdminVideos = () => {
           {/* Videos List */}
           <Card>
             <CardHeader>
-              <CardTitle>{t('admin.existingVideos')}</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>{t('admin.existingVideos')}</CardTitle>
+                <Button 
+                  onClick={handleVideoImport}
+                  disabled={importing}
+                  variant="outline"
+                  size="sm"
+                >
+                  {importing ? 'Importing...' : 'Import Videos'}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

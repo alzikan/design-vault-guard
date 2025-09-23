@@ -2,3 +2,6 @@ project_id = "zfzdtgulalwvmmfuoaft"
 
 [functions.gallery-import]
 verify_jwt = false
+
+[functions.video-import]
+verify_jwt = false
