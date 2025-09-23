@@ -107,10 +107,10 @@ export default function Gallery() {
       <div className="min-h-screen bg-background pb-32">
         <div className="flex items-center p-4 border-b border-border/20">
           <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
             onClick={() => navigate('/')}
-            className="mr-3"
+            className="mr-3 bg-secondary hover:bg-secondary/80"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -236,10 +236,10 @@ export default function Gallery() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="icon"
                 onClick={() => navigate('/')}
-                className="h-10 w-10"
+                className="h-10 w-10 bg-secondary hover:bg-secondary/80"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
