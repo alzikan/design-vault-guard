@@ -43,10 +43,11 @@ Deno.serve(async (req) => {
     );
 
 const csvData = `Video Name,Video URL
-درس 1: رسم كرة زجاجية,https://alzakan.net/videos/lesson1.mp4
-درس 2: رسم برتقالة,https://alzakan.net/videos/lesson2.mp4
-درس 3: رسم الشاطئ,https://alzakan.net/videos/lesson3.mp4
-درس 5: رسم كرة و الظل,https://alzakan.net/videos/lesson5.mp4`;
+رسم كرة,https://alzakan.net/images/Videosyte/X/drawing%20Boll%20%20XA.MP4
+النسبة والتناسب,https://alzakan.net/images/Videosyte/X/Ratio%20&%20ProportionXA.mp4
+الخيال,https://alzakan.net/images/Videosyte/X/imaagination%20XA.mp4
+دائرة الألوان,https://alzakan.net/images/Videosyte/X/Color%20circle%20XA.mp4
+نقطة التلاشي,https://alzakan.net/images/Videosyte/X/Vinshing%20point%20XA.MP4`;
 
     console.log('Starting video import');
 
