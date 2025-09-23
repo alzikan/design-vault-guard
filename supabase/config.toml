@@ -1,1 +1,4 @@
 project_id = "zfzdtgulalwvmmfuoaft"
+
+[functions.gallery-import]
+verify_jwt = false
