@@ -217,16 +217,16 @@ export default function Gallery() {
 
   // Desktop Layout (modern gallery design)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-card">
       {/* Desktop Header */}
-      <header className="sticky top-0 z-40 border-b border-border/20 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-card-foreground">
                 Gallery
               </h1>
-              <p className="text-muted-foreground mt-1">{filteredArtworks.length} artworks</p>
+              <p className="text-card-foreground/70 mt-1">{filteredArtworks.length} artworks</p>
             </div>
             
             {/* Desktop Controls */}
@@ -254,13 +254,10 @@ export default function Gallery() {
                 {categories.map((category) => (
                   <Button
                     key={category}
-                    variant={selectedCategory === category ? "default" : "ghost"}
+                    variant={selectedCategory === category ? "default" : "secondary"}
                     size="sm"
                     onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category 
-                      ? "bg-warm-gold text-background hover:bg-warm-gold/90 h-9" 
-                      : "hover:bg-muted h-9"
-                    }
+                    className="h-9"
                   >
                     {category}
                   </Button>
@@ -268,7 +265,7 @@ export default function Gallery() {
               </div>
               
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
                 className="h-9 gap-2"
@@ -286,7 +283,7 @@ export default function Gallery() {
           <div className="flex items-center justify-center py-32">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading artworks...</p>
+              <p className="text-card-foreground/70">Loading artworks...</p>
             </div>
           </div>
         ) : (
@@ -294,25 +291,25 @@ export default function Gallery() {
             {/* Featured Section */}
             {featuredArtwork && (
               <section className="mb-16">
-                <h2 className="text-2xl font-semibold mb-8">Featured Artwork</h2>
+                <h2 className="text-2xl font-semibold mb-8 text-card-foreground">Featured Artwork</h2>
                 <div 
-                  className="relative group cursor-pointer bg-card/30 backdrop-blur-sm rounded-3xl p-8 border border-border/20 hover:border-warm-gold/20 transition-all duration-500"
+                  className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500"
                   onClick={() => viewArtwork(featuredArtwork)}
                 >
                   <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
                       <div>
-                        <Badge variant="secondary" className="mb-4 bg-warm-gold/10 text-warm-gold border-warm-gold/20">
+                        <Badge variant="secondary" className="mb-4 bg-warm-gold/20 text-warm-gold border-warm-gold/30">
                           Featured
                         </Badge>
-                        <h3 className="text-3xl font-bold mb-2">{featuredArtwork.title}</h3>
+                        <h3 className="text-3xl font-bold mb-2 text-card-foreground">{featuredArtwork.title}</h3>
                         <p className="text-warm-gold font-medium">Created in {featuredArtwork.year}</p>
                       </div>
-                      <p className="text-muted-foreground text-lg leading-relaxed">
+                      <p className="text-card-foreground/80 text-lg leading-relaxed">
                         {featuredArtwork.description || 'A masterful piece showcasing exceptional artistic vision and technical skill.'}
                       </p>
                       <div className="flex items-center gap-4">
-                        <Badge variant="outline">{featuredArtwork.medium}</Badge>
+                        <Badge variant="outline" className="bg-secondary/30 text-card-foreground border-border">{featuredArtwork.medium}</Badge>
                         {featuredArtwork.price && (
                           <span className="text-2xl font-bold text-warm-gold">${featuredArtwork.price}</span>
                         )}
@@ -334,8 +331,8 @@ export default function Gallery() {
             {/* Gallery Grid */}
             <section>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-semibold">Collection</h2>
-                <p className="text-muted-foreground">{filteredArtworks.filter(a => a.id !== featuredArtwork?.id).length} pieces</p>
+                <h2 className="text-2xl font-semibold text-card-foreground">Collection</h2>
+                <p className="text-card-foreground/70">{filteredArtworks.filter(a => a.id !== featuredArtwork?.id).length} pieces</p>
               </div>
               
               {viewMode === "grid" ? (
@@ -346,7 +343,7 @@ export default function Gallery() {
                       className="group cursor-pointer"
                       onClick={() => viewArtwork(artwork)}
                     >
-                      <div className="relative overflow-hidden rounded-2xl bg-card/20 backdrop-blur-sm border border-border/10 hover:border-warm-gold/20 transition-all duration-500">
+                      <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
                           src={artwork.image} 
                           alt={artwork.title}
@@ -380,7 +377,7 @@ export default function Gallery() {
                       className="group cursor-pointer break-inside-avoid mb-8"
                       onClick={() => viewArtwork(artwork)}
                     >
-                      <div className="relative overflow-hidden rounded-2xl bg-card/20 backdrop-blur-sm border border-border/10 hover:border-warm-gold/20 transition-all duration-500">
+                      <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
                           src={artwork.image} 
                           alt={artwork.title}
