@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search } from "lucide-react";
+import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,6 +13,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export default function Gallery() {
   const { t } = useLanguage();
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry");
@@ -103,7 +105,17 @@ export default function Gallery() {
   if (isMobile) {
     return (
       <div className="min-h-screen bg-background pb-32">
-        <PageHeader title="Gallery" />
+        <div className="flex items-center p-4 border-b border-border/20">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="mr-3"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h1 className="text-2xl font-bold">Gallery</h1>
+        </div>
         
         <div className="px-4">
           {/* Compact Filters */}
@@ -222,11 +234,21 @@ export default function Gallery() {
       <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-card-foreground">
-                Gallery
-              </h1>
-              <p className="text-card-foreground/70 mt-1">{filteredArtworks.length} artworks</p>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate('/')}
+                className="h-10 w-10"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-4xl font-bold text-card-foreground">
+                  Gallery
+                </h1>
+                <p className="text-card-foreground/70 mt-1">{filteredArtworks.length} artworks</p>
+              </div>
             </div>
             
             {/* Desktop Controls */}
