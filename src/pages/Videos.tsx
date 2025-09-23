@@ -8,7 +8,6 @@ import { Progress } from "@/components/ui/progress";
 import { Play, Clock, Eye, Heart, Pause, Volume2, Maximize, SkipBack, SkipForward, ArrowLeft, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import VideoImportTrigger from "@/components/VideoImportTrigger";
 
 const VideoCard = ({ video, onPlay, isFavorite, onToggleFavorite, t }: { 
   video: any; 
@@ -186,10 +185,7 @@ export default function Videos() {
     <div className="min-h-screen bg-background pb-32">
       <PageHeader title={t('nav.videos')} />
       
-      <div className="px-4">
-        {/* Temporary Video Import Trigger */}
-        <VideoImportTrigger />
-        
+      <div className="px-4">        
         {/* Video Player Modal */}
         {currentVideo && (
           <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
