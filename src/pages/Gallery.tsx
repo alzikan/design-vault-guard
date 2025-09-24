@@ -80,6 +80,7 @@ export default function Gallery() {
   }, []);
 
   const handleArtworkClick = useCallback((artwork: any) => {
+    console.log('Artwork clicked:', artwork.title);
     setSelectedArtwork(artwork);
   }, []);
 
@@ -232,6 +233,111 @@ export default function Gallery() {
         </div>
 
         <BottomNav />
+
+        {/* Artwork Detail Modal - Mobile */}
+        {selectedArtwork && (
+          <div 
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={closeModal}
+          >
+            <div 
+              className="bg-background border border-border rounded-3xl w-full max-w-lg max-h-[95vh] overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Mobile Modal Header */}
+              <div className="relative bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-sm p-4 border-b border-border/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
+                      onClick={() => toggleFavorite(selectedArtwork.id)}
+                    >
+                      <Heart className={`w-5 h-5 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
+                    </Button>
+                    <div>
+                      <h1 className="text-lg font-bold text-foreground">
+                        {selectedArtwork.title}
+                      </h1>
+                      <p className="text-warm-gold font-medium text-sm">
+                        Created in {selectedArtwork.year}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
+                    onClick={closeModal}
+                  >
+                    <X className="w-5 h-5 text-muted-foreground" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="max-h-[calc(95vh-80px)] overflow-y-auto">
+                {/* Mobile Image Section */}
+                <div className="bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-6">
+                  <img 
+                    src={selectedArtwork.image} 
+                    alt={selectedArtwork.title}
+                    className="max-w-full max-h-[50vh] object-contain rounded-xl shadow-xl ring-1 ring-border/20"
+                  />
+                </div>
+                
+                {/* Mobile Details Section */}
+                <div className="p-6 space-y-6">
+                  {/* Category and Price */}
+                  <div className="space-y-3">
+                    <Badge variant="secondary" className="bg-warm-gold/10 text-warm-gold border-warm-gold/20 px-3 py-1">
+                      {selectedArtwork.category}
+                    </Badge>
+                    {selectedArtwork.price && (
+                      <div className="text-2xl font-bold text-warm-gold">
+                        ${selectedArtwork.price}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Medium */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
+                      Medium
+                    </h3>
+                    <p className="text-muted-foreground bg-muted/30 rounded-xl p-3 border border-border/20 text-sm">
+                      {selectedArtwork.medium || 'Not specified'}
+                    </p>
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
+                      Description
+                    </h3>
+                    <p className="text-muted-foreground bg-muted/30 rounded-xl p-3 border border-border/20 leading-relaxed text-sm">
+                      {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
+                    </p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-3 pt-4 border-t border-border/20">
+                    <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-10">
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Share Artwork
+                    </Button>
+                    <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-10">
+                      <Download className="w-4 h-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
