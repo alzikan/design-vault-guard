@@ -197,29 +197,6 @@ export default function Home() {
             </Button>
           )}
           
-          {/* Auth/Profile Button */}
-          {user ? (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
-              onClick={() => navigate('/profile')}
-            >
-              <Settings className="w-4 h-4 mr-1" />
-              {t('nav.profile')}
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              size="sm"
-              className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
-              onClick={() => navigate('/auth')}
-            >
-              <LogIn className="w-4 h-4 mr-1" />
-              {t('nav.signIn')}
-            </Button>
-          )}
-          
           {/* Language Toggle */}
           <Button 
             variant="outline" 
