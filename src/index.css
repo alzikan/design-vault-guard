@@ -8,39 +8,39 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Warm golden art-inspired theme */
-    --background: 40 25% 85%;
+    /* Warm golden art-inspired theme with better contrast */
+    --background: 45 25% 95%;
     --foreground: 30 15% 15%;
 
-    --card: 40 30% 12%;
-    --card-foreground: 40 25% 90%;
+    --card: 45 20% 98%;
+    --card-foreground: 30 15% 15%;
 
-    --popover: 40 30% 12%;
-    --popover-foreground: 40 25% 90%;
+    --popover: 45 20% 98%;
+    --popover-foreground: 30 15% 15%;
 
     --primary: 30 50% 60%;
-    --primary-foreground: 30 15% 15%;
+    --primary-foreground: 45 25% 95%;
 
-    --secondary: 40 20% 25%;
-    --secondary-foreground: 40 25% 90%;
+    --secondary: 40 15% 92%;
+    --secondary-foreground: 30 15% 15%;
 
-    --muted: 40 15% 20%;
-    --muted-foreground: 40 20% 70%;
+    --muted: 40 10% 88%;
+    --muted-foreground: 30 15% 25%;
 
     --accent: 45 60% 70%;
     --accent-foreground: 30 15% 15%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 40 25% 90%;
+    --destructive-foreground: 45 25% 95%;
 
-    --border: 40 15% 30%;
-    --input: 40 15% 20%;
+    --border: 40 20% 80%;
+    --input: 45 15% 96%;
     --ring: 45 60% 70%;
 
     /* Art gallery specific colors */
     --gallery-frame: 25 30% 25%;
-    --gallery-bg: 40 30% 12%;
-    --warm-gold: 45 80% 75%;
+    --gallery-bg: 45 20% 98%;
+    --warm-gold: 45 80% 65%;
     --warm-bronze: 30 40% 40%;
 
     /* Gradients */
@@ -51,51 +51,45 @@ All colors MUST be HSL.
     --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    /* Keep the same warm theme for dark mode */
-    --background: 40 25% 85%;
-    --foreground: 30 15% 15%;
+    /* Dark mode with better contrast */
+    --background: 30 20% 8%;
+    --foreground: 45 25% 95%;
 
-    --card: 40 30% 12%;
-    --card-foreground: 40 25% 90%;
+    --card: 30 25% 12%;
+    --card-foreground: 45 25% 95%;
 
-    --popover: 40 30% 12%;
-    --popover-foreground: 40 25% 90%;
+    --popover: 30 25% 12%;
+    --popover-foreground: 45 25% 95%;
 
-    --primary: 30 50% 60%;
-    --primary-foreground: 30 15% 15%;
+    --primary: 45 60% 70%;
+    --primary-foreground: 30 20% 8%;
 
-    --secondary: 40 20% 25%;
-    --secondary-foreground: 40 25% 90%;
+    --secondary: 30 15% 18%;
+    --secondary-foreground: 45 25% 95%;
 
-    --muted: 40 15% 20%;
-    --muted-foreground: 40 20% 70%;
+    --muted: 30 10% 15%;
+    --muted-foreground: 45 15% 75%;
 
     --accent: 45 60% 70%;
-    --accent-foreground: 30 15% 15%;
+    --accent-foreground: 30 20% 8%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 40 25% 90%;
+    --destructive-foreground: 45 25% 95%;
 
-    --border: 40 15% 30%;
-    --input: 40 15% 20%;
+    --border: 30 15% 20%;
+    --input: 30 15% 18%;
     --ring: 45 60% 70%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

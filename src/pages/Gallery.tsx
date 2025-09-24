@@ -80,7 +80,6 @@ export default function Gallery() {
   }, []);
 
   const handleArtworkClick = useCallback((artwork: any) => {
-    console.log('Artwork clicked:', artwork.title);
     setSelectedArtwork(artwork);
   }, []);
 
