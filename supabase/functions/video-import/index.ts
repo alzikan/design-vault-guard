@@ -12,7 +12,15 @@ interface VideoData {
 
 async function validateUrl(url: string): Promise<boolean> {
   try {
-    const response = await fetch(url, { method: 'HEAD', timeout: 10000 });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
     console.log(`URL validation failed for ${url}:`, error);
@@ -108,7 +116,8 @@ const csvData = `Video Name,Video URL
 
       } catch (error) {
         console.error(`Error processing entry ${i + 1}:`, error);
-        results.errors.push(`Entry ${i + 1}: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        results.errors.push(`Entry ${i + 1}: ${errorMessage}`);
         results.failed++;
       }
     }
@@ -128,10 +137,11 @@ const csvData = `Video Name,Video URL
 
   } catch (error) {
     console.error('Video import function error:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return new Response(
       JSON.stringify({ 
         error: 'Video import failed', 
-        details: error.message 
+        details: errorMessage 
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -14,7 +14,15 @@ interface ArtworkData {
 
 async function validateUrl(url: string): Promise<boolean> {
   try {
-    const response = await fetch(url, { method: 'HEAD', timeout: 10000 });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
     return response.ok;
   } catch (error) {
     console.log(`URL validation failed for ${url}:`, error);
@@ -209,7 +217,8 @@ https://alzakan.net/images/Al7uj/Al7uj/Al7uj%20icons.jpg,الحج,1445,https://a
 
       } catch (error) {
         console.error(`Error processing entry ${i + 1}:`, error);
-        results.errors.push(`Entry ${i + 1}: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        results.errors.push(`Entry ${i + 1}: ${errorMessage}`);
         results.failed++;
       }
     }
@@ -229,10 +238,11 @@ https://alzakan.net/images/Al7uj/Al7uj/Al7uj%20icons.jpg,الحج,1445,https://a
 
   } catch (error) {
     console.error('Import function error:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return new Response(
       JSON.stringify({ 
         error: 'Import failed', 
-        details: error.message 
+        details: errorMessage 
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
