@@ -14,12 +14,17 @@ interface Profile {
   user_id: string;
   email: string;
   full_name: string;
-  is_admin: boolean;
+  phone: string;
   created_at: string;
+  updated_at: string;
+}
+
+interface UserWithRole extends Profile {
+  is_admin: boolean;
 }
 
 export default function AdminUsers() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -29,13 +34,28 @@ export default function AdminUsers() {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
+      // First get all profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setProfiles(data || []);
+      if (profilesError) throw profilesError;
+
+      // Then get user roles for each profile
+      const profilesWithRoles: UserWithRole[] = [];
+      
+      for (const profile of profilesData || []) {
+        const { data: roleData } = await supabase
+          .rpc('is_admin', { _user_id: profile.user_id });
+        
+        profilesWithRoles.push({
+          ...profile,
+          is_admin: roleData || false
+        });
+      }
+
+      setProfiles(profilesWithRoles);
     } catch (error) {
       console.error('Error fetching profiles:', error);
       toast({
@@ -50,13 +70,25 @@ export default function AdminUsers() {
 
   const toggleAdminAccess = async (userId: string, currentAdminStatus: boolean) => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_admin: !currentAdminStatus })
-        .eq('user_id', userId);
+      if (currentAdminStatus) {
+        // Remove admin role
+        const { error } = await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId)
+          .eq('role', 'admin');
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // Add admin role
+        const { error } = await supabase
+          .from('user_roles')
+          .insert({ user_id: userId, role: 'admin' });
 
+        if (error) throw error;
+      }
+
+      // Update local state
       setProfiles(profiles.map(profile => 
         profile.user_id === userId 
           ? { ...profile, is_admin: !currentAdminStatus }

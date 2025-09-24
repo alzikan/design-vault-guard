@@ -23,22 +23,19 @@ export const useAdminAccess = () => {
 
       setLoading(true);
       try {
-        console.log('Querying profiles table for user:', user.id);
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('is_admin')
-          .eq('user_id', user.id)
-          .maybeSingle();
+        console.log('Calling admin status function for user:', user.id);
+        const { data: adminStatus, error } = await supabase
+          .rpc('get_current_user_admin_status');
 
-        console.log('Profile query result:', { profile, error });
+        console.log('Admin status query result:', { adminStatus, error });
 
         if (error) {
           console.error('Error checking admin access:', error);
           setIsAdmin(false);
         } else {
-          const adminStatus = profile?.is_admin || false;
-          console.log('Setting admin status to:', adminStatus);
-          setIsAdmin(adminStatus);
+          const isAdminUser = adminStatus || false;
+          console.log('Setting admin status to:', isAdminUser);
+          setIsAdmin(isAdminUser);
         }
       } catch (error) {
         console.error('Error checking admin access:', error);
