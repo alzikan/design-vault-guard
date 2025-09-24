@@ -1,4 +1,4 @@
-import { Home, Image, BookOpen, Play, LogIn } from "lucide-react";
+import { Home, Image, BookOpen, Play, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,14 +19,10 @@ export function BottomNav({ className }: BottomNavProps) {
     { icon: Play, labelKey: "nav.videos", path: "/videos" },
     { icon: Image, labelKey: "nav.gallery", path: "/gallery" },
     { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" },
-    ...(user ? [] : [{ icon: LogIn, labelKey: "nav.login", path: "/auth" }]),
+    ...(user ? [{ icon: User, labelKey: "Profile", path: "/profile" }] : [{ icon: User, labelKey: "nav.login", path: "/auth" }]),
   ];
   return (
-    <nav className={cn(
-      "fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border",
-      "mx-4 mb-4 rounded-2xl shadow-2xl",
-      className
-    )}>
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border/20 mx-4 mb-4 rounded-2xl shadow-2xl">
       <div className="flex items-center justify-around py-2 px-2">
         {navItems.map((item) => (
           <NavLink
@@ -36,8 +32,8 @@ export function BottomNav({ className }: BottomNavProps) {
               "flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200",
               "min-w-[60px] relative",
               isActive 
-                ? "bg-accent text-accent-foreground shadow-lg scale-105" 
-                : "text-muted-foreground hover:text-card-foreground hover:bg-muted/50"
+                ? "bg-warm-gold text-background shadow-lg scale-105" 
+                : "text-muted-foreground hover:text-card-foreground hover:bg-muted/20"
             )}
           >
             {({ isActive }) => (
@@ -48,18 +44,18 @@ export function BottomNav({ className }: BottomNavProps) {
                 )} />
                 <span className={cn(
                   "text-xs mt-1 font-medium transition-all duration-200",
-                  isActive ? "opacity-100" : "opacity-70"
+                  isActive ? "opacity-100 font-semibold" : "opacity-70"
                 )}>
                   {t(item.labelKey)}
                 </span>
                 {isActive && (
-                  <div className="absolute -top-1 w-8 h-1 bg-warm-gold rounded-full" />
+                  <div className="absolute -top-1 w-8 h-1 bg-background rounded-full" />
                 )}
               </>
             )}
           </NavLink>
         ))}
       </div>
-    </nav>
+    </div>
   );
 }

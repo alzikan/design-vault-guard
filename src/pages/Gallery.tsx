@@ -5,6 +5,8 @@ import { BottomNav } from "@/components/ui/bottom-nav";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -123,117 +125,96 @@ export default function Gallery() {
 
   const { filtered: filteredArtworks, featured: featuredArtwork, others: otherArtworks } = filteredAndSortedArtworks;
 
-  // Mobile Layout (existing)
+  // Mobile Layout - Updated to match reference design
   if (isMobile) {
     return (
       <div className="min-h-screen bg-background pb-32">
-        <div className="flex items-center p-4 border-b border-border/20">
-          <Button
-            variant="secondary"
-            size="icon"
-            onClick={() => navigate('/')}
-            className="mr-3 bg-secondary hover:bg-secondary/80"
+        <div className="flex items-center justify-between p-4 pt-12">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-12 h-12 border-2 border-warm-gold/20">
+              <AvatarImage src="/placeholder.svg" alt="User" />
+              <AvatarFallback className="bg-warm-gold text-white">
+                U
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          
+          <h1 className="text-2xl font-bold text-foreground">Gallery</h1>
+          
+          {/* Language Toggle */}
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
           >
-            <ArrowLeft className="w-5 h-5" />
+            عربي
           </Button>
-          <h1 className="text-2xl font-bold">Gallery</h1>
         </div>
         
         <div className="px-4">
-          {/* Compact Filters */}
-          <div className="bg-card/20 backdrop-blur-sm rounded-xl p-3 border border-border/10 mb-4">
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Category Pills */}
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={selectedCategory === category 
-                    ? "bg-warm-gold text-background hover:bg-warm-gold/90 rounded-full h-7 px-3 text-xs font-medium" 
-                    : "bg-transparent hover:bg-muted/40 rounded-full h-7 px-3 text-xs"
-                  }
-                >
-                  {category}
-                </Button>
-              ))}
-              
-              {/* Sort Button */}
-              <div className="flex items-center ml-auto">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSortBy(sortBy === "year" ? "title" : "year")}
-                  className="bg-muted/20 hover:bg-muted/40 rounded-full h-7 px-3 text-xs gap-1"
-                >
-                  <Filter className="w-3 h-3" />
-                  {sortBy === "year" ? "Year" : "A-Z"}
-                </Button>
-              </div>
-            </div>
-          </div>
-
           {loading ? (
             <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
               <p className="text-muted-foreground">Loading artworks...</p>
             </div>
           ) : (
             <>
-              {/* Featured Artwork */}
-              {featuredArtwork && (
-                <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
-                  <h2 className="text-xl font-bold text-foreground mb-4 text-center">
-                    {featuredArtwork.title}
-                  </h2>
-                  <div 
-                    className="relative group cursor-pointer"
-                    onClick={() => handleArtworkClick(featuredArtwork)}
-                  >
-                    <img 
-                      src={featuredArtwork.image} 
-                      alt={featuredArtwork.title}
-                      className="w-full h-64 object-cover rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                      <div className="p-4 text-white">
-                        <p className="font-medium">{featuredArtwork.medium}</p>
-                        <p className="text-sm opacity-90">Created in {featuredArtwork.year}</p>
-                      </div>
+              {/* Category Sections - Following reference design */}
+              {categories.filter(cat => cat !== "All").map((category) => {
+                const categoryArtworks = artworks.filter(artwork => artwork.category === category);
+                
+                if (categoryArtworks.length === 0) return null;
+                
+                return (
+                  <div key={category} className="mb-8">
+                    {/* Category Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-foreground">{category}</h2>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-warm-gold hover:text-warm-gold/80"
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          // Show all artworks in this category
+                        }}
+                      >
+                        See All
+                      </Button>
+                    </div>
+                    
+                    {/* Category Artworks Grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {categoryArtworks.slice(0, 4).map((artwork) => (
+                        <div 
+                          key={artwork.id}
+                          className="relative group cursor-pointer"
+                          onClick={() => handleArtworkClick(artwork)}
+                        >
+                          <div className="relative overflow-hidden rounded-xl bg-card/30 border border-border/20">
+                            <img 
+                              src={artwork.image} 
+                              alt={artwork.title}
+                              className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            
+                            {/* Artwork Info */}
+                            <div className="absolute bottom-0 left-0 right-0 p-3">
+                              <h3 className="text-white font-medium text-sm leading-tight">
+                                {artwork.title}
+                              </h3>
+                              <p className="text-warm-gold text-xs mt-1">
+                                {artwork.year}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-              )}
-
-              {/* Other Artworks Grid */}
-              {otherArtworks.length > 0 && (
-                <div className="bg-card/30 backdrop-blur-sm rounded-2xl p-6 border border-border/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-foreground">More Designs</h3>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {otherArtworks.map((artwork) => (
-                      <div 
-                        key={artwork.id}
-                        className="relative group cursor-pointer"
-                        onClick={() => handleArtworkClick(artwork)}
-                      >
-                        <img 
-                          src={artwork.image} 
-                          alt={artwork.title}
-                          className="w-full h-24 object-cover rounded-lg shadow-md group-hover:shadow-lg transition-all duration-300"
-                        />
-                        <div className="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <p className="text-white text-xs font-medium text-center px-2">
-                            {artwork.title}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })}
 
               {filteredArtworks.length === 0 && (
                 <div className="text-center py-12">
@@ -246,103 +227,133 @@ export default function Gallery() {
 
         <BottomNav />
 
-        {/* Artwork Detail Modal - Mobile */}
+        {/* Artwork Detail Modal - Updated to match picture_details reference */}
         {selectedArtwork && (
           <div 
-            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50"
             onClick={closeModal}
           >
-            <div 
-              className="bg-background border border-border rounded-3xl w-full max-w-lg max-h-[95vh] overflow-hidden shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Mobile Modal Header */}
-              <div className="relative bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-sm p-4 border-b border-border/20">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
-                      onClick={() => toggleFavorite(selectedArtwork.id)}
-                    >
-                      <Heart className={`w-5 h-5 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
-                    </Button>
-                    <div>
-                      <h1 className="text-lg font-bold text-foreground">
-                        {selectedArtwork.title}
-                      </h1>
-                      <p className="text-warm-gold font-medium text-sm">
-                        Created in {selectedArtwork.year}
-                      </p>
-                    </div>
-                  </div>
+            <div className="relative h-full flex flex-col">
+              {/* Back Button */}
+              <div className="absolute top-4 left-4 z-10">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 border border-white/20 text-white"
+                  onClick={closeModal}
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+              </div>
+
+              {/* Full Screen Image */}
+              <div className="flex-1 flex items-center justify-center p-4 pt-16">
+                <img 
+                  src={selectedArtwork.image} 
+                  alt={selectedArtwork.title}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+
+              {/* Bottom Action Bar */}
+              <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
+                <div className="flex items-center gap-4">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-10 w-10 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
-                    onClick={closeModal}
+                    className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 border border-white/20 text-white"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(selectedArtwork.id);
+                    }}
                   >
-                    <X className="w-5 h-5 text-muted-foreground" />
+                    <Heart className={`w-6 h-6 ${favorites.includes(selectedArtwork.id) ? 'fill-current text-red-500' : ''}`} />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 border border-white/20 text-white"
+                  >
+                    <Download className="w-6 h-6" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 border border-white/20 text-white"
+                  >
+                    <Share2 className="w-6 h-6" />
                   </Button>
                 </div>
               </div>
 
-              <div className="max-h-[calc(95vh-80px)] overflow-y-auto">
-                {/* Mobile Image Section */}
-                <div className="bg-gradient-to-br from-muted/20 to-muted/40 flex items-center justify-center p-6">
-                  <img 
-                    src={selectedArtwork.image} 
-                    alt={selectedArtwork.title}
-                    className="max-w-full max-h-[50vh] object-contain rounded-xl shadow-xl ring-1 ring-border/20"
-                  />
-                </div>
-                
-                {/* Mobile Details Section */}
-                <div className="p-6 space-y-6">
-                  {/* Category and Price */}
-                  <div className="space-y-3">
-                    <Badge variant="secondary" className="bg-warm-gold/10 text-warm-gold border-warm-gold/20 px-3 py-1">
-                      {selectedArtwork.category}
-                    </Badge>
-                    {selectedArtwork.price && (
-                      <div className="text-2xl font-bold text-warm-gold">
-                        ${selectedArtwork.price}
-                      </div>
-                    )}
+              {/* Full Screen Toggle */}
+              <div className="absolute bottom-4 right-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="bg-black/50 hover:bg-black/70 border border-white/20 text-white"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
+                      <div className="w-1.5 h-1.5 bg-white"></div>
+                      <div className="w-1.5 h-1.5 bg-white"></div>
+                      <div className="w-1.5 h-1.5 bg-white"></div>
+                      <div className="w-1.5 h-1.5 bg-white"></div>
+                    </div>
+                    <span className="text-sm">Full Screen</span>
                   </div>
+                </Button>
+              </div>
 
-                  {/* Medium */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
-                      Medium
-                    </h3>
-                    <p className="text-muted-foreground bg-muted/30 rounded-xl p-3 border border-border/20 text-sm">
-                      {selectedArtwork.medium || 'Not specified'}
-                    </p>
+              {/* Artwork Info Panel - Expandable */}
+              <div className="bg-card/95 backdrop-blur-sm border-t border-border/20 p-6 space-y-4">
+                <div>
+                  <h1 className="text-xl font-bold text-card-foreground mb-2">
+                    {selectedArtwork.title}
+                  </h1>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {selectedArtwork.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea'}
+                  </p>
+                </div>
+
+                {/* Comments Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-warm-gold mb-3">20 Comments</h3>
+                  
+                  {/* Comment Input */}
+                  <div className="mb-4">
+                    <Input 
+                      placeholder="Add a comment..."
+                      className="bg-muted/30 border-border/20"
+                    />
                   </div>
                   
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
-                      Description
-                    </h3>
-                    <p className="text-muted-foreground bg-muted/30 rounded-xl p-3 border border-border/20 leading-relaxed text-sm">
-                      {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
-                    </p>
+                  {/* Sample Comments */}
+                  <div className="space-y-3">
+                    <div className="bg-muted/20 rounded-lg p-3">
+                      <p className="text-muted-foreground text-sm">
+                        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+                      </p>
+                    </div>
+                    <div className="bg-muted/20 rounded-lg p-3">
+                      <p className="text-muted-foreground text-sm">
+                        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex flex-col gap-3 pt-4 border-t border-border/20">
-                    <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-10">
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share Artwork
-                    </Button>
-                    <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-10">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download
+                  
+                  {/* Load More Comments */}
+                  <div className="text-center mt-4">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="flex gap-1">
+                          <div className="w-1 h-1 bg-current rounded-full"></div>
+                          <div className="w-1 h-1 bg-current rounded-full"></div>
+                          <div className="w-1 h-1 bg-current rounded-full"></div>
+                        </div>
+                      </div>
                     </Button>
                   </div>
                 </div>
