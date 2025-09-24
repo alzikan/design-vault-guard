@@ -124,10 +124,10 @@ export default function Videos() {
                     {/* Video Info */}
                     <div className="p-4">
                       <h3 className="font-bold text-card-foreground text-lg mb-2">
-                        Video title
+                        {video.title}
                       </h3>
                       <p className="text-muted-foreground text-sm leading-relaxed mb-3">
-                        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+                        {video.description || 'No description available'}
                       </p>
                       
                       <div className="flex items-center justify-between">
