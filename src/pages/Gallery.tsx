@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft } from "lucide-react";
+import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft, ChevronLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,6 +24,8 @@ export default function Gallery() {
   const [artworks, setArtworks] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [artworksPerPage] = useState(12);
 
   // Memoized and optimized fetch function
   const fetchArtworks = useCallback(async () => {
@@ -94,7 +96,7 @@ export default function Gallery() {
 
   // Optimized filtering and sorting with better memoization
   const filteredAndSortedArtworks = useMemo(() => {
-    if (!artworks.length) return { filtered: [], featured: null, others: [] };
+    if (!artworks.length) return { filtered: [], featured: null, others: [], totalPages: 0 };
 
     // Filter by category first
     const categoryFiltered = selectedCategory === "All" 
@@ -115,15 +117,28 @@ export default function Gallery() {
     // Find featured and separate in one pass
     const featured = sorted.find(artwork => artwork.is_featured) || sorted[0];
     const others = featured ? sorted.filter(artwork => artwork.id !== featured.id) : sorted;
+    
+    // Calculate pagination
+    const totalPages = Math.ceil(others.length / artworksPerPage);
+    const startIndex = (currentPage - 1) * artworksPerPage;
+    const endIndex = startIndex + artworksPerPage;
+    const paginatedOthers = others.slice(startIndex, endIndex);
 
     return {
       filtered: sorted,
       featured,
-      others: others.slice(0, 6) // Only take first 6 for mobile view
+      others: paginatedOthers,
+      totalPages,
+      totalArtworks: others.length
     };
-  }, [artworks, selectedCategory, sortBy]);
+  }, [artworks, selectedCategory, sortBy, currentPage, artworksPerPage]);
 
-  const { filtered: filteredArtworks, featured: featuredArtwork, others: otherArtworks } = filteredAndSortedArtworks;
+  const { filtered: filteredArtworks, featured: featuredArtwork, others: otherArtworks, totalPages, totalArtworks } = filteredAndSortedArtworks;
+
+  // Reset to first page when category or sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, sortBy]);
 
   // Mobile Layout - Updated to match reference design
   if (isMobile) {
@@ -503,7 +518,7 @@ export default function Gallery() {
             <section>
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-semibold text-card-foreground">{t('gallery.collection')}</h2>
-                <p className="text-card-foreground/70">{otherArtworks.length} {t('gallery.pieces')}</p>
+                <p className="text-card-foreground/70">{totalArtworks || 0} {t('gallery.pieces')}</p>
               </div>
               
               {viewMode === "grid" ? (
@@ -575,6 +590,60 @@ export default function Gallery() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-12 pb-8">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="h-10 px-4"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    {t('common.previous')}
+                  </Button>
+                  
+                  <div className="flex items-center gap-2">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCurrentPage(pageNum)}
+                          className="h-10 w-10"
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="h-10 px-4"
+                  >
+                    {t('common.next')}
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
               )}
 
