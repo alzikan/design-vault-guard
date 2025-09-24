@@ -1,4 +1,4 @@
-import { Home, Image, BookOpen, Play, User } from "lucide-react";
+import { Home, Image, BookOpen, Play, User, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -19,6 +19,7 @@ export function BottomNav({ className }: BottomNavProps) {
     { icon: Play, labelKey: "nav.videos", path: "/videos" },
     { icon: Image, labelKey: "nav.gallery", path: "/gallery" },
     { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" },
+    { icon: Info, labelKey: "nav.about", path: "/about" },
     ...(user ? [{ icon: User, labelKey: "Profile", path: "/profile" }] : [{ icon: User, labelKey: "nav.login", path: "/auth" }]),
   ];
   return (
