@@ -174,7 +174,7 @@ export default function Profile() {
                   />
                 ) : (
                   <p className="text-foreground">
-                    {profile.full_name || '0593321454'}
+                    {profile.full_name || 'Not set'}
                   </p>
                 )}
               </div>
@@ -198,7 +198,7 @@ export default function Profile() {
                   />
                 ) : (
                   <p className="text-foreground">
-                    {profile.phone || '0593321454'}
+                    {profile.phone || 'Not set'}
                   </p>
                 )}
               </div>
@@ -223,7 +223,7 @@ export default function Profile() {
                   />
                 ) : (
                   <p className="text-foreground">
-                    {profile.email || '0593321454'}
+                    {profile.email || 'Not set'}
                   </p>
                 )}
               </div>
