@@ -23,7 +23,7 @@ export default function Gallery() {
   const [categories, setCategories] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
 
-  // Memoized fetch function to prevent unnecessary re-renders
+  // Memoized and optimized fetch function
   const fetchArtworks = useCallback(async () => {
     try {
       const { data, error } = await supabase
@@ -34,16 +34,19 @@ export default function Gallery() {
       if (error) throw error;
       
       if (data) {
-        setArtworks(data.map(artwork => ({
+        // Process data once and memoize the result
+        const processedArtworks = data.map(artwork => ({
           ...artwork,
           year: artwork.created_year?.toString() || '',
           image: artwork.image_url,
           category: artwork.medium || 'Other'
-        })));
+        }));
         
-        // Extract unique categories
-        const uniqueCategories = ["All", ...new Set(data.map(artwork => artwork.medium).filter(Boolean))];
-        setCategories(uniqueCategories);
+        setArtworks(processedArtworks);
+        
+        // Extract categories efficiently
+        const categorySet = new Set(data.map(artwork => artwork.medium).filter(Boolean));
+        setCategories(["All", ...Array.from(categorySet)]);
       }
     } catch (error) {
       console.error('Error fetching artworks:', error);
@@ -87,13 +90,16 @@ export default function Gallery() {
     setSelectedArtwork(null);
   }, []);
 
-  const filteredArtworks = useMemo(() => {
-    // Filter by category
-    const categoryFiltered = artworks.filter(artwork => {
-      return selectedCategory === "All" || artwork.category === selectedCategory;
-    });
+  // Optimized filtering and sorting with better memoization
+  const filteredAndSortedArtworks = useMemo(() => {
+    if (!artworks.length) return { filtered: [], featured: null, others: [] };
 
-    // Sort artworks
+    // Filter by category first
+    const categoryFiltered = selectedCategory === "All" 
+      ? artworks 
+      : artworks.filter(artwork => artwork.category === selectedCategory);
+
+    // Sort efficiently
     const sorted = [...categoryFiltered].sort((a, b) => {
       if (sortBy === "year") {
         const yearA = parseInt(a.year) || 0;
@@ -104,11 +110,18 @@ export default function Gallery() {
       return 0;
     });
 
-    return sorted;
+    // Find featured and separate in one pass
+    const featured = sorted.find(artwork => artwork.is_featured) || sorted[0];
+    const others = featured ? sorted.filter(artwork => artwork.id !== featured.id) : sorted;
+
+    return {
+      filtered: sorted,
+      featured,
+      others: others.slice(0, 6) // Only take first 6 for mobile view
+    };
   }, [artworks, selectedCategory, sortBy]);
 
-  const featuredArtwork = filteredArtworks.find(artwork => artwork.is_featured) || filteredArtworks[0];
-  const otherArtworks = filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).slice(0, 6);
+  const { filtered: filteredArtworks, featured: featuredArtwork, others: otherArtworks } = filteredAndSortedArtworks;
 
   // Mobile Layout (existing)
   if (isMobile) {
@@ -468,12 +481,12 @@ export default function Gallery() {
             <section>
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-semibold text-card-foreground">Collection</h2>
-                <p className="text-card-foreground/70">{filteredArtworks.filter(a => a.id !== featuredArtwork?.id).length} pieces</p>
+                <p className="text-card-foreground/70">{otherArtworks.length} pieces</p>
               </div>
               
               {viewMode === "grid" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork) => (
+                  {otherArtworks.map((artwork) => (
                     <div 
                       key={artwork.id}
                       className="group cursor-pointer"
@@ -507,7 +520,7 @@ export default function Gallery() {
                 </div>
               ) : (
                 <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
-                  {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork, index) => (
+                  {otherArtworks.map((artwork, index) => (
                     <div 
                       key={artwork.id}
                       className="group cursor-pointer break-inside-avoid mb-8"
