@@ -33,7 +33,7 @@ export function BottomNav({ className }: BottomNavProps) {
               "min-w-[64px] relative",
               isActive 
                 ? "bg-warm-gold text-background shadow-lg" 
-                : "text-muted-foreground hover:text-card-foreground hover:bg-muted/20"
+                : "text-foreground/80 hover:text-foreground hover:bg-muted/30"
             )}
           >
             {({ isActive }) => (
