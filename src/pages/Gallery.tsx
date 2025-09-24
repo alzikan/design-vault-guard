@@ -79,11 +79,9 @@ export default function Gallery() {
     setSelectedArtwork(artwork);
   }, []);
 
-  const handleArtworkClick = useCallback((artwork: any, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    viewArtwork(artwork);
-  }, [viewArtwork]);
+  const handleArtworkClick = useCallback((artwork: any) => {
+    setSelectedArtwork(artwork);
+  }, []);
 
   const closeModal = useCallback(() => {
     setSelectedArtwork(null);
@@ -176,10 +174,8 @@ export default function Gallery() {
                     {featuredArtwork.title}
                   </h2>
                   <div 
-                    className="relative group cursor-pointer touch-manipulation"
-                    onClick={(e) => handleArtworkClick(featuredArtwork, e)}
-                    onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                    onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    className="relative group cursor-pointer"
+                    onClick={() => handleArtworkClick(featuredArtwork)}
                   >
                     <img 
                       src={featuredArtwork.image} 
@@ -207,10 +203,8 @@ export default function Gallery() {
                     {otherArtworks.map((artwork) => (
                       <div 
                         key={artwork.id}
-                        className="relative group cursor-pointer touch-manipulation"
-                        onClick={(e) => handleArtworkClick(artwork, e)}
-                        onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-                        onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        className="relative group cursor-pointer"
+                        onClick={() => handleArtworkClick(artwork)}
                       >
                         <img 
                           src={artwork.image} 
@@ -330,8 +324,8 @@ export default function Gallery() {
               <section className="mb-16">
                 <h2 className="text-2xl font-semibold mb-8 text-card-foreground">Featured Artwork</h2>
                 <div 
-                  className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500 touch-manipulation"
-                  onClick={(e) => handleArtworkClick(featuredArtwork, e)}
+                  className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500"
+                  onClick={() => handleArtworkClick(featuredArtwork)}
                 >
                   <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
@@ -377,8 +371,8 @@ export default function Gallery() {
                   {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork) => (
                     <div 
                       key={artwork.id}
-                      className="group cursor-pointer touch-manipulation"
-                      onClick={(e) => handleArtworkClick(artwork, e)}
+                      className="group cursor-pointer"
+                      onClick={() => handleArtworkClick(artwork)}
                     >
                       <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
@@ -411,8 +405,8 @@ export default function Gallery() {
                   {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork, index) => (
                     <div 
                       key={artwork.id}
-                      className="group cursor-pointer break-inside-avoid mb-8 touch-manipulation"
-                      onClick={(e) => handleArtworkClick(artwork, e)}
+                      className="group cursor-pointer break-inside-avoid mb-8"
+                      onClick={() => handleArtworkClick(artwork)}
                     >
                       <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
