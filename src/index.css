@@ -27,8 +27,8 @@ All colors MUST be HSL.
     --muted: 35 15% 85%;
     --muted-foreground: 25 15% 25%;
 
-    --accent: 40 60% 65%;
-    --accent-foreground: 25 15% 15%;
+    --accent: 40 65% 65%;
+    --accent-foreground: 25 25% 20%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 35 20% 90%;
@@ -40,7 +40,7 @@ All colors MUST be HSL.
     /* Art gallery specific colors */
     --gallery-frame: 25 30% 25%;
     --gallery-bg: 35 20% 90%;
-    --warm-gold: 40 60% 65%;
+    --warm-gold: 40 65% 65%;
     --warm-bronze: 30 40% 40%;
 
     /* Gradients */
