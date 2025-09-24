@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,6 +112,51 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+
+  /* Arabic Font Support */
+  .font-arabic {
+    font-family: 'Amiri', 'Scheherazade New', serif;
+    direction: rtl;
+    text-align: center;
+  }
+
+  .font-decorative {
+    font-family: 'Scheherazade New', 'Amiri', serif;
+    font-weight: 700;
+  }
+
+  /* Custom animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1.5s ease-out;
+  }
+
+  @keyframes pulse-warm {
+    0%, 100% {
+      opacity: 1;
+      background-color: hsl(var(--warm-gold));
+    }
+    50% {
+      opacity: 0.7;
+      background-color: hsl(var(--warm-bronze));
+    }
+  }
+
+  .animate-pulse-warm {
+    animation: pulse-warm 2s ease-in-out infinite;
   }
 
   .gallery-frame {
@@ -122,5 +171,30 @@ All colors MUST be HSL.
 
   .warm-glow {
     box-shadow: 0 0 30px hsl(var(--warm-gold) / 0.3);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--warm-gold));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--warm-bronze));
+  }
+
+  /* Glass morphism effect */
+  .glass-card {
+    background: hsla(var(--card), 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsla(var(--border), 0.2);
   }
 }

@@ -3,11 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Splash from "./pages/Splash";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Gallery from "./pages/Gallery";
 import Lessons from "./pages/Lessons";
 import Videos from "./pages/Videos";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import AdminArtworks from "./pages/admin/AdminArtworks";
@@ -70,11 +72,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/splash" element={<Splash />} />
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/videos" element={<Videos />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/auth" element={<Auth />} />
           
           {/* Protected Admin Routes */}

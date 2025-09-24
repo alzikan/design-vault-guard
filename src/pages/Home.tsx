@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { PageHeader } from "@/components/page-header";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Play, BookOpen, Palette, TrendingUp, Heart, Settings, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -169,15 +169,100 @@ export default function Home() {
   ];
   return (
     <div className="min-h-screen bg-background pb-32">
-      <PageHeader title={t('nav.home')} />
+      {/* Header with user profile */}
+      <div className="flex items-center justify-between p-4 pt-12">
+        <div className="flex items-center gap-3">
+          <Avatar className="w-12 h-12 border-2 border-warm-gold/20">
+            <AvatarImage src="/placeholder.svg" alt="User" />
+            <AvatarFallback className="bg-warm-gold text-white">
+              {user?.email?.charAt(0).toUpperCase() || 'U'}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Home</h1>
+          </div>
+        </div>
+        
+        {/* Language Toggle */}
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+        >
+          عربي
+        </Button>
+      </div>
       
       <div className="px-4">
+        {/* Featured Artworks Grid - Following reference design */}
+        <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            {featuredArtworks.slice(0, 6).map((artwork, index) => (
+              <div 
+                key={artwork.id}
+                className="relative group cursor-pointer"
+                onClick={() => navigate('/gallery')}
+              >
+                <div className="relative overflow-hidden rounded-xl bg-card/30 border border-border/20">
+                  <img 
+                    src={artwork.image} 
+                    alt={artwork.title}
+                    className="w-full h-32 object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  
+                  {/* Artwork Info */}
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <h3 className="text-white font-medium text-sm leading-tight">
+                      {artwork.title}
+                    </h3>
+                    <p className="text-warm-gold text-xs mt-1">
+                      {artwork.year}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Categories - Horizontal scroll like reference */}
+        {categories.filter(category => category.artworkCount > 0).length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-foreground">Categories</h2>
+              <Button variant="ghost" size="sm" className="text-warm-gold">
+                See All
+              </Button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {categories.filter(category => category.artworkCount > 0).map((category) => (
+                <Card 
+                  key={category.id} 
+                  className="min-w-[140px] bg-card border-border/20 cursor-pointer hover:shadow-lg transition-all duration-300" 
+                  onClick={() => navigate('/gallery')}
+                >
+                  <div className="p-4 text-center">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-warm-gold/10 flex items-center justify-center">
+                      <Palette className="w-6 h-6 text-warm-gold" />
+                    </div>
+                    <h3 className="font-bold text-card-foreground text-sm">{category.name}</h3>
+                    <p className="text-warm-gold text-xs mt-1">{category.artworkCount}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           {quickStats.map((stat, index) => (
             <Card key={index} className="bg-card border-border/20 p-4">
               <div className="flex items-center gap-3">
-                <stat.icon className={`w-8 h-8 ${stat.color}`} />
+                <div className="w-10 h-10 rounded-full bg-warm-gold/10 flex items-center justify-center">
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                </div>
                 <div>
                   <div className="text-xl font-bold text-card-foreground">{stat.value}</div>
                   <div className="text-xs text-muted-foreground">{stat.label}</div>
@@ -205,78 +290,6 @@ export default function Home() {
               </div>
             </div>
           </Card>
-        )}
-
-        {/* Featured Artworks */}
-        <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-          <h2 className="text-xl font-bold text-card-foreground mb-4">{t('home.featured')}</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {featuredArtworks.map((artwork) => (
-              <ArtGalleryCard
-                key={artwork.id}
-                title={artwork.title}
-                year={artwork.year}
-                image={artwork.image}
-                onClick={() => navigate('/gallery')}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Categories */}
-        {categories.filter(category => category.artworkCount > 0).length > 0 && (
-          <div className="bg-card rounded-2xl p-6 shadow-xl mb-6">
-            <h2 className="text-xl font-bold text-card-foreground mb-4">Categories</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {categories.filter(category => category.artworkCount > 0).map((category) => (
-                <Card key={category.id} className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105" onClick={() => navigate('/gallery')}>
-                  <div className="relative">
-                    {/* Thumbnail Image */}
-                    <div className="relative h-32 bg-gradient-to-br from-muted/30 to-muted/60 overflow-hidden">
-                      {category.thumbnailUrl ? (
-                        <img 
-                          src={category.thumbnailUrl} 
-                          alt={category.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const img = e.currentTarget;
-                            const fallback = img.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
-                            img.style.display = 'none';
-                            if (fallback) fallback.style.display = 'flex';
-                          }}
-                        />
-                      ) : null}
-                      {/* Fallback placeholder */}
-                      <div 
-                        className={`fallback-placeholder absolute inset-0 flex items-center justify-center bg-gradient-to-br from-warm-gold/20 to-warm-gold/40 ${category.thumbnailUrl ? 'hidden' : 'flex'}`}
-                      >
-                        <Palette className="w-12 h-12 text-warm-gold/60" />
-                      </div>
-                      {/* Overlay gradient */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                      {/* Count badge */}
-                      <div className="absolute top-2 right-2">
-                        <Badge variant="secondary" className="bg-black/50 text-white border-none">
-                          {category.artworkCount}
-                        </Badge>
-                      </div>
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="p-4">
-                      <h3 className="font-bold text-card-foreground text-sm mb-1">{category.name}</h3>
-                      <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                        {category.description || `Browse ${category.artworkCount} ${category.artworkCount === 1 ? 'artwork' : 'artworks'} in this category`}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="text-lg font-bold text-warm-gold">{category.artworkCount}</div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
         )}
 
         {/* Recent Lessons Progress */}
@@ -312,7 +325,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
 
         {/* Recent Videos */}
         <div className="bg-card rounded-2xl p-6 shadow-xl">
