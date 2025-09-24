@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { PageHeader } from '@/components/page-header';
+import AdminNav from '@/components/admin-nav';
 
 interface Profile {
   id: string;
@@ -78,18 +79,23 @@ export default function AdminUsers() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
-        <PageHeader title="User Management" subtitle="Manage user access and permissions" />
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen bg-background">
+        <AdminNav />
+        <div className="container mx-auto p-6">
+          <PageHeader title="User Management" subtitle="Manage user access and permissions" />
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <PageHeader title="User Management" subtitle="Manage user access and permissions" />
+    <div className="min-h-screen bg-background">
+      <AdminNav />
+      <div className="container mx-auto p-6">
+        <PageHeader title="User Management" subtitle="Manage user access and permissions" />
       
       <div className="grid gap-4">
         {profiles.map((profile) => (
@@ -128,6 +134,7 @@ export default function AdminUsers() {
             <p className="text-muted-foreground">No users found</p>
           </Card>
         )}
+      </div>
       </div>
     </div>
   );
