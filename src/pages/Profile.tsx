@@ -38,7 +38,7 @@ export default function Profile() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, email')
+        .select('full_name, email, phone')
         .eq('user_id', user?.id)
         .maybeSingle();
 
@@ -46,7 +46,7 @@ export default function Profile() {
         setProfile({
           full_name: data.full_name || "",
           email: data.email || user?.email || "",
-          phone: "" // We'll add phone support later
+          phone: data.phone || ""
         });
       } else {
         // Create initial profile if doesn't exist
@@ -70,7 +70,8 @@ export default function Profile() {
         .upsert({
           user_id: user?.id,
           full_name: profile.full_name,
-          email: profile.email
+          email: profile.email,
+          phone: profile.phone
         });
 
       if (error) throw error;
