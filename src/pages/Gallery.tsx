@@ -30,7 +30,7 @@ export default function Gallery() {
     try {
       const { data, error } = await supabase
         .from('artworks')
-        .select('id, title, created_year, image_url, medium, description, price, is_featured')
+        .select('id, title, created_year, image_url, medium, description, price, is_featured, category')
         .eq('is_available', true);
       
       if (error) throw error;
@@ -41,13 +41,13 @@ export default function Gallery() {
           ...artwork,
           year: artwork.created_year?.toString() || '',
           image: artwork.image_url,
-          category: artwork.medium || 'Other'
+          category: artwork.category || 'Other'
         }));
         
         setArtworks(processedArtworks);
         
         // Extract categories efficiently
-        const categorySet = new Set(data.map(artwork => artwork.medium).filter(Boolean));
+        const categorySet = new Set(data.map(artwork => artwork.category).filter(Boolean));
         setCategories(["All", ...Array.from(categorySet)]);
       }
     } catch (error) {
