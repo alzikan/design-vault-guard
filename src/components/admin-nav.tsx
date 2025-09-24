@@ -75,8 +75,8 @@ const AdminNav = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            {/* Desktop view - show first 2 buttons */}
-            <div className="hidden lg:flex items-center space-x-2">
+            {/* Desktop/Tablet view - show buttons on md screens and up */}
+            <div className="hidden md:flex items-center space-x-2">
               <Link to="/admin/artworks">
                 <Button variant="outline" size="sm">
                   <Plus className="h-4 w-4 mr-2" />
@@ -123,8 +123,8 @@ const AdminNav = () => {
               </Button>
             </div>
 
-            {/* Mobile/Tablet dropdown menu */}
-            <div className="lg:hidden">
+            {/* Mobile dropdown menu */}
+            <div className="md:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
