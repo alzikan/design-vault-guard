@@ -392,6 +392,16 @@ export default function Gallery() {
             
             {/* Desktop Controls */}
             <div className="flex items-center gap-6">
+              {/* Language Toggle */}
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground h-9"
+                onClick={toggleLanguage}
+              >
+                {t('nav.language')}
+              </Button>
+              
               <div className="flex items-center gap-2">
                 <Button
                   variant={viewMode === "grid" ? "default" : "outline"}
