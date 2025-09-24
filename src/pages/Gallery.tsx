@@ -13,7 +13,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Gallery() {
-  const { t } = useLanguage();
+  const { t, toggleLanguage } = useLanguage();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -139,15 +139,16 @@ export default function Gallery() {
             </Avatar>
           </div>
           
-          <h1 className="text-2xl font-bold text-foreground">Gallery</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t('gallery.title')}</h1>
           
           {/* Language Toggle */}
           <Button 
             variant="outline" 
             size="sm"
             className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+            onClick={toggleLanguage}
           >
-            عربي
+            {t('nav.language')}
           </Button>
         </div>
         
@@ -155,7 +156,7 @@ export default function Gallery() {
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading artworks...</p>
+              <p className="text-muted-foreground">{t('gallery.loading')}</p>
             </div>
           ) : (
             <>
@@ -179,7 +180,7 @@ export default function Gallery() {
                           // Show all artworks in this category
                         }}
                       >
-                        See All
+                        {t('gallery.seeAll')}
                       </Button>
                     </div>
                     
@@ -218,7 +219,7 @@ export default function Gallery() {
 
               {filteredArtworks.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-muted-foreground">No artworks found matching your criteria.</p>
+                  <p className="text-muted-foreground">{t('gallery.noResults')}</p>
                 </div>
               )}
             </>
@@ -302,7 +303,7 @@ export default function Gallery() {
                       <div className="w-1.5 h-1.5 bg-white"></div>
                       <div className="w-1.5 h-1.5 bg-white"></div>
                     </div>
-                    <span className="text-sm">Full Screen</span>
+                    <span className="text-sm">{t('gallery.fullScreen')}</span>
                   </div>
                 </Button>
               </div>
@@ -320,12 +321,12 @@ export default function Gallery() {
 
                 {/* Comments Section */}
                 <div>
-                  <h3 className="text-lg font-semibold text-warm-gold mb-3">20 Comments</h3>
+                  <h3 className="text-lg font-semibold text-warm-gold mb-3">20 {t('gallery.comments')}</h3>
                   
                   {/* Comment Input */}
                   <div className="mb-4">
                     <Input 
-                      placeholder="Add a comment..."
+                      placeholder={t('gallery.addComment')}
                       className="bg-muted/30 border-border/20"
                     />
                   </div>
@@ -383,9 +384,9 @@ export default function Gallery() {
               </Button>
               <div>
                 <h1 className="text-4xl font-bold text-card-foreground">
-                  Gallery
+                  {t('gallery.title')}
                 </h1>
-                <p className="text-card-foreground/70 mt-1">{filteredArtworks.length} artworks</p>
+                <p className="text-card-foreground/70 mt-1">{filteredArtworks.length} {t('gallery.artworks')}</p>
               </div>
             </div>
             
@@ -431,7 +432,7 @@ export default function Gallery() {
                 className="h-9 gap-2"
               >
                 <Filter className="w-4 h-4" />
-                Sort by {sortBy === "year" ? "Year" : "Title"}
+                {t('gallery.sortBy')} {sortBy === "year" ? t('gallery.year') : t('gallery.title_sort')}
               </Button>
             </div>
           </div>
@@ -443,7 +444,7 @@ export default function Gallery() {
           <div className="flex items-center justify-center py-32">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
-              <p className="text-card-foreground/70">Loading artworks...</p>
+              <p className="text-card-foreground/70">{t('gallery.loading')}</p>
             </div>
           </div>
         ) : (
@@ -451,7 +452,7 @@ export default function Gallery() {
             {/* Featured Section */}
             {featuredArtwork && (
               <section className="mb-16">
-                <h2 className="text-2xl font-semibold mb-8 text-card-foreground">Featured Artwork</h2>
+                <h2 className="text-2xl font-semibold mb-8 text-card-foreground">{t('gallery.featuredArtwork')}</h2>
                 <div 
                   className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500"
                   onClick={() => handleArtworkClick(featuredArtwork)}
@@ -460,10 +461,10 @@ export default function Gallery() {
                     <div className="space-y-6">
                       <div>
                         <Badge variant="secondary" className="mb-4 bg-warm-gold/20 text-warm-gold border-warm-gold/30">
-                          Featured
+                          {t('gallery.featured')}
                         </Badge>
                         <h3 className="text-3xl font-bold mb-2 text-card-foreground">{featuredArtwork.title}</h3>
-                        <p className="text-warm-gold font-medium">Created in {featuredArtwork.year}</p>
+                        <p className="text-warm-gold font-medium">{t('gallery.createdIn')} {featuredArtwork.year}</p>
                       </div>
                       <p className="text-card-foreground/80 text-lg leading-relaxed">
                         {featuredArtwork.description || 'A masterful piece showcasing exceptional artistic vision and technical skill.'}
@@ -491,8 +492,8 @@ export default function Gallery() {
             {/* Gallery Grid */}
             <section>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-semibold text-card-foreground">Collection</h2>
-                <p className="text-card-foreground/70">{otherArtworks.length} pieces</p>
+                <h2 className="text-2xl font-semibold text-card-foreground">{t('gallery.collection')}</h2>
+                <p className="text-card-foreground/70">{otherArtworks.length} {t('gallery.pieces')}</p>
               </div>
               
               {viewMode === "grid" ? (
@@ -571,8 +572,8 @@ export default function Gallery() {
                 <div className="text-center py-32">
                   <div className="max-w-md mx-auto">
                     <Search className="w-16 h-16 text-muted-foreground/40 mx-auto mb-6" />
-                    <h3 className="text-xl font-semibold mb-2">No artworks found</h3>
-                    <p className="text-muted-foreground">Try adjusting your filters to see more results.</p>
+                    <h3 className="text-xl font-semibold mb-2">{t('gallery.noResults')}</h3>
+                    <p className="text-muted-foreground">{t('gallery.tryAdjustingFilters')}</p>
                   </div>
                 </div>
               )}
@@ -608,7 +609,7 @@ export default function Gallery() {
                       {selectedArtwork.title}
                     </h1>
                     <p className="text-warm-gold font-medium">
-                      Created in {selectedArtwork.year}
+                      {t('gallery.createdIn')} {selectedArtwork.year}
                     </p>
                   </div>
                 </div>
@@ -652,10 +653,10 @@ export default function Gallery() {
                   <div className="space-y-3">
                     <h3 className="text-xl font-semibold text-foreground flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
-                      Medium
+                      {t('gallery.medium')}
                     </h3>
                     <p className="text-muted-foreground bg-muted/30 rounded-xl p-4 border border-border/20">
-                      {selectedArtwork.medium || 'Not specified'}
+                      {selectedArtwork.medium || t('gallery.notSpecified')}
                     </p>
                   </div>
                   
@@ -663,7 +664,7 @@ export default function Gallery() {
                   <div className="space-y-3">
                     <h3 className="text-xl font-semibold text-foreground flex items-center gap-3">
                       <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
-                      Description
+                      {t('gallery.description')}
                     </h3>
                     <p className="text-muted-foreground bg-muted/30 rounded-xl p-4 border border-border/20 leading-relaxed">
                       {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
@@ -674,11 +675,11 @@ export default function Gallery() {
                   <div className="flex flex-col gap-3 pt-6 border-t border-border/20">
                     <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-12">
                       <Share2 className="w-5 h-5 mr-2" />
-                      Share Artwork
+                      {t('gallery.shareArtwork')}
                     </Button>
                     <Button variant="outline" className="w-full bg-muted/20 hover:bg-muted/40 border-border/20 h-12">
                       <Download className="w-5 h-5 mr-2" />
-                      Download
+                      {t('gallery.download')}
                     </Button>
                   </div>
                 </div>
