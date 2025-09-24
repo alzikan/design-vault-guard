@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Videos() {
-  const { t } = useLanguage();
+  const { t, toggleLanguage } = useLanguage();
   const navigate = useNavigate();
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,15 +58,16 @@ export default function Videos() {
           </Avatar>
         </div>
         
-        <h1 className="text-2xl font-bold text-foreground">Videos</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('nav.videos')}</h1>
         
         {/* Language Toggle */}
         <Button 
           variant="outline" 
           size="sm"
           className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+          onClick={toggleLanguage}
         >
-          عربي
+          {t('nav.language')}
         </Button>
       </div>
 
@@ -74,7 +75,7 @@ export default function Videos() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading videos...</p>
+            <p className="text-muted-foreground">{t('videos.loading')}</p>
           </div>
         ) : (
           <>
@@ -127,7 +128,7 @@ export default function Videos() {
                         {video.title}
                       </h3>
                       <p className="text-muted-foreground text-xs md:text-sm leading-relaxed mb-2 md:mb-3 line-clamp-2">
-                        {video.description || 'No description available'}
+                        {video.description || t('videos.noDescription')}
                       </p>
                       
                       <div className="flex items-center justify-between text-xs">
@@ -139,7 +140,7 @@ export default function Videos() {
                           )}
                         </div>
                         <div className="text-muted-foreground">
-                          {video.view_count || 0} views
+                          {video.view_count || 0} {t('videos.views')}
                         </div>
                       </div>
                     </div>
@@ -151,8 +152,8 @@ export default function Videos() {
             {videos.length === 0 && (
               <div className="text-center py-12">
                 <Play className="w-16 h-16 text-muted-foreground/40 mx-auto mb-6" />
-                <h3 className="text-xl font-semibold mb-2">No videos found</h3>
-                <p className="text-muted-foreground">Check back later for new video content.</p>
+                <h3 className="text-xl font-semibold mb-2">{t('videos.noVideosFound')}</h3>
+                <p className="text-muted-foreground">{t('videos.checkBackLater')}</p>
               </div>
             )}
           </>
@@ -190,12 +191,12 @@ export default function Videos() {
                   poster={selectedVideo.thumbnail_url}
                 >
                   <source src={selectedVideo.video_url} type="video/mp4" />
-                  Your browser does not support the video tag.
+                  {t('videos.browserNotSupported')}
                 </video>
               ) : (
                 <div className="text-center">
                   <Play className="w-24 h-24 text-white/60 mx-auto mb-4" />
-                  <p className="text-white/80">Video not available</p>
+                  <p className="text-white/80">{t('videos.videoNotAvailable')}</p>
                 </div>
               )}
             </div>
@@ -203,10 +204,10 @@ export default function Videos() {
             {/* Video Info */}
             <div className="bg-card/95 backdrop-blur-sm p-6">
               <h2 className="text-xl font-bold text-card-foreground mb-2">
-                {selectedVideo.title || 'Video title'}
+                {selectedVideo.title || t('videos.videoTitle')}
               </h2>
               <p className="text-muted-foreground mb-4">
-                {selectedVideo.description || 'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum'}
+                {selectedVideo.description || t('videos.noDescription')}
               </p>
               
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -215,7 +216,7 @@ export default function Videos() {
                     {selectedVideo.category}
                   </Badge>
                 )}
-                <span>{selectedVideo.view_count || 0} views</span>
+                <span>{selectedVideo.view_count || 0} {t('videos.views')}</span>
                 {selectedVideo.duration_minutes && (
                   <span>{selectedVideo.duration_minutes}min</span>
                 )}

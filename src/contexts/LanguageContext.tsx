@@ -81,6 +81,12 @@ const translations = {
     'videos.views': 'views',
     'videos.loading': 'Loading videos...',
     'videos.noVideos': 'No videos available yet.',
+    'videos.noVideosFound': 'No videos found',
+    'videos.checkBackLater': 'Check back later for new video content.',
+    'videos.noDescription': 'No description available',
+    'videos.videoNotAvailable': 'Video not available',
+    'videos.videoTitle': 'Video title',
+    'videos.browserNotSupported': 'Your browser does not support the video tag.',
     'videos.general': 'General',
     
     // Auth Page
@@ -246,6 +252,12 @@ const translations = {
     'videos.views': 'مشاهدة',
     'videos.loading': 'جاري تحميل الفيديوهات...',
     'videos.noVideos': 'لا توجد فيديوهات متاحة حتى الآن.',
+    'videos.noVideosFound': 'لم يتم العثور على فيديوهات',
+    'videos.checkBackLater': 'تحقق مرة أخرى لاحقاً للحصول على محتوى فيديو جديد.',
+    'videos.noDescription': 'لا يوجد وصف متاح',
+    'videos.videoNotAvailable': 'الفيديو غير متاح',
+    'videos.videoTitle': 'عنوان الفيديو',
+    'videos.browserNotSupported': 'متصفحك لا يدعم تشغيل هذا الفيديو.',
     'videos.general': 'عام',
     
     // Auth Page
