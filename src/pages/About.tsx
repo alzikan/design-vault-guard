@@ -93,7 +93,7 @@ export default function About() {
                 }}
               />
             </div>
-            <h1 className="text-2xl font-bold text-card-foreground mb-2">
+            <h1 className="text-2xl font-bold text-foreground mb-2">
               {profile.artist_name}
             </h1>
             <p className="text-warm-gold font-medium mb-4">
@@ -108,8 +108,8 @@ export default function About() {
 
         {/* About Content */}
         <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
-          <h2 className="text-xl font-bold text-card-foreground mb-4">About Me</h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <h2 className="text-xl font-bold text-foreground mb-4">About Me</h2>
+          <p className="text-foreground/90 leading-relaxed">
             {profile.about_content}
           </p>
         </Card>
@@ -119,9 +119,9 @@ export default function About() {
           <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <GraduationCap className="w-5 h-5 text-warm-gold" />
-              <h2 className="text-xl font-bold text-card-foreground">Education</h2>
+              <h2 className="text-xl font-bold text-foreground">Education</h2>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-foreground/90 leading-relaxed">
               {profile.education}
             </p>
           </Card>
@@ -132,9 +132,9 @@ export default function About() {
           <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <Award className="w-5 h-5 text-warm-gold" />
-              <h2 className="text-xl font-bold text-card-foreground">Achievements</h2>
+              <h2 className="text-xl font-bold text-foreground">Achievements</h2>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-foreground/90 leading-relaxed">
               {profile.achievements}
             </p>
           </Card>
@@ -145,9 +145,9 @@ export default function About() {
           <Card className="bg-card border-border/20 p-6 mb-6 shadow-xl">
             <div className="flex items-center gap-2 mb-4">
               <CalendarDays className="w-5 h-5 text-warm-gold" />
-              <h2 className="text-xl font-bold text-card-foreground">Exhibitions</h2>
+              <h2 className="text-xl font-bold text-foreground">Exhibitions</h2>
             </div>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-foreground/90 leading-relaxed">
               {profile.exhibitions}
             </p>
           </Card>
