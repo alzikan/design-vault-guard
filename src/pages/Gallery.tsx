@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
@@ -23,16 +23,12 @@ export default function Gallery() {
   const [categories, setCategories] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch artworks from database
-  useEffect(() => {
-    fetchArtworks();
-  }, []);
-
-  const fetchArtworks = async () => {
+  // Memoized fetch function to prevent unnecessary re-renders
+  const fetchArtworks = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('artworks')
-        .select('id, title, created_year, image_url, medium, description, price')
+        .select('id, title, created_year, image_url, medium, description, price, is_featured')
         .eq('is_available', true);
       
       if (error) throw error;
@@ -54,7 +50,12 @@ export default function Gallery() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Fetch artworks from database
+  useEffect(() => {
+    fetchArtworks();
+  }, [fetchArtworks]);
 
   // Load favorites from localStorage on mount
   useEffect(() => {
@@ -64,19 +65,29 @@ export default function Gallery() {
     }
   }, []);
 
-  // Save favorites to localStorage
-  const toggleFavorite = (artworkId: number) => {
+  // Memoized functions to prevent unnecessary re-renders
+  const toggleFavorite = useCallback((artworkId: number) => {
     const newFavorites = favorites.includes(artworkId)
       ? favorites.filter(id => id !== artworkId)
       : [...favorites, artworkId];
     
     setFavorites(newFavorites);
     localStorage.setItem('artFavorites', JSON.stringify(newFavorites));
-  };
+  }, [favorites]);
 
-  const viewArtwork = (artwork: any) => {
+  const viewArtwork = useCallback((artwork: any) => {
     setSelectedArtwork(artwork);
-  };
+  }, []);
+
+  const handleArtworkClick = useCallback((artwork: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    viewArtwork(artwork);
+  }, [viewArtwork]);
+
+  const closeModal = useCallback(() => {
+    setSelectedArtwork(null);
+  }, []);
 
   const filteredArtworks = useMemo(() => {
     // Filter by category
@@ -165,8 +176,10 @@ export default function Gallery() {
                     {featuredArtwork.title}
                   </h2>
                   <div 
-                    className="relative group cursor-pointer"
-                    onClick={() => viewArtwork(featuredArtwork)}
+                    className="relative group cursor-pointer touch-manipulation"
+                    onClick={(e) => handleArtworkClick(featuredArtwork, e)}
+                    onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                    onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   >
                     <img 
                       src={featuredArtwork.image} 
@@ -194,8 +207,10 @@ export default function Gallery() {
                     {otherArtworks.map((artwork) => (
                       <div 
                         key={artwork.id}
-                        className="relative group cursor-pointer"
-                        onClick={() => viewArtwork(artwork)}
+                        className="relative group cursor-pointer touch-manipulation"
+                        onClick={(e) => handleArtworkClick(artwork, e)}
+                        onTouchStart={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                        onTouchEnd={(e) => e.currentTarget.style.transform = 'scale(1)'}
                       >
                         <img 
                           src={artwork.image} 
@@ -315,8 +330,8 @@ export default function Gallery() {
               <section className="mb-16">
                 <h2 className="text-2xl font-semibold mb-8 text-card-foreground">Featured Artwork</h2>
                 <div 
-                  className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500"
-                  onClick={() => viewArtwork(featuredArtwork)}
+                  className="relative group cursor-pointer bg-secondary/50 backdrop-blur-sm rounded-3xl p-8 border border-border hover:border-warm-gold/40 transition-all duration-500 touch-manipulation"
+                  onClick={(e) => handleArtworkClick(featuredArtwork, e)}
                 >
                   <div className="grid lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-6">
@@ -362,8 +377,8 @@ export default function Gallery() {
                   {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork) => (
                     <div 
                       key={artwork.id}
-                      className="group cursor-pointer"
-                      onClick={() => viewArtwork(artwork)}
+                      className="group cursor-pointer touch-manipulation"
+                      onClick={(e) => handleArtworkClick(artwork, e)}
                     >
                       <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
@@ -396,8 +411,8 @@ export default function Gallery() {
                   {filteredArtworks.filter(artwork => artwork.id !== featuredArtwork?.id).map((artwork, index) => (
                     <div 
                       key={artwork.id}
-                      className="group cursor-pointer break-inside-avoid mb-8"
-                      onClick={() => viewArtwork(artwork)}
+                      className="group cursor-pointer break-inside-avoid mb-8 touch-manipulation"
+                      onClick={(e) => handleArtworkClick(artwork, e)}
                     >
                       <div className="relative overflow-hidden rounded-2xl bg-secondary/30 backdrop-blur-sm border border-border hover:border-warm-gold/40 transition-all duration-500">
                         <img 
@@ -445,8 +460,14 @@ export default function Gallery() {
 
       {/* Artwork Detail Modal */}
       {selectedArtwork && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-background border border-border rounded-3xl w-full max-w-6xl max-h-[95vh] overflow-hidden shadow-2xl">
+        <div 
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-background border border-border rounded-3xl w-full max-w-6xl max-h-[95vh] overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header with close and favorite buttons */}
             <div className="relative bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-sm p-6 border-b border-border/20">
               <div className="flex items-center justify-between">
@@ -472,7 +493,7 @@ export default function Gallery() {
                   variant="ghost"
                   size="icon"
                   className="h-12 w-12 rounded-full bg-muted/30 hover:bg-muted/50 border border-border/20"
-                  onClick={() => setSelectedArtwork(null)}
+                  onClick={closeModal}
                 >
                   <X className="w-6 h-6 text-muted-foreground" />
                 </Button>
