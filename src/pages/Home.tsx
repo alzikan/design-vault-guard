@@ -183,15 +183,53 @@ export default function Home() {
           </div>
         </div>
         
-        {/* Language Toggle */}
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
-          onClick={toggleLanguage}
-        >
-          {t('nav.language')}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Admin Access Button - Only show for admin users */}
+          {hasAdminAccess && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="bg-warm-gold/10 border-warm-gold/30 hover:bg-warm-gold/20 text-warm-gold"
+              onClick={() => navigate('/admin')}
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              Admin
+            </Button>
+          )}
+          
+          {/* Auth/Profile Button */}
+          {user ? (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+              onClick={() => navigate('/profile')}
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              {t('nav.profile')}
+            </Button>
+          ) : (
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+              onClick={() => navigate('/auth')}
+            >
+              <LogIn className="w-4 h-4 mr-1" />
+              {t('nav.signIn')}
+            </Button>
+          )}
+          
+          {/* Language Toggle */}
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+            onClick={toggleLanguage}
+          >
+            {t('nav.language')}
+          </Button>
+        </div>
       </div>
       
       <div className="px-4">
