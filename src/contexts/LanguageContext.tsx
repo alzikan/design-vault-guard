@@ -22,7 +22,8 @@ const translations = {
     'nav.language': 'عربي',
     'nav.login': 'Login',
     
-    // Home Page
+    // Home Page specific
+    'home.categories': 'Categories',
     'home.title': 'Welcome to Art Studio',
     'home.subtitle': 'Explore your creativity',
     'home.featured': 'Featured Artworks',
@@ -186,7 +187,8 @@ const translations = {
     'nav.language': 'English',
     'nav.login': 'تسجيل الدخول',
     
-    // Home Page
+    // Home Page specific
+    'home.categories': 'الفئات',
     'home.title': 'مرحباً بك في استوديو الفن',
     'home.subtitle': 'اكتشف إبداعك',
     'home.featured': 'الأعمال المميزة',

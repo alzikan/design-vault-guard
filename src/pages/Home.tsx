@@ -14,7 +14,7 @@ import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, toggleLanguage } = useLanguage();
   const { user } = useAuth();
   const { hasAdminAccess } = useAdminAccess();
   const [lessonsProgress, setLessonsProgress] = useState<any>({});
@@ -179,7 +179,7 @@ export default function Home() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Home</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t('nav.home')}</h1>
           </div>
         </div>
         
@@ -188,8 +188,9 @@ export default function Home() {
           variant="outline" 
           size="sm"
           className="bg-card/50 border-border/20 hover:bg-card/70 text-foreground"
+          onClick={toggleLanguage}
         >
-          عربي
+          {t('nav.language')}
         </Button>
       </div>
       
@@ -230,9 +231,9 @@ export default function Home() {
         {categories.filter(category => category.artworkCount > 0).length > 0 && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-foreground">Categories</h2>
+              <h2 className="text-xl font-bold text-foreground">{t('home.categories')}</h2>
               <Button variant="ghost" size="sm" className="text-warm-gold">
-                See All
+                {t('home.viewAll')}
               </Button>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-2">
