@@ -78,12 +78,12 @@ export default function Videos() {
           </div>
         ) : (
           <>
-            {/* Video List */}
-            <div className="space-y-4">
+            {/* Video Grid - Responsive Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {videos.map((video) => (
                 <Card 
                   key={video.id} 
-                  className="bg-card/50 border-border/20 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300"
+                  className="bg-card/50 border-border/20 overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-300 group"
                   onClick={() => handleVideoClick(video)}
                 >
                   <div className="relative">
@@ -93,21 +93,21 @@ export default function Videos() {
                         <img 
                           src={video.thumbnail_url} 
                           alt={video.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
                             e.currentTarget.src = "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=225&fit=crop";
                           }}
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-warm-gold/20 to-warm-bronze/30 flex items-center justify-center">
-                          <Play className="w-16 h-16 text-warm-gold/60" />
+                          <Play className="w-12 h-12 md:w-16 md:h-16 text-warm-gold/60" />
                         </div>
                       )}
                       
                       {/* Play Button Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-16 h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20">
-                          <Play className="w-8 h-8 text-white ml-1" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="w-12 h-12 md:w-16 md:h-16 bg-black/50 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/20">
+                          <Play className="w-6 h-6 md:w-8 md:h-8 text-white ml-1" />
                         </div>
                       </div>
                       
@@ -122,23 +122,23 @@ export default function Videos() {
                     </div>
                     
                     {/* Video Info */}
-                    <div className="p-4">
-                      <h3 className="font-bold text-card-foreground text-lg mb-2">
+                    <div className="p-3 md:p-4">
+                      <h3 className="font-bold text-card-foreground text-sm md:text-base mb-1 md:mb-2 line-clamp-2">
                         {video.title}
                       </h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">
+                      <p className="text-muted-foreground text-xs md:text-sm leading-relaxed mb-2 md:mb-3 line-clamp-2">
                         {video.description || 'No description available'}
                       </p>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1">
                           {video.category && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs px-2 py-0.5">
                               {video.category}
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground">
                           {video.view_count || 0} views
                         </div>
                       </div>
