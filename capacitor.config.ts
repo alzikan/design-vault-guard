@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.23b9bca968fa481c9d3a5f7c45897572',
+  appId: 'com.alzikan.art',
   appName: 'alzakanart',
   webDir: 'dist',
   server: {
