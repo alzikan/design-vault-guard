@@ -554,6 +554,7 @@ export default function Gallery() {
                         className="bg-muted/30 border-border/20"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
                         onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                       />
                       <Button 
@@ -617,6 +618,7 @@ export default function Gallery() {
                               <Input
                                 value={editingCommentText}
                                 onChange={(e) => setEditingCommentText(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
                                 className="text-sm bg-background"
                                 onKeyPress={(e) => e.key === 'Enter' && handleUpdateComment(comment.id)}
                               />
@@ -1042,6 +1044,7 @@ export default function Gallery() {
                           className="bg-muted/30 border-border/20"
                           value={newComment}
                           onChange={(e) => setNewComment(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
                           onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                         />
                         <Button 
@@ -1105,6 +1108,7 @@ export default function Gallery() {
                                 <Input
                                   value={editingCommentText}
                                   onChange={(e) => setEditingCommentText(e.target.value)}
+                                  onClick={(e) => e.stopPropagation()}
                                   className="text-sm bg-background"
                                   onKeyPress={(e) => e.key === 'Enter' && handleUpdateComment(comment.id)}
                                 />
