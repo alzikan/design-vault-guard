@@ -173,6 +173,56 @@ export default function Gallery() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-warm-gold mx-auto mb-4"></div>
               <p className="text-muted-foreground">{t('gallery.loading')}</p>
             </div>
+          ) : selectedCategory !== "All" ? (
+            <>
+              {/* Selected Category View */}
+              <div className="mb-4 flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedCategory("All")}
+                  className="h-9 w-9"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <h2 className="text-2xl font-bold text-foreground">{selectedCategory}</h2>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 pb-8">
+                {filteredArtworks.map((artwork) => (
+                  <div 
+                    key={artwork.id}
+                    className="relative group cursor-pointer"
+                    onClick={() => handleArtworkClick(artwork)}
+                  >
+                    <div className="relative overflow-hidden rounded-xl bg-card/30 border border-border/20">
+                      <img 
+                        src={artwork.image} 
+                        alt={artwork.title}
+                        className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      
+                      {/* Artwork Info */}
+                      <div className="absolute bottom-0 left-0 right-0 p-3">
+                        <h3 className="text-white font-medium text-sm leading-tight">
+                          {artwork.title}
+                        </h3>
+                        <p className="text-warm-gold text-xs mt-1">
+                          {artwork.year}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {filteredArtworks.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">{t('gallery.noResults')}</p>
+                </div>
+              )}
+            </>
           ) : (
             <>
               {/* Category Sections - Following reference design */}
@@ -190,10 +240,7 @@ export default function Gallery() {
                         variant="ghost" 
                         size="sm" 
                         className="text-warm-gold hover:text-warm-gold/80"
-                        onClick={() => {
-                          setSelectedCategory(category);
-                          // Show all artworks in this category
-                        }}
+                        onClick={() => setSelectedCategory(category)}
                       >
                         {t('gallery.seeAll')}
                       </Button>
@@ -231,12 +278,6 @@ export default function Gallery() {
                   </div>
                 );
               })}
-
-              {filteredArtworks.length === 0 && (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground">{t('gallery.noResults')}</p>
-                </div>
-              )}
             </>
           )}
         </div>
