@@ -105,20 +105,35 @@ export default function Gallery() {
   const fetchComments = async (artworkId: string) => {
     setLoadingComments(true);
     try {
-      const { data, error } = await (supabase as any)
+      const { data: commentsData, error: commentsError } = await (supabase as any)
         .from('comments')
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .eq('artwork_id', artworkId)
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
-      setComments(data || []);
+      if (commentsError) throw commentsError;
+      
+      // Fetch profile information for each comment
+      if (commentsData && commentsData.length > 0) {
+        const userIds = [...new Set(commentsData.map((c: any) => c.user_id))] as string[];
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('user_id, full_name, email')
+          .in('user_id', userIds);
+        
+        if (!profilesError && profilesData) {
+          const profilesMap = new Map(profilesData.map(p => [p.user_id, p]));
+          const commentsWithProfiles = commentsData.map((comment: any) => ({
+            ...comment,
+            profiles: profilesMap.get(comment.user_id)
+          }));
+          setComments(commentsWithProfiles);
+        } else {
+          setComments(commentsData);
+        }
+      } else {
+        setComments([]);
+      }
     } catch (error) {
       console.error('Error fetching comments:', error);
       toast.error('Failed to load comments');
@@ -140,25 +155,31 @@ export default function Gallery() {
     }
     
     try {
-      const { data, error } = await (supabase as any)
+      const { data: newCommentData, error } = await (supabase as any)
         .from('comments')
         .insert({
           artwork_id: selectedArtwork.id,
           user_id: user.id,
           comment_text: newComment.trim()
         })
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            email
-          )
-        `)
+        .select('*')
         .single();
       
       if (error) throw error;
       
-      setComments([data, ...comments]);
+      // Fetch profile info for the new comment
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email')
+        .eq('user_id', user.id)
+        .single();
+      
+      const commentWithProfile = {
+        ...newCommentData,
+        profiles: profileData
+      };
+      
+      setComments([commentWithProfile, ...comments]);
       setNewComment("");
       toast.success('Comment added successfully');
     } catch (error) {
