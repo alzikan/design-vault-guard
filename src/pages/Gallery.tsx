@@ -7,15 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft, ChevronLeft } from "lucide-react";
+import { Filter, Heart, X, Share2, Download, ChevronRight, Grid, List, Search, ArrowLeft, ChevronLeft, Edit2, Trash2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function Gallery() {
   const { t, toggleLanguage } = useLanguage();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry");
@@ -26,6 +29,13 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [artworksPerPage] = useState(12);
+  
+  // Comments state
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState("");
+  const [loadingComments, setLoadingComments] = useState(false);
 
   // Memoized and optimized fetch function
   const fetchArtworks = useCallback(async () => {
@@ -88,10 +98,144 @@ export default function Gallery() {
 
   const handleArtworkClick = useCallback((artwork: any) => {
     setSelectedArtwork(artwork);
+    fetchComments(artwork.id);
   }, []);
+  
+  // Fetch comments for selected artwork
+  const fetchComments = async (artworkId: string) => {
+    setLoadingComments(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from('comments')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            email
+          )
+        `)
+        .eq('artwork_id', artworkId)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      setComments(data || []);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+      toast.error('Failed to load comments');
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+  
+  // Add new comment
+  const handleAddComment = async () => {
+    if (!user) {
+      toast.error('Please sign in to add a comment');
+      return;
+    }
+    
+    if (!newComment.trim()) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('comments')
+        .insert({
+          artwork_id: selectedArtwork.id,
+          user_id: user.id,
+          comment_text: newComment.trim()
+        })
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            email
+          )
+        `)
+        .single();
+      
+      if (error) throw error;
+      
+      setComments([data, ...comments]);
+      setNewComment("");
+      toast.success('Comment added successfully');
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      toast.error('Failed to add comment');
+    }
+  };
+  
+  // Start editing comment
+  const handleStartEdit = (comment: any) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentText(comment.comment_text);
+  };
+  
+  // Update comment
+  const handleUpdateComment = async (commentId: string) => {
+    if (!editingCommentText.trim()) {
+      toast.error('Comment cannot be empty');
+      return;
+    }
+    
+    try {
+      const { error } = await (supabase as any)
+        .from('comments')
+        .update({ comment_text: editingCommentText.trim() })
+        .eq('id', commentId)
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      
+      setComments(comments.map(c => 
+        c.id === commentId 
+          ? { ...c, comment_text: editingCommentText.trim() }
+          : c
+      ));
+      setEditingCommentId(null);
+      setEditingCommentText("");
+      toast.success('Comment updated successfully');
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      toast.error('Failed to update comment');
+    }
+  };
+  
+  // Delete comment
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('Are you sure you want to delete this comment?')) return;
+    
+    try {
+      const { error } = await (supabase as any)
+        .from('comments')
+        .delete()
+        .eq('id', commentId)
+        .eq('user_id', user?.id);
+      
+      if (error) throw error;
+      
+      setComments(comments.filter(c => c.id !== commentId));
+      toast.success('Comment deleted successfully');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
+    }
+  };
+  
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingCommentText("");
+  };
 
   const closeModal = useCallback(() => {
     setSelectedArtwork(null);
+    setComments([]);
+    setNewComment("");
+    setEditingCommentId(null);
+    setEditingCommentText("");
   }, []);
 
   // Optimized filtering and sorting with better memoization
@@ -377,42 +521,113 @@ export default function Gallery() {
 
                 {/* Comments Section */}
                 <div>
-                  <h3 className="text-lg font-semibold text-warm-gold mb-3">20 {t('gallery.comments')}</h3>
+                  <h3 className="text-lg font-semibold text-warm-gold mb-3">
+                    {comments.length} {t('gallery.comments')}
+                  </h3>
                   
                   {/* Comment Input */}
-                  <div className="mb-4">
-                    <Input 
-                      placeholder={t('gallery.addComment')}
-                      className="bg-muted/30 border-border/20"
-                    />
-                  </div>
-                  
-                  {/* Sample Comments */}
-                  <div className="space-y-3">
-                    <div className="bg-muted/20 rounded-lg p-3">
-                      <p className="text-muted-foreground text-sm">
-                        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
+                  {user ? (
+                    <div className="mb-4 flex gap-2">
+                      <Input 
+                        placeholder={t('gallery.addComment')}
+                        className="bg-muted/30 border-border/20"
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+                      />
+                      <Button 
+                        size="icon"
+                        onClick={handleAddComment}
+                        disabled={!newComment.trim()}
+                        className="shrink-0"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="mb-4 p-3 bg-muted/20 rounded-lg">
+                      <p className="text-sm text-muted-foreground">
+                        Please sign in to add comments
                       </p>
                     </div>
-                    <div className="bg-muted/20 rounded-lg p-3">
-                      <p className="text-muted-foreground text-sm">
-                        Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum
-                      </p>
-                    </div>
-                  </div>
+                  )}
                   
-                  {/* Load More Comments */}
-                  <div className="text-center mt-4">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex gap-1">
-                          <div className="w-1 h-1 bg-current rounded-full"></div>
-                          <div className="w-1 h-1 bg-current rounded-full"></div>
-                          <div className="w-1 h-1 bg-current rounded-full"></div>
+                  {/* Comments List */}
+                  {loadingComments ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-gold mx-auto"></div>
+                    </div>
+                  ) : comments.length > 0 ? (
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {comments.map((comment) => (
+                        <div key={comment.id} className="bg-muted/20 rounded-lg p-3">
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex-1">
+                              <p className="text-xs font-medium text-foreground">
+                                {comment.profiles?.full_name || comment.profiles?.email || 'Anonymous'}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(comment.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            {user?.id === comment.user_id && (
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleStartEdit(comment)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive"
+                                  onClick={() => handleDeleteComment(comment.id)}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          {editingCommentId === comment.id ? (
+                            <div className="flex gap-2 mt-2">
+                              <Input
+                                value={editingCommentText}
+                                onChange={(e) => setEditingCommentText(e.target.value)}
+                                className="text-sm bg-background"
+                                onKeyPress={(e) => e.key === 'Enter' && handleUpdateComment(comment.id)}
+                              />
+                              <Button
+                                size="sm"
+                                onClick={() => handleUpdateComment(comment.id)}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleCancelEdit}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground text-sm">
+                              {comment.comment_text}
+                            </p>
+                          )}
                         </div>
-                      </div>
-                    </Button>
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <p className="text-sm text-muted-foreground">
+                        No comments yet. Be the first to comment!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -789,6 +1004,118 @@ export default function Gallery() {
                     <p className="text-muted-foreground bg-muted/30 rounded-xl p-4 border border-border/20 leading-relaxed">
                       {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
                     </p>
+                  </div>
+
+                  {/* Comments Section */}
+                  <div className="space-y-4 pt-6 border-t border-border/20">
+                    <h3 className="text-xl font-semibold text-foreground flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
+                      {t('gallery.comments')} ({comments.length})
+                    </h3>
+                    
+                    {/* Comment Input */}
+                    {user ? (
+                      <div className="flex gap-2">
+                        <Input 
+                          placeholder={t('gallery.addComment')}
+                          className="bg-muted/30 border-border/20"
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+                        />
+                        <Button 
+                          size="icon"
+                          onClick={handleAddComment}
+                          disabled={!newComment.trim()}
+                          className="shrink-0"
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-muted/20 rounded-lg">
+                        <p className="text-sm text-muted-foreground">
+                          Please sign in to add comments
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Comments List */}
+                    {loadingComments ? (
+                      <div className="text-center py-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-gold mx-auto"></div>
+                      </div>
+                    ) : comments.length > 0 ? (
+                      <div className="space-y-3 max-h-96 overflow-y-auto">
+                        {comments.map((comment) => (
+                          <div key={comment.id} className="bg-muted/20 rounded-lg p-4">
+                            <div className="flex items-start justify-between gap-2 mb-2">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-foreground">
+                                  {comment.profiles?.full_name || comment.profiles?.email || 'Anonymous'}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(comment.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              {user?.id === comment.user_id && (
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    onClick={() => handleStartEdit(comment)}
+                                  >
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-destructive"
+                                    onClick={() => handleDeleteComment(comment.id)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            {editingCommentId === comment.id ? (
+                              <div className="flex gap-2 mt-2">
+                                <Input
+                                  value={editingCommentText}
+                                  onChange={(e) => setEditingCommentText(e.target.value)}
+                                  className="text-sm bg-background"
+                                  onKeyPress={(e) => e.key === 'Enter' && handleUpdateComment(comment.id)}
+                                />
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleUpdateComment(comment.id)}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={handleCancelEdit}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                              <p className="text-muted-foreground text-sm leading-relaxed">
+                                {comment.comment_text}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <p className="text-sm text-muted-foreground">
+                          No comments yet. Be the first to comment!
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Action Buttons */}
