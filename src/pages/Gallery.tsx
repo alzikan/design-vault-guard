@@ -640,7 +640,7 @@ export default function Gallery() {
                               </Button>
                             </div>
                           ) : (
-                            <p className="text-muted-foreground text-sm">
+                            <p className="text-card-foreground text-sm">
                               {comment.comment_text}
                             </p>
                           )}
@@ -649,7 +649,7 @@ export default function Gallery() {
                     </div>
                   ) : (
                     <div className="text-center py-6">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-card-foreground">
                         No comments yet. Be the first to comment!
                       </p>
                     </div>
