@@ -1,7 +1,7 @@
 project_id = "zfzdtgulalwvmmfuoaft"
 
 [functions.gallery-import]
-verify_jwt = false
+verify_jwt = true
 
 [functions.video-import]
-verify_jwt = false
+verify_jwt = true
