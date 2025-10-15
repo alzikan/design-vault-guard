@@ -530,7 +530,10 @@ export default function Gallery() {
               </div>
 
               {/* Artwork Info Panel - Expandable */}
-              <div className="bg-card/95 backdrop-blur-sm border-t border-border/20 p-6 space-y-4">
+              <div 
+                className="bg-card/95 backdrop-blur-sm border-t border-border/20 p-6 space-y-4 max-h-[50vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div>
                   <h1 className="text-xl font-bold text-card-foreground mb-2">
                     {selectedArtwork.title}
