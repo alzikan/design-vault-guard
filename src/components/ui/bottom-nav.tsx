@@ -18,7 +18,7 @@ export function BottomNav({ className }: BottomNavProps) {
     { icon: Home, labelKey: "nav.home", path: "/" },
     { icon: Play, labelKey: "nav.videos", path: "/videos" },
     { icon: Image, labelKey: "nav.gallery", path: "/gallery" },
-    { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" },
+    // { icon: BookOpen, labelKey: "nav.lessons", path: "/lessons" }, // Hidden for now
     { icon: Info, labelKey: "nav.about", path: "/about" },
     ...(user ? [{ icon: User, labelKey: "Profile", path: "/profile" }] : [{ icon: User, labelKey: "nav.login", path: "/auth" }]),
   ];
