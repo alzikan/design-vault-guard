@@ -538,9 +538,11 @@ export default function Gallery() {
                   <h1 className="text-xl font-bold text-card-foreground mb-2">
                     {selectedArtwork.title}
                   </h1>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {selectedArtwork.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea'}
-                  </p>
+                  {selectedArtwork.description && (
+                    <p className="text-card-foreground leading-relaxed">
+                      {selectedArtwork.description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Comments Section */}
