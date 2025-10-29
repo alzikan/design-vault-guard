@@ -71,6 +71,8 @@ const translations = {
     'gallery.description': 'Description',
     'gallery.shareArtwork': 'Share Artwork',
     'gallery.notSpecified': 'Not specified',
+    'gallery.signInToComment': 'Please sign in to add comments',
+    'gallery.noComments': 'No comments yet. Be the first to comment!',
     
     // Lessons Page
     'lessons.title': 'Art Lessons',
@@ -260,6 +262,8 @@ const translations = {
     'gallery.description': 'الوصف',
     'gallery.shareArtwork': 'مشاركة العمل الفني',
     'gallery.notSpecified': 'غير محدد',
+    'gallery.signInToComment': 'يرجى تسجيل الدخول لإضافة تعليق',
+    'gallery.noComments': 'لا توجد تعليقات بعد. كن أول من يعلق!',
     
     // Lessons Page
     'lessons.title': 'دروس الفن',

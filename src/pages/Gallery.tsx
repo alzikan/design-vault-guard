@@ -574,7 +574,7 @@ export default function Gallery() {
                   ) : (
                     <div className="mb-4 p-3 bg-muted/20 rounded-lg">
                       <p className="text-sm text-card-foreground">
-                        Please sign in to add comments
+                        {t('gallery.signInToComment')}
                       </p>
                     </div>
                   )}
@@ -652,7 +652,7 @@ export default function Gallery() {
                   ) : (
                     <div className="text-center py-6">
                       <p className="text-sm text-card-foreground">
-                        No comments yet. Be the first to comment!
+                        {t('gallery.noComments')}
                       </p>
                     </div>
                   )}
@@ -1064,7 +1064,7 @@ export default function Gallery() {
                     ) : (
                       <div className="p-3 bg-muted/20 rounded-lg">
                         <p className="text-sm text-card-foreground">
-                          Please sign in to add comments
+                          {t('gallery.signInToComment')}
                         </p>
                       </div>
                     )}
@@ -1142,7 +1142,7 @@ export default function Gallery() {
                     ) : (
                       <div className="text-center py-6">
                         <p className="text-sm text-card-foreground">
-                          No comments yet. Be the first to comment!
+                          {t('gallery.noComments')}
                         </p>
                       </div>
                     )}
