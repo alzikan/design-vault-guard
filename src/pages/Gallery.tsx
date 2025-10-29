@@ -573,7 +573,7 @@ export default function Gallery() {
                     </div>
                   ) : (
                     <div className="mb-4 p-3 bg-muted/20 rounded-lg">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-card-foreground">
                         Please sign in to add comments
                       </p>
                     </div>
@@ -1063,7 +1063,7 @@ export default function Gallery() {
                       </div>
                     ) : (
                       <div className="p-3 bg-muted/20 rounded-lg">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-card-foreground">
                           Please sign in to add comments
                         </p>
                       </div>
@@ -1141,7 +1141,7 @@ export default function Gallery() {
                       </div>
                     ) : (
                       <div className="text-center py-6">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-card-foreground">
                           No comments yet. Be the first to comment!
                         </p>
                       </div>
