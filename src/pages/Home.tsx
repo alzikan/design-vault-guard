@@ -256,7 +256,7 @@ export default function Home() {
                 <Card 
                   key={category.id} 
                   className="min-w-[140px] bg-card border-border/20 cursor-pointer hover:shadow-lg transition-all duration-300" 
-                  onClick={() => navigate('/gallery')}
+                  onClick={() => navigate(`/gallery?category=${encodeURIComponent(category.name)}`)}
                 >
                   <div className="p-4 text-center">
                     <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-warm-gold/10 flex items-center justify-center">

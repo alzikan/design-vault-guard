@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback, memo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PageHeader } from "@/components/page-header";
 import { BottomNav } from "@/components/ui/bottom-nav";
 import { ArtGalleryCard } from "@/components/art-gallery-card";
@@ -19,6 +19,7 @@ export default function Gallery() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState("year");
   const [viewMode, setViewMode] = useState<"grid" | "masonry">("masonry");
@@ -81,6 +82,14 @@ export default function Gallery() {
       setFavorites(JSON.parse(savedFavorites));
     }
   }, []);
+
+  // Set category from URL parameter on mount
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [searchParams]);
 
   // Memoized functions to prevent unnecessary re-renders
   const toggleFavorite = useCallback((artworkId: number) => {
