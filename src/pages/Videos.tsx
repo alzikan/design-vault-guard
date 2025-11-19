@@ -127,7 +127,7 @@ export default function Videos() {
                       <h3 className="font-bold text-card-foreground text-sm md:text-base mb-1 md:mb-2 line-clamp-2">
                         {video.title}
                       </h3>
-                      <p className="text-muted-foreground text-xs md:text-sm leading-relaxed mb-2 md:mb-3 line-clamp-2">
+                      <p className="text-foreground text-xs md:text-sm leading-relaxed mb-2 md:mb-3 line-clamp-2">
                         {video.description || t('videos.noDescription')}
                       </p>
                       
