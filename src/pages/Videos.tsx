@@ -213,7 +213,7 @@ export default function Videos() {
               <h2 className="text-xl font-bold text-card-foreground mb-2">
                 {selectedVideo.title || t('videos.videoTitle')}
               </h2>
-              <p className="text-white mb-4">
+              <p className="text-card-foreground/90 mb-4">
                 {selectedVideo.description || t('videos.noDescription')}
               </p>
               
