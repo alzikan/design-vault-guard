@@ -1038,7 +1038,7 @@ export default function Gallery() {
                       <div className="w-2 h-2 rounded-full bg-warm-gold"></div>
                       {t('gallery.description')}
                     </h3>
-                    <p className="text-foreground bg-muted/30 rounded-xl p-4 border border-border/20 leading-relaxed">
+                    <p className="text-white bg-muted/30 rounded-xl p-4 border border-border/20 leading-relaxed">
                       {selectedArtwork.description || 'This beautiful artwork speaks for itself through its visual elements and artistic expression.'}
                     </p>
                   </div>
