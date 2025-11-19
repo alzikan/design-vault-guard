@@ -326,6 +326,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_artwork_view_count: {
+        Args: { artwork_id: string }
+        Returns: number
+      }
+      increment_video_view_count: {
+        Args: { video_id: string }
+        Returns: number
+      }
       is_admin: { Args: { _user_id?: string }; Returns: boolean }
     }
     Enums: {
