@@ -93,6 +93,7 @@ export type Database = {
           price: number | null
           title: string
           updated_at: string
+          view_count: number | null
         }
         Insert: {
           artist_name?: string | null
@@ -109,6 +110,7 @@ export type Database = {
           price?: number | null
           title: string
           updated_at?: string
+          view_count?: number | null
         }
         Update: {
           artist_name?: string | null
@@ -125,6 +127,7 @@ export type Database = {
           price?: number | null
           title?: string
           updated_at?: string
+          view_count?: number | null
         }
         Relationships: []
       }
