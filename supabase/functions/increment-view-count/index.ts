@@ -30,26 +30,26 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Determine table name based on content type
-    const tableName = contentType === 'video' ? 'videos' : 'artworks';
+    // Determine RPC function name based on content type
+    const rpcFunction = contentType === 'video' 
+      ? 'increment_video_view_count' 
+      : 'increment_artwork_view_count';
 
-    // Increment view count
+    // Call the database function to increment view count atomically
     const { data, error } = await supabase
-      .from(tableName)
-      .update({ view_count: supabase.raw('view_count + 1') })
-      .eq('id', contentId)
-      .select('view_count')
-      .single();
+      .rpc(rpcFunction, { 
+        [contentType === 'video' ? 'video_id' : 'artwork_id']: contentId 
+      });
 
     if (error) {
       console.error('Database error:', error);
       throw error;
     }
 
-    console.log('View count updated successfully:', data);
+    console.log('View count updated successfully. New count:', data);
 
     return new Response(
-      JSON.stringify({ success: true, viewCount: data.view_count }),
+      JSON.stringify({ success: true, viewCount: data }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
