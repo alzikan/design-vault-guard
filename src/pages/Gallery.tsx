@@ -108,6 +108,13 @@ export default function Gallery() {
   const handleArtworkClick = useCallback((artwork: any) => {
     setSelectedArtwork(artwork);
     fetchComments(artwork.id);
+    
+    // Increment view count (fire and forget - don't block UI)
+    supabase.functions.invoke('increment-view-count', {
+      body: { contentType: 'artwork', contentId: artwork.id }
+    }).catch(error => {
+      console.error('Failed to increment view count:', error);
+    });
   }, []);
   
   // Fetch comments for selected artwork

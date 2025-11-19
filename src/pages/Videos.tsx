@@ -39,6 +39,13 @@ export default function Videos() {
 
   const handleVideoClick = (video: any) => {
     setSelectedVideo(video);
+    
+    // Increment view count (fire and forget - don't block UI)
+    supabase.functions.invoke('increment-view-count', {
+      body: { contentType: 'video', contentId: video.id }
+    }).catch(error => {
+      console.error('Failed to increment view count:', error);
+    });
   };
 
   const closeVideoModal = () => {
