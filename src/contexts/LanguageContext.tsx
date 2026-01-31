@@ -201,6 +201,27 @@ const translations = {
     'home.views': 'views',
     'home.favorites': 'Your Favorites',
     'home.artworks': 'artworks',
+    
+    // Privacy Policy
+    'privacy.title': 'Privacy Policy',
+    'privacy.lastUpdated': 'Last Updated',
+    'privacy.intro': 'Welcome to Alzakan Art. We respect your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you use our application.',
+    'privacy.infoCollectTitle': 'Information We Collect',
+    'privacy.infoCollectContent': '• Email address (when you create an account)\n• Lesson progress and completion data\n• Comments you post on artworks\n• App usage analytics (anonymized)',
+    'privacy.howWeUseTitle': 'How We Use Your Information',
+    'privacy.howWeUseContent': '• To authenticate and manage your account\n• To track and save your lesson progress\n• To enable comments on artworks\n• To improve our app and user experience\n• To send important updates about our services',
+    'privacy.dataStorageTitle': 'Data Storage & Security',
+    'privacy.dataStorageContent': 'Your data is stored securely using Supabase cloud services. We implement industry-standard security measures including encryption in transit and at rest to protect your personal information.',
+    'privacy.thirdPartyTitle': 'Third-Party Services',
+    'privacy.thirdPartyContent': 'We use Supabase for authentication and database services. Supabase complies with GDPR and maintains strict data protection standards. We do not sell or share your personal data with third parties for marketing purposes.',
+    'privacy.childrenTitle': "Children's Privacy",
+    'privacy.childrenContent': 'Our app is designed for users of all ages interested in art. We do not knowingly collect personal information from children under 13 without parental consent. If you believe we have collected information from a child, please contact us immediately.',
+    'privacy.yourRightsTitle': 'Your Rights',
+    'privacy.yourRightsContent': '• Access your personal data\n• Request correction of your data\n• Request deletion of your account and data\n• Export your data\n• Opt-out of non-essential communications',
+    'privacy.contactTitle': 'Contact Us',
+    'privacy.contactContent': 'If you have questions about this privacy policy or your personal data, please contact us at:\n\nEmail: contact@alzakanart.com',
+    'privacy.updatesTitle': 'Policy Updates',
+    'privacy.updatesContent': 'We may update this privacy policy from time to time. We will notify you of any significant changes through the app or via email. Your continued use of the app after changes constitutes acceptance of the updated policy.',
   },
   ar: {
     // Navigation & Header
@@ -392,6 +413,27 @@ const translations = {
     'home.views': 'مشاهدة',
     'home.favorites': 'المفضلة لديك',
     'home.artworks': 'أعمال فنية',
+    
+    // Privacy Policy
+    'privacy.title': 'سياسة الخصوصية',
+    'privacy.lastUpdated': 'آخر تحديث',
+    'privacy.intro': 'مرحباً بك في الزكان للفن. نحن نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية. توضح سياسة الخصوصية هذه كيفية جمع واستخدام وحماية معلوماتك عند استخدام تطبيقنا.',
+    'privacy.infoCollectTitle': 'المعلومات التي نجمعها',
+    'privacy.infoCollectContent': '• عنوان البريد الإلكتروني (عند إنشاء حساب)\n• بيانات تقدم الدروس والإكمال\n• التعليقات التي تنشرها على الأعمال الفنية\n• تحليلات استخدام التطبيق (مجهولة الهوية)',
+    'privacy.howWeUseTitle': 'كيف نستخدم معلوماتك',
+    'privacy.howWeUseContent': '• للمصادقة وإدارة حسابك\n• لتتبع وحفظ تقدمك في الدروس\n• لتمكين التعليقات على الأعمال الفنية\n• لتحسين تطبيقنا وتجربة المستخدم\n• لإرسال تحديثات مهمة حول خدماتنا',
+    'privacy.dataStorageTitle': 'تخزين البيانات والأمان',
+    'privacy.dataStorageContent': 'يتم تخزين بياناتك بشكل آمن باستخدام خدمات Supabase السحابية. نحن ننفذ إجراءات أمنية معيارية بما في ذلك التشفير أثناء النقل والتخزين لحماية معلوماتك الشخصية.',
+    'privacy.thirdPartyTitle': 'خدمات الطرف الثالث',
+    'privacy.thirdPartyContent': 'نستخدم Supabase للمصادقة وخدمات قاعدة البيانات. يلتزم Supabase باللائحة العامة لحماية البيانات ويحافظ على معايير صارمة لحماية البيانات. نحن لا نبيع أو نشارك بياناتك الشخصية مع أطراف ثالثة لأغراض التسويق.',
+    'privacy.childrenTitle': 'خصوصية الأطفال',
+    'privacy.childrenContent': 'تطبيقنا مصمم للمستخدمين من جميع الأعمار المهتمين بالفن. نحن لا نجمع عن علم معلومات شخصية من الأطفال دون 13 عاماً بدون موافقة الوالدين. إذا كنت تعتقد أننا جمعنا معلومات من طفل، يرجى الاتصال بنا فوراً.',
+    'privacy.yourRightsTitle': 'حقوقك',
+    'privacy.yourRightsContent': '• الوصول إلى بياناتك الشخصية\n• طلب تصحيح بياناتك\n• طلب حذف حسابك وبياناتك\n• تصدير بياناتك\n• إلغاء الاشتراك في الاتصالات غير الضرورية',
+    'privacy.contactTitle': 'اتصل بنا',
+    'privacy.contactContent': 'إذا كانت لديك أسئلة حول سياسة الخصوصية هذه أو بياناتك الشخصية، يرجى الاتصال بنا على:\n\nالبريد الإلكتروني: contact@alzakanart.com',
+    'privacy.updatesTitle': 'تحديثات السياسة',
+    'privacy.updatesContent': 'قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سنخطرك بأي تغييرات جوهرية من خلال التطبيق أو عبر البريد الإلكتروني. استمرارك في استخدام التطبيق بعد التغييرات يعني قبولك للسياسة المحدثة.',
   }
 };
 
