@@ -4,10 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.alzikan.art',
   appName: 'alzakanart',
   webDir: 'dist',
-  server: {
-    url: 'https://23b9bca9-68fa-481c-9d3a-5f7c45897572.lovableproject.com?forceHideBadge=true',
-    cleartext: true
-  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 3000,
