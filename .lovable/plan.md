@@ -1,97 +1,114 @@
 
-# Create Privacy Policy Page
+# App Store Submission Fixes
 
 ## Overview
 
-I will create a Privacy Policy page that is required for App Store and Google Play Store submission. The page will be accessible at `/privacy-policy` and will follow the existing design patterns of your app.
+I will implement all the recommendations from your app developer to ensure a smooth App Store submission. These changes cover export compliance, version alignment, branding consistency, and typo fixes.
 
 ---
 
-## What Will Be Created
+## Changes to Implement
 
-### 1. New Page: `src/pages/PrivacyPolicy.tsx`
+### 1. Export Compliance (Info.plist)
 
-A new privacy policy page that includes:
+**What**: Add `ITSAppUsesNonExemptEncryption` key to indicate the app only uses HTTPS (which is exempt from export regulations).
 
-- **Header** with your app's consistent design (using PageHeader component)
-- **Privacy Policy content** covering all App Store required sections:
-  - Information Collection
-  - How We Use Your Information
-  - Data Storage & Security
-  - Third-Party Services (Supabase)
-  - Children's Privacy
-  - Your Rights
-  - Contact Information
-  - Policy Updates
+**Why**: This prevents App Store Connect from asking about export compliance during every submission.
 
-- **Bottom Navigation** for consistent app experience
-- **Bilingual Support** (English and Arabic) using your existing translation system
+**Action**: Create an Info.plist file that Capacitor will merge into the iOS build:
 
-### 2. Update `src/App.tsx`
+| Key | Type | Value |
+|-----|------|-------|
+| ITSAppUsesNonExemptEncryption | Boolean | NO |
 
-Add a new route `/privacy-policy` pointing to the PrivacyPolicy page.
-
-### 3. Update `src/contexts/LanguageContext.tsx`
-
-Add translations for all privacy policy text in both English and Arabic.
+**File to create**: `ios/App/App/Info.plist` additions (or instruct user to add manually in Xcode since iOS folder is generated locally)
 
 ---
 
-## Page Design
+### 2. Version Alignment
 
-The page will match your existing app design:
-- Same background and card styling as the About page
-- Scrollable content with clear section headings
-- Each section in its own Card component
-- Icons for visual appeal (Shield, Lock, Eye, etc.)
-- Full RTL support for Arabic
+**Current state**:
+- `package.json`: "0.0.0"
+- `VERSION`: "1.2.0"
+- Xcode: MARKETING_VERSION = 1.0, CURRENT_PROJECT_VERSION = 1
+
+**Action**: Update `package.json` version to "1.2.0" to match the VERSION file.
+
+**Note for Xcode**: You will need to update the following in Xcode after pulling:
+- MARKETING_VERSION = 1.2.0
+- CURRENT_PROJECT_VERSION = 1 (increment this for each App Store upload: 1, 2, 3...)
 
 ---
 
-## Privacy Policy Content
+### 3. Display Name / Branding
 
-The policy will cover:
+**Current state**:
+- `capacitor.config.ts`: appName = 'alzakanart'
+- The app ID is `com.alzikan.art` (with "i")
 
-| Section | Description |
-|---------|-------------|
-| Information We Collect | Email for account creation, lesson progress, comments |
-| How We Use Data | Authentication, personalization, analytics |
-| Data Storage | Supabase cloud storage, security measures |
-| Third-Party Services | Supabase for backend services |
-| Children's Privacy | Age restrictions and parental consent |
-| Your Rights | Data access, deletion, and modification requests |
-| Contact | How to reach you for privacy questions |
-| Updates | How policy changes will be communicated |
+**Action**: Update `capacitor.config.ts` to use `appName: 'Alzikan Art'` for consistency with the app ID and brand.
+
+This will appear on the home screen when users install the app.
+
+---
+
+### 4. "Artiest" Typo Fix
+
+**Current state** in `index.html`:
+- Title: "Ibrahim AlZikan Artiest الفنان ابراهيم الزيكان"
+- Multiple meta tags with "Artiest"
+
+**Action**: Change "Artiest" to "Artist" in:
+- `<title>` tag
+- `<meta name="description">`
+- `<meta property="og:title">`
+- `<meta name="twitter:title">`
+- `<meta property="og:description">`
+- `<meta name="twitter:description">`
+
+---
+
+## Summary of File Changes
+
+| File | Change |
+|------|--------|
+| `package.json` | Update version from "0.0.0" to "1.2.0" |
+| `capacitor.config.ts` | Change appName from 'alzakanart' to 'Alzikan Art' |
+| `index.html` | Fix "Artiest" typo to "Artist" in title and all meta tags |
+
+---
+
+## Manual Steps Required After Implementation
+
+After pulling these changes to your local repository, your developer needs to:
+
+1. **Run sync**: `npm run build && npx cap sync`
+
+2. **Update Xcode settings** (in Xcode > App target > General):
+   - Set Version (MARKETING_VERSION) to `1.2.0`
+   - Set Build (CURRENT_PROJECT_VERSION) to `1`
+
+3. **Add Export Compliance** (in Xcode > App target > Info):
+   - Add key: `App Uses Non-Exempt Encryption`
+   - Set value: `NO`
+
+   Or add to Info.plist:
+   ```
+   <key>ITSAppUsesNonExemptEncryption</key>
+   <false/>
+   ```
+
+4. **Archive and submit** to App Store Connect
 
 ---
 
 ## Technical Details
 
-### Files to Create
-- `src/pages/PrivacyPolicy.tsx` - Main privacy policy page component
-
 ### Files to Modify
-- `src/App.tsx` - Add route for `/privacy-policy`
-- `src/contexts/LanguageContext.tsx` - Add ~30 new translation keys for privacy policy content
+- `package.json` - Line 4: version "0.0.0" to "1.2.0"
+- `capacitor.config.ts` - Line 5: appName 'alzakanart' to 'Alzikan Art'
+- `index.html` - Lines 6, 7, 20, 21, 22, 23: "Artiest" to "Artist"
 
-### Dependencies
-No new dependencies required - uses existing UI components (Card, PageHeader, BottomNav, etc.)
+### No New Dependencies Required
 
----
-
-## How to Access
-
-After implementation:
-- **Web**: Visit `https://alzakanart.lovable.app/privacy-policy`
-- **App Store**: You can link to this URL in your app listing
-- **In-App**: Optionally add a link in settings or footer
-
----
-
-## Important Notes
-
-1. **Placeholder Contact Email**: I will use a placeholder email (contact@alzakanart.com). You should update this with your actual contact email.
-
-2. **Last Updated Date**: The policy will show today's date. Update this whenever you modify the policy.
-
-3. **Customization**: You may want to review and customize the legal language based on your specific data practices or consult with a legal professional for compliance in your region.
+All changes are configuration updates only.
