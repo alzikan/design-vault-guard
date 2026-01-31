@@ -12,6 +12,7 @@ import Videos from "./pages/Videos";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminArtworks from "./pages/admin/AdminArtworks";
 import AdminLessons from "./pages/admin/AdminLessons";
 import AdminVideos from "./pages/admin/AdminVideos";
@@ -80,6 +81,7 @@ const App = () => (
           <Route path="/videos" element={<Videos />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           
           {/* Protected Admin Routes */}
           <Route path="/admin" element={
