@@ -219,7 +219,7 @@ const translations = {
     'privacy.yourRightsTitle': 'Your Rights',
     'privacy.yourRightsContent': '• Access your personal data\n• Request correction of your data\n• Request deletion of your account and data\n• Export your data\n• Opt-out of non-essential communications',
     'privacy.contactTitle': 'Contact Us',
-    'privacy.contactContent': 'If you have questions about this privacy policy or your personal data, please contact us at:\n\nEmail: contact@alzakanart.com',
+    'privacy.contactContent': 'If you have questions about this privacy policy or your personal data, please contact us at:\n\nEmail: contact@alzikan.com',
     'privacy.updatesTitle': 'Policy Updates',
     'privacy.updatesContent': 'We may update this privacy policy from time to time. We will notify you of any significant changes through the app or via email. Your continued use of the app after changes constitutes acceptance of the updated policy.',
   },
@@ -431,7 +431,7 @@ const translations = {
     'privacy.yourRightsTitle': 'حقوقك',
     'privacy.yourRightsContent': '• الوصول إلى بياناتك الشخصية\n• طلب تصحيح بياناتك\n• طلب حذف حسابك وبياناتك\n• تصدير بياناتك\n• إلغاء الاشتراك في الاتصالات غير الضرورية',
     'privacy.contactTitle': 'اتصل بنا',
-    'privacy.contactContent': 'إذا كانت لديك أسئلة حول سياسة الخصوصية هذه أو بياناتك الشخصية، يرجى الاتصال بنا على:\n\nالبريد الإلكتروني: contact@alzakanart.com',
+    'privacy.contactContent': 'إذا كانت لديك أسئلة حول سياسة الخصوصية هذه أو بياناتك الشخصية، يرجى الاتصال بنا على:\n\nالبريد الإلكتروني: contact@alzikan.com',
     'privacy.updatesTitle': 'تحديثات السياسة',
     'privacy.updatesContent': 'قد نقوم بتحديث سياسة الخصوصية هذه من وقت لآخر. سنخطرك بأي تغييرات جوهرية من خلال التطبيق أو عبر البريد الإلكتروني. استمرارك في استخدام التطبيق بعد التغييرات يعني قبولك للسياسة المحدثة.',
   }
