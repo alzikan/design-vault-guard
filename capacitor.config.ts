@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.alzikan.art',
-  appName: 'alzakanart',
+  appName: 'Alzikan Art',
   webDir: 'dist',
   plugins: {
     SplashScreen: {
