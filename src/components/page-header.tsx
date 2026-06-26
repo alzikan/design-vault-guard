@@ -143,14 +143,15 @@ export function PageHeader({
       <div className="flex items-center gap-2">
         {user && hasAdminAccess && (
           <Button
-            variant="outline"
+            variant="default"
             size="sm"
             onClick={() => navigate('/admin')}
-            className="bg-warm-gold/15 text-warm-gold border-warm-gold/40 hover:bg-warm-gold/25 hover:text-warm-gold gap-1"
+            aria-label={t('nav.admin')}
+            className="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-400 border-2 border-white shadow-lg font-bold uppercase tracking-wide gap-1.5 min-h-11 px-3"
             title={t('nav.admin')}
           >
-            <Shield className="w-4 h-4" />
-            <span className="text-sm font-semibold">{t('nav.admin')}</span>
+            <Shield className="w-5 h-5" strokeWidth={2.5} />
+            <span className="text-sm font-bold">{t('nav.admin')}</span>
           </Button>
         )}
         {user ? (
