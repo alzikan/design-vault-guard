@@ -141,6 +141,18 @@ export function PageHeader({
 
       {/* Right side controls */}
       <div className="flex items-center gap-2">
+        {user && hasAdminAccess && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/admin')}
+            className="bg-warm-gold/15 text-warm-gold border-warm-gold/40 hover:bg-warm-gold/25 hover:text-warm-gold gap-1"
+            title={t('nav.admin')}
+          >
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-semibold">{t('nav.admin')}</span>
+          </Button>
+        )}
         {user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
