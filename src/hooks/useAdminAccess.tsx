@@ -6,6 +6,7 @@ export const useAdminAccess = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [checkedUserId, setCheckedUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -15,6 +16,7 @@ export const useAdminAccess = () => {
         console.log('No user found, clearing admin status');
         setIsAdmin(false);
         setLoading(false);
+        setCheckedUserId(null);
         return;
       }
 
@@ -38,6 +40,7 @@ export const useAdminAccess = () => {
         console.error('Error checking admin access:', error);
         setIsAdmin(false);
       } finally {
+        setCheckedUserId(user.id);
         setLoading(false);
       }
     };
@@ -45,9 +48,14 @@ export const useAdminAccess = () => {
     checkAdminAccess();
   }, [user?.id]);
 
+  // Synchronously treat as loading whenever the current user.id has not been checked yet.
+  // This prevents a race where loading briefly reads `false` with stale `isAdmin=false`
+  // right after sign-in, causing ProtectedAdminRoute to redirect away.
+  const effectiveLoading = loading || (!!user?.id && checkedUserId !== user.id);
+
   return {
     hasAdminAccess: isAdmin,
-    loading,
+    loading: effectiveLoading,
     user
   };
 };
