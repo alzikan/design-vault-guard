@@ -126,28 +126,36 @@ export default function AdminUsers() {
   return (
     <div className="min-h-screen bg-background">
       <AdminNav />
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto px-4 py-6 sm:p-6">
         <PageHeader title="User Management" subtitle="Manage user access and permissions" />
-      
-      <div className="grid gap-4">
+
+      <div className="grid gap-3 sm:gap-4 mt-4">
         {profiles.map((profile) => (
-          <Card key={profile.id} className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h3 className="font-semibold">{profile.full_name}</h3>
-                <p className="text-sm text-muted-foreground">{profile.email}</p>
-                <p className="text-xs text-muted-foreground">
+          <Card key={profile.id} className="p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-base sm:text-lg text-foreground truncate">
+                  {profile.full_name || profile.email}
+                </h3>
+                <p className="text-sm text-foreground/80 break-all">{profile.email}</p>
+                <p className="text-xs text-muted-foreground mt-1">
                   Joined: {new Date(profile.created_at).toLocaleDateString()}
                 </p>
               </div>
-              
-              <div className="flex items-center space-x-4">
-                <Badge variant={profile.is_admin ? "default" : "secondary"}>
-                  {profile.is_admin ? "Admin" : "User"}
+
+              <div className="flex items-center justify-between gap-3 sm:justify-end sm:gap-4 shrink-0">
+                <Badge
+                  variant={profile.is_admin ? 'default' : 'secondary'}
+                  className="text-xs px-2.5 py-1"
+                >
+                  {profile.is_admin ? 'Admin' : 'User'}
                 </Badge>
-                
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor={`admin-${profile.id}`} className="text-sm">
+
+                <div className="flex items-center gap-2">
+                  <Label
+                    htmlFor={`admin-${profile.id}`}
+                    className="text-sm font-medium whitespace-nowrap"
+                  >
                     Admin Access
                   </Label>
                   <Switch
