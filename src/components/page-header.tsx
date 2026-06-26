@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Globe, Settings, LogOut, Key, Shield } from "lucide-react";
+import { Globe, Settings, LogOut, Key, Shield, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -147,10 +147,10 @@ export function PageHeader({
             size="sm"
             onClick={() => navigate('/admin')}
             aria-label={t('nav.admin')}
-            className="bg-red-600 text-white hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-400 border-2 border-white shadow-lg font-bold uppercase tracking-wide gap-1.5 min-h-11 px-3"
+            className="bg-[#b91c1c] text-white hover:bg-[#991b1b] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#b91c1c] border-2 border-white shadow-lg font-bold uppercase tracking-wide gap-1.5 min-h-11 px-3"
             title={t('nav.admin')}
           >
-            <Shield className="w-5 h-5" strokeWidth={2.5} />
+            <ShieldAlert className="w-5 h-5 shrink-0" strokeWidth={2.75} aria-hidden="true" />
             <span className="text-sm font-bold">{t('nav.admin')}</span>
           </Button>
         )}
