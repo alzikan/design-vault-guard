@@ -21,6 +21,7 @@ const translations = {
     'nav.signOut': 'Sign Out',
     'nav.language': 'عربي',
     'nav.login': 'Login',
+    'nav.admin': 'Admin',
     
     // Home Page specific
     'home.categories': 'Categories',
@@ -233,6 +234,7 @@ const translations = {
     'nav.signOut': 'تسجيل الخروج',
     'nav.language': 'English',
     'nav.login': 'تسجيل الدخول',
+    'nav.admin': 'المشرف',
     
     // Home Page specific
     'home.categories': 'الفئات',
