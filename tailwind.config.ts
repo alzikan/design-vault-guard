@@ -51,6 +51,12 @@ export default {
         "gallery-bg": "hsl(var(--gallery-bg))",
         "warm-gold": "hsl(var(--warm-gold))",
         "warm-bronze": "hsl(var(--warm-bronze))",
+        "admin-alert": {
+          DEFAULT: "hsl(var(--admin-alert))",
+          hover: "hsl(var(--admin-alert-hover))",
+          foreground: "hsl(var(--admin-alert-foreground))",
+          ring: "hsl(var(--admin-alert-ring))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

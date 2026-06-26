@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Play, BookOpen, Palette, TrendingUp, Heart, Settings, LogIn } from "lucide-react";
+import { Play, BookOpen, Palette, TrendingUp, Heart, ShieldAlert, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -187,13 +187,16 @@ export default function Home() {
           {/* Admin Access Button - Only show for admin users */}
           {hasAdminAccess && (
             <Button 
-              variant="outline" 
+              variant="default" 
               size="sm"
-              className="bg-warm-gold/10 border-warm-gold/30 hover:bg-warm-gold/20 text-warm-gold"
+              className="min-h-11 rounded-lg border-2 border-warm-gold bg-admin-alert px-3 font-extrabold text-admin-alert-foreground shadow-lg ring-2 ring-admin-alert-ring hover:bg-admin-alert-hover focus-visible:ring-4 focus-visible:ring-admin-alert-ring"
               onClick={() => navigate('/admin')}
+              aria-label={t('nav.admin')}
             >
-              <Settings className="w-4 h-4 mr-1" />
-              Admin
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-admin-alert-foreground text-admin-alert" aria-hidden="true">
+                <ShieldAlert className="h-4 w-4" strokeWidth={3} />
+              </span>
+              <span className="text-sm font-extrabold">{t('nav.admin')}</span>
             </Button>
           )}
           

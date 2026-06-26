@@ -147,11 +147,13 @@ export function PageHeader({
             size="sm"
             onClick={() => navigate('/admin')}
             aria-label={t('nav.admin')}
-            className="bg-[#b91c1c] text-white hover:bg-[#991b1b] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#b91c1c] border-2 border-white shadow-lg font-bold uppercase tracking-wide gap-1.5 min-h-11 px-3"
+            className="min-h-11 rounded-lg border-2 border-warm-gold bg-admin-alert px-3 font-extrabold text-admin-alert-foreground shadow-lg ring-2 ring-admin-alert-ring hover:bg-admin-alert-hover focus-visible:ring-4 focus-visible:ring-admin-alert-ring"
             title={t('nav.admin')}
           >
-            <ShieldAlert className="w-5 h-5 shrink-0" strokeWidth={2.75} aria-hidden="true" />
-            <span className="text-sm font-bold">{t('nav.admin')}</span>
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-admin-alert-foreground text-admin-alert" aria-hidden="true">
+              <ShieldAlert className="h-4 w-4" strokeWidth={3} />
+            </span>
+            <span className="text-sm font-extrabold">{t('nav.admin')}</span>
           </Button>
         )}
         {user ? (
