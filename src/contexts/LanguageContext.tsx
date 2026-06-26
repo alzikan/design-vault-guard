@@ -348,6 +348,18 @@ const translations = {
     
     // Admin Pages
     'admin.title': 'لوحة الإدارة',
+    'admin.users': 'المستخدمون',
+    'admin.userManagement': 'إدارة المستخدمين',
+    'admin.userManagementSubtitle': 'لوحة التحكم الإدارية',
+    'admin.adminAccess': 'صلاحية المسؤول',
+    'admin.roleAdmin': 'مشرف',
+    'admin.roleUser': 'مستخدم',
+    'admin.joined': 'انضم في',
+    'admin.noUsers': 'لا يوجد مستخدمون',
+    'admin.grantedAccess': 'تم منح صلاحية المسؤول',
+    'admin.revokedAccess': 'تم سحب صلاحية المسؤول',
+    'admin.totalUsers': 'إجمالي المستخدمين',
+    'admin.totalAdmins': 'المشرفون',
     'admin.artworks': 'إدارة الأعمال الفنية',
     'admin.lessons': 'إدارة الدروس',
     'admin.videos': 'إدارة الفيديوهات',
