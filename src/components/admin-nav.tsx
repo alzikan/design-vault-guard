@@ -27,7 +27,7 @@ const AdminNav = () => {
     { to: '/admin/lessons', label: t('admin.addLesson'), icon: <Plus className="h-4 w-4" /> },
     { to: '/admin/videos', label: t('admin.addVideo'), icon: <Plus className="h-4 w-4" /> },
     { to: '/admin/profile', label: t('admin.artistProfile'), icon: <User className="h-4 w-4" /> },
-    { to: '/admin/users', label: 'Users', icon: <Users className="h-4 w-4" /> },
+    { to: '/admin/users', label: t('admin.users'), icon: <Users className="h-4 w-4" /> },
   ];
 
   return (
