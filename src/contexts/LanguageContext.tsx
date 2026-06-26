@@ -123,6 +123,18 @@ const translations = {
     
     // Admin Pages
     'admin.title': 'Admin Panel',
+    'admin.users': 'Users',
+    'admin.userManagement': 'User Management',
+    'admin.userManagementSubtitle': 'Administrative Control',
+    'admin.adminAccess': 'Admin Access',
+    'admin.roleAdmin': 'Admin',
+    'admin.roleUser': 'User',
+    'admin.joined': 'Joined',
+    'admin.noUsers': 'No users found',
+    'admin.grantedAccess': 'Admin access granted',
+    'admin.revokedAccess': 'Admin access revoked',
+    'admin.totalUsers': 'Total Users',
+    'admin.totalAdmins': 'Admins',
     'admin.artworks': 'Manage Artworks',
     'admin.lessons': 'Manage Lessons',
     'admin.videos': 'Manage Videos',
