@@ -12,12 +12,9 @@ export const useAdminAccess = () => {
       console.log('Checking admin access for user:', user?.id);
       
       if (!user?.id) {
-        console.log('No user found, keeping current admin status and not loading');
-        // Don't reset isAdmin to false if user is temporarily undefined
-        // Only set loading to false if we never had a user
-        if (!loading) {
-          setLoading(false);
-        }
+        console.log('No user found, clearing admin status');
+        setIsAdmin(false);
+        setLoading(false);
         return;
       }
 
