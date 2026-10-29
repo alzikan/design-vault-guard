@@ -2,7 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { isRecoveryCallback } from "@/lib/password-recovery";
 import Splash from "./pages/Splash";
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -24,6 +27,25 @@ import { useAdminAccess } from "./hooks/useAdminAccess";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
+
+// Support old emails that return to the home page or /auth instead of the new page.
+const RecoveryRedirect = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.pathname === '/reset-password') return;
+    if (isRecoveryCallback(location.hash, location.search)) {
+      navigate(`/reset-password${location.search}${location.hash}`, { replace: true });
+    }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(event => {
+      if (event === 'PASSWORD_RECOVERY') {
+        navigate('/reset-password#type=recovery', { replace: true });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [location.pathname, location.hash, location.search, navigate]);
+  return null;
+};
 
 // Protected Admin Route Component - SECURE: Deny by default, allow only when explicitly confirmed
 const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
@@ -72,6 +94,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <RecoveryRedirect />
         <Routes>
           {/* Public Routes */}
           <Route path="/splash" element={<Splash />} />
