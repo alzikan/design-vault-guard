@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { MailCheck, ArrowLeft, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ export default function Auth() {
   const { t } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
-  const [mode, setMode] = useState('signin');
+  const [mode, setMode] = useState(new URLSearchParams(location.search).get('mode') === 'forgot' ? 'forgot' : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
