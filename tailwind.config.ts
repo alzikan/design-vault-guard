@@ -18,6 +18,12 @@ export default {
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
+        auth: {
+          background: "hsl(var(--auth-background))",
+          foreground: "hsl(var(--auth-foreground))",
+          input: "hsl(var(--auth-input))",
+          border: "hsl(var(--auth-border))",
+        },
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
