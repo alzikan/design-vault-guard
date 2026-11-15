@@ -4,6 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import AdminNav from '@/components/admin-nav';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
+import { canManageUserAccess } from '@/lib/admin-access';
 import { ShieldCheck, User as UserIcon, Users as UsersIcon } from 'lucide-react';
 
 interface Profile {
@@ -25,6 +27,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const isRTL = language === 'ar';
 
   useEffect(() => {
@@ -68,7 +71,11 @@ export default function AdminUsers() {
   };
 
   const toggleAdminAccess = async (userId: string, currentAdminStatus: boolean) => {
+    if (!canManageUserAccess(user?.id, userId)) return;
     try {
+      const { data, error: authError } = await supabase.auth.getUser();
+      if (authError) throw authError;
+      if (!canManageUserAccess(data.user?.id, userId)) return;
       if (currentAdminStatus) {
         // Remove admin role
         const { error } = await supabase
@@ -233,12 +240,20 @@ export default function AdminUsers() {
                   <Switch
                     id={`admin-${profile.id}`}
                     checked={profile.is_admin}
+                    disabled={!canManageUserAccess(user?.id, profile.user_id)}
+                    aria-describedby={user?.id === profile.user_id ? `self-access-${profile.id}` : undefined}
                     onCheckedChange={() =>
                       toggleAdminAccess(profile.user_id, profile.is_admin)
                     }
                     className="data-[state=checked]:bg-[#C5A059]"
                   />
                 </div>
+                {user?.id === profile.user_id && (
+                  <p id={`self-access-${profile.id}`} className="text-foreground text-sm mt-3 flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {t('admin.selfAccessProtected')}
+                  </p>
+                )}
               </div>
             );
           })}

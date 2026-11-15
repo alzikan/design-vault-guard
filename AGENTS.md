@@ -3,3 +3,4 @@
 - Let the Supabase client establish callback sessions; verify them with getUser before allowing password recovery, and preserve legacy recovery redirects.
 - Keep authentication messages in LanguageContext and authentication colors in semantic CSS tokens for bilingual, high-contrast forms.
 - Protect permanent administrator role assignments with a database trigger tied to the verified account ID, not a client-side email bypass, so all access checks remain server-validated.
+- Block self-directed role mutations in a database trigger using auth.uid(), and disable the current account's access switch in the UI, so accidental or direct requests cannot cause self-demotion.
